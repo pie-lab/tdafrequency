@@ -7,11 +7,13 @@ navbar:
       href: tda-difficulty.html
     - text: Estimates based on Ngram Results  
       href: item-difficulty.html
+    - text: Code  
+      href: data-cleaning.html
   right:
     - icon: fa-file
       href: https://psyarxiv.com
     - icon: fa-github
-      href: https://github.com/pie-lab/tda
+      href: https://github.com/pie-lab/tdafrequency
 output:
   html_document:
     lib_dir: site_libs

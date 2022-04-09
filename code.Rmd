@@ -1,0 +1,385 @@
+---
+title: "Analytic Code"
+date: "Last updated `r Sys.Date()`"
+output: 
+  html_document:
+    toc: TRUE
+---
+
+```{r, include = F}
+knitr::opts_chunk$set(message = F, warning = F)
+```
+
+
+# Load data and packages
+
+```{r, message = F, warning = F}
+library(here) # for engaging with working environment
+library(rio) # for importing excel files
+library(psych) # for scoring multiple choice items
+library(R.utils) # just for the insert() function
+library(conflicted)
+library(tidyverse) # for data cleaning and manipulation
+conflict_prefer("here", "here")
+conflict_prefer("filter", "dplyr")
+conflict_prefer("count", "dplyr")
+conflict_prefer("mutate", "dplyr")
+conflict_prefer("summarise", "dplyr")
+```
+
+## Qualtrics survey responses
+
+The excel files contain raw data exported from Qualtrics. The first row of this file contains variable names, but rows 2 and 3 contain meta data. To account, we first load in all data as a "names" data frame and then data starting at row 4, for the raw data. 
+
+```{r, message = F, warning = F, eval = F}
+# read in form A (Prolific)
+formA_names = read_csv(
+  here("data/Form+A_Prolific_April+2,+2021_15.27.csv"))
+
+formA = read_csv(
+  here("data/Form+A_Prolific_April+2,+2021_15.27.csv"), 
+  col_names = F, skip = 3)
+
+names(formA) = names(formA_names)
+rm(formA_names)
+
+# read in form A (MTurk)
+formA_names = read_csv(
+  here("data/Form A_April 2, 2021_15.41.numeric.csv"))
+
+formA2 = read_csv(
+  here("data/Form A_April 2, 2021_15.41.numeric.csv"), 
+  col_names = F, skip = 3)
+
+names(formA2) = names(formA_names)
+rm(formA_names)
+
+formA = full_join(formA, formA2)
+rm(formA2)
+
+# read in form B (Prolific)
+formB_names = read_csv(
+  here("data/Form+B_Prolific_April+2,+2021_15.27.csv"))
+
+formB = read_csv(
+  here("data/Form+B_Prolific_April+2,+2021_15.27.csv"), 
+  col_names = F, skip = 3)
+
+names(formB) = names(formB_names)
+rm(formB_names)
+
+
+# read in form B (MTurk)
+formB_names = read_csv(
+  here("data/Form B_April 2, 2021_15.44.numeric.csv"))
+
+formB2 = read_csv(
+  here("data/Form B_April 2, 2021_15.44.numeric.csv"), 
+  col_names = F, skip = 3)
+
+names(formB2) = names(formB_names)
+rm(formB_names)
+
+formB = full_join(formB, formB2)
+rm(formB2)
+
+# read in form C (Prolific)
+formC_names = read_csv(
+  here("data/Form+C_April+16,+2021_17.21.csv"))
+
+formC = read_csv(
+  here("data/Form+C_April+16,+2021_17.21.csv"), 
+  col_names = F, skip = 3)
+
+names(formC) = names(formC_names)
+rm(formC_names)
+```
+
+```{r, eval = F, echo = F}
+save(formA, formB, formC, file = here("data/raw_data.Rdata"))
+```
+
+```{r, echo = F}
+load(here("data/raw_data.Rdata"))
+```
+
+In forms A and B, variable names composed solely of numbers (e.g., 20001) refer to the specific variable number as included in the dictionary. These must be prefaced by `q_` for readability. 
+
+```{r}
+names(formA) = str_replace(names(formA), # look in this vector of strings
+                           "(^)([0-9]*$)", #match two parts. part 1: beginning of string, second part: digits 0 or more times and then the string ends
+                           "q_\\2") # replace with q_ followed by the second part of the match
+
+names(formB) = str_replace(names(formB), 
+                           "(^)([0-9]*$)", 
+                           "q_\\2") 
+
+names(formC) = str_replace(names(formC), 
+                           "^Q", 
+                           "q_") 
+
+# an additional error in form C -- some variable names were coded with only the last 4 digits (i.e., missing the first "2")
+names(formC) = str_replace(names(formC), 
+                           "(q_)(\\d{4}$)", "\\12\\2")
+```
+
+Remove participants without valid Prolific or MTurk IDs.
+
+```{r}
+formA = formA %>%
+  dplyr::filter(!is.na(mTurkCode) | str_length(PROLIFIC_PID) > 3)
+formB = formB %>%
+  dplyr::filter(!is.na(mTurkCode) | str_length(PROLIFIC_PID) > 3)
+formC = formC %>%
+  dplyr::filter(str_length(PROLIFIC_PID) > 3)
+```
+
+## Scoring keys
+
+```{r, message = F, warning = F}
+keyA = read.csv(here("keys/key_A.csv"))
+keyB = read.csv(here("keys/key_B.csv"))
+keyC = import(here("keys/key_C.xlsx"), sheet = 1)
+```
+
+Variable names composed solely of numbers (e.g., 1) refer to the response choice number as presented to participants. These must be prefaced by `R_` for readability. 
+
+```{r}
+names(keyA) = str_replace(names(keyA), 
+                           "(^X)([0-9]{1}$)", 
+                           "R_\\2") 
+
+names(keyB) = str_replace(names(keyB), 
+                           "(^X)([0-9]{1}$)", 
+                           "R_\\2") 
+
+names(keyC) = str_replace(names(keyC), 
+                           "(^)([0-9]{1}$)", 
+                           "R_\\2") 
+keyC = dplyr::rename(keyC, X = .)
+```
+
+The `Key` column indicates the position of the correct response. We create a key vector that contains the value of the correct response, not the position.
+
+```{r}
+
+create_key = function(keydf){
+  # select only response variables and concatonate by row into vectors
+  keydf$response_vector = keydf %>%
+    select(starts_with("R")) %>%
+    pmap(~c(..1, ..2, ..3, ..4, ..5, ..6))
+
+  # map across response vectors and key positions to pull out correct answer
+  keydf = keydf %>%
+    mutate(answer = map2_chr(response_vector, Key,
+                         ~.x[.y]))
+  return(keydf)
+}
+
+keyA = create_key(keyA) %>%
+  mutate(form = "A")
+keyB = create_key(keyB) %>%
+  mutate(form = "B")
+keyC = create_key(keyC) %>%
+  group_by(Stimulus) %>%
+  dplyr::mutate(form = ifelse(dplyr::row_number() == 1, "C", "D")) %>%
+  ungroup()
+```
+
+Merge keys together.
+
+```{r}
+masterKey = keyA %>%
+  full_join(keyB) %>%
+  full_join(keyC) %>%
+  select(X:Key, answer, form) %>%
+  dplyr::rename(item = X)
+```
+
+
+# Score data new
+
+First, we merge all raw datasets.
+
+```{r}
+all_data = formA %>%
+  full_join(formB) %>%
+  full_join(formC)
+```
+
+```{r}
+alldata_scored = score.multiple.choice(
+  key = masterKey$Key, 
+  data = all_data[, masterKey$item], 
+  score = FALSE)
+```
+
+Remove items which were mistakes (see key_C, sheet entitled linking C to A and B.)
+
+```{r, eval = T}
+remove_items = c(
+    "q_21148",
+    "q_22573",
+    "q_22496",
+    "q_20052",
+    "q_21409",
+    "q_22068",
+    "q_22169",
+    "q_21911",
+    "q_21185",
+    "q_21288",
+    "q_20790",
+    "q_20033",
+    "q_24285",
+    "q_23402",
+    "q_24824",
+    "q_23044",
+    "q_25399",
+    "q_23847",
+    "q_23990",
+    "q_23485",
+    "q_24709",
+    "q_23602",
+    "q_24676",
+    "q_25281",
+    "q_23456",
+    "q_20479",
+    "q_23832")
+
+remove_which = which(masterKey$item %in% remove_items)
+
+alldata_scored = alldata_scored[, -remove_which]
+masterKey = dplyr::filter(masterKey, !(item %in% remove_items))
+all_data = select(all_data, -all_of(remove_items))
+```
+
+# Data for publication
+
+## Demographics
+
+```{r}
+demo = all_data %>%
+  mutate(comb_id = case_when(
+    !is.na(prolificID) ~ prolificID,
+    !is.na(mTurkCode) ~ as.character(mTurkCode),
+    TRUE ~ NA_character_)) %>%
+  mutate(source = case_when(
+    !is.na(prolificID) ~ "Prolific",
+    !is.na(mTurkCode) ~ "MTurk",
+    TRUE ~ NA_character_)) %>%
+  dplyr::mutate(row = row_number() + 1000) %>%
+  group_by(comb_id) %>%
+  dplyr::mutate(row = min(row)) %>%
+  dplyr::mutate(PID = paste0("R", row)) %>%
+  ungroup() %>%
+  dplyr::rename(duration = `Duration (in seconds)`) %>%
+  dplyr::mutate(
+    english_cat = case_when(
+      english == 1 ~ "Very well (fluent/native)",
+      english == 2 ~ "Well",
+      english == 3 ~ "Not well",
+      english == 4 ~ "Not at all (Need translation)",
+      TRUE ~ NA_character_),
+    growup_cat = case_when(
+      growup == 1 ~ "United States of America",
+      growup == 2 ~ "Outside of the US"),
+    live_cat = case_when(
+      live == 1 ~ "Yes",
+      live == 2 ~ "No"),
+    state = recode(states, 
+                    !!!c(state.name[1:50], "District of Columbia")
+                    ),
+    sex = case_when(
+      sex == 1 ~ "Male",
+      sex == 2 ~ "Female",
+      sex == 3 ~ "Other",
+      sex == 4 ~ "Prefer not to say"),
+    edu = case_when(
+      edu == 0 ~ "Less than 12 years", 
+      edu == 1 ~  "High school grad/GED",
+      edu == 2 ~  "Currently in college/university",
+      edu == 3 ~  "Some college/university, but did not graduate",
+      edu == 4 ~  "Associate degree (2 yr)",
+      edu == 5 ~  "College/university degree (4 yr)",
+      edu == 6 ~  "Currently in grad/professional school",
+      edu == 7 ~  "Grad/professional degree"),
+    ethnic = case_when(
+     ethnic == 1 ~ "American Indian/Alaskan Native",
+     ethnic == 2 ~ "Asian",
+     ethnic == 3 ~ "Black",
+     ethnic == 4 ~ "Hispanic",
+     ethnic == 5 ~ "White",
+     ethnic == 6 ~ "Mixed (two or more)",
+     ethnic == 7 ~ "Other"),
+    hhinc = case_when(
+      hhinc == 1 ~ "< 20K",
+      hhinc == 2 ~ "20K-40K",
+      hhinc == 3 ~ "40K-60K",
+      hhinc == 4 ~ "60K-80K",
+      hhinc == 5 ~ "80K-100K",
+      hhinc == 6 ~ "100K-120K",
+      hhinc == 7 ~ "120K-150K",
+      hhinc == 8 ~ "150K-200K",
+      hhinc == 9 ~ "200K-250K",
+      hhinc == 10 ~ "250K-350K",
+      hhinc == 11 ~ "350K-500K",
+      hhinc == 12 ~ "> 500K",
+      hhinc == 13 ~ "Prefer not to say"))
+```
+
+Participants are excluded from analyses if they
+* complete the survey in less than 3 minutes (180 seconds),
+* don't speak fluent English,
+* grew up outside the US, or
+* are currently living outside the US.
+
+```{r}
+demo = demo %>%
+  mutate(included = case_when(
+    duration < 180 ~ "No",
+    english > 2 ~ "No",
+    growup == 2 ~ "No",
+    live == 2 ~ "No",
+    TRUE ~ "Yes"
+  ))
+```
+
+163 rows are excluded on this basis.
+
+```{r}
+demo = demo %>%
+  select(PID, source, StartDate, duration, english_cat, growup_cat, live_cat, state, age, sex, edu, ethnic, hhinc, included)
+
+names(demo) = str_remove(names(demo), "_cat")
+
+demo$prop_correct <- alldata_scored %>% rowMeans(na.rm = T)
+
+```
+
+
+```{r}
+alldata_scored_df = as.data.frame(alldata_scored)
+data_scored = cbind(demo, alldata_scored)
+write_csv(data_scored, 
+          file = here("data/TDA_data_scored.csv"))
+
+# This output file has been posted on Dataverse at
+# https://doi.org/10.7910/DVN/5T80PF
+```
+
+
+We also save a shortened version of the master key object.
+
+```{r}
+masterKey %>%
+  select(item, answer, form) %>%
+  dplyr::rename(adjective = answer) %>%
+  write_csv(file = here("data/masterkey.csv"))
+
+# This output file has been posted on Dataverse at
+# https://doi.org/10.7910/DVN/5T80PF
+```
+
+
+
+

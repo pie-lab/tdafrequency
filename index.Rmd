@@ -14,10 +14,20 @@ output:
 
 [Insert something like the abstract from the submitted manuscript here.]
 
-For more details, see [--- citation blinded for review ---]
+### For more details
+
+A full description of the data is provided in
+[--- citation blinded for review ---]
 <!-- 
 <font size="2">Condon, D. M., & McDougald, S. (under review). Article title. *Journal TBD*.</font>
 -->
+
+The raw data are available for download at 
+[add dataverse link here]
+
+The analytic code used for this project is available at [https://pie-lab.github.io/tdafrequency/data-cleaning.html](https://pie-lab.github.io/tdafrequency/code.html).
+
+The code used to create this website is available at [https://github.com/pie-lab/tdafrequency](https://github.com/pie-lab/tdafrequency).
 
 ### About the frequencies
 
