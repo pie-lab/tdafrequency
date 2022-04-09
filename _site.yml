@@ -3,9 +3,9 @@ output_dir: "."
 navbar:
   title: "TDA"
   left:
-    - text: Search Engine Results  
+    - text: Estimates based on Search Engine Results  
       href: tda-difficulty.html
-    - text: Ngram Results  
+    - text: Estimates based on Ngram Results  
       href: item-difficulty.html
   right:
     - icon: fa-file
