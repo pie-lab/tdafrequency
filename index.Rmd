@@ -1,41 +1,27 @@
 ---
-title: "Trait Descriptive Adjectives"
-subtitle: "Frequency of use based on search engine results and ngrams in Google Books"
-author: "David M. Condon & Sarah McDougald"
+title: Trait Descriptive Adjectives
+subtitle: Usage frequencies based on search engine results and ngrams in Google Books
+author: [--- author names blinded for review ---]
 output: 
   html_document:
-    toc: TRUE
-    toc_depth: 2
+    toc: FALSE
+    toc_depth: 1
     toc_float: TRUE
     theme: cosmo
 ---
 
-<u>To cite these data:</u>
+### Overview
 
-<font size="2">Condon, D. M., Coughlin, J., & Weston, S. J. (2022). Personality Trait Descriptors: 2,818 Trait Descriptive Adjectives characterized by familiarity, frequency of use, and prior use in psycholexical research. *Journal of Open Psychology Data*.</font>
+[Insert something like the abstract from the submitted manuscript here.]
 
-All data described on this website are available for download at [https://doi.org/10.7910/DVN/5T80PF](https://doi.org/10.7910/DVN/5T80PF).
+For more details, see [--- citation blinded for review ---]
+<!-- 
+<font size="2">Condon, D. M., & McDougald, S. (under review). Article title. *Journal TBD*.</font>
+-->
 
-The code for cleaning the data is available at [https://pie-lab.github.io/tda/data-cleaning.html](https://pie-lab.github.io/tda/data-cleaning.html).
+### About the frequencies
 
-The code used to create this website is available at [https://github.com/pie-lab/tda](https://github.com/pie-lab/tda).
+[Insert info about: the source files, downloading the data, and how users can provide feedback or suggestions.]
 
-# Background
 
-A foundational theory in personality assessment – the “Lexical Hypothesis” – posits that all relevant psychological differences between people are marked by trait descriptive adjectives (TDAs), and thus these adjectives could serve as the universe of stimuli which would inform the structure of personality. The full number of TDAs is in the many thousands, and so cannot be administered to any single participant; as a result, early personality psychologists subjectively reduced the set of adjectives administered. This is potentially problematic, as academic researchers may not recognize the obscure nature of some adjectives, especially for individuals with lower levels of literacy. Subsequent research on personality structure compounded such bias by using as participants homogenous samples of White, educated, and young individuals. The current study sought to quantify the knowledge of TDAs using a sample of participants recruited to be more representative of the U.S. population with respect to age, race/ethnicity, gender, and education.
 
-A thorough description of this work is given in Condon, Coughlin, and Weston (2022). The text below provides a brief summary of the design. To see the results of this work, begin with the [TDA Difficulty](https://pie-lab.github.io/tda/tda-difficulty.html) page. For more information about the participants, see the [Sample characteristics](https://pie-lab.github.io/tda/sample.html) page. 
-
-# Study Design
-
-The study design involved several distinct steps, including (1) the aggregation of a trait descriptive adjective set with 2,818 terms, (2) sourcing definitions for all of the terms; (3) creating multiple choice vocabulary questions based on each term-definition pair; (4) designing and completing survey-based data collection on the pool of questions; and (5) developing tools to disseminate results from the analyses of these data and other characteristics of the 2,818 TDA set. 
-
-Step 1 began with the 1,710 terms identified by Goldberg,^1^ and supplemented these with previously dropped terms from Norman^2^ and Allport & Odbert,^3^ plus some others. In Step 2, personality-relevant definitions for the 2,818 terms were sourced from Oxford Dictionaries via Google (see the manuscript for some exceptions). In Step 3, the term-definition pairs were used to generate two multiple-choice vocabulary questions for each term, and these were administered to a large and representative sample in Step 4. Finally, in Step 5, the data were analyzed and organized for dissemination through this website.
-
-# References
-
-1. Goldberg, L. R. (1982). From Ace to Zombie: Some explorations in the language of personality. In Spielberger, C. D. and Butcher, J. N., (Eds.), *Advances in personality assessment: Vol. 1*, pages 203-234. Erlbaum, Hillsdale, NJ.
-
-2. Norman, W. T. (1967). *2800 personality trait descriptors: Normative operating characteristics for a university population.* University of Michigan, Department of Psychology, Ann Arbor.
-
-3. Allport, G. W., & Odbert, H. S. (1936). Trait-names: A psycho-lexical study. *Psychological Monographs: General and Applied, 47*(1):1-170. https://doi.org/10.1037/h0093360

@@ -9,7 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="David M. Condon &amp; Sarah McDougald" />
+<meta name="author" content="— author names blinded for review —" />
 
 
 <title>Trait Descriptive Adjectives</title>
@@ -30,9 +30,6 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
-<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
-<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
@@ -224,69 +221,6 @@ $(document).ready(function () {
 
 
 
-<style type="text/css">
-
-#TOC {
-  margin: 25px 0px 20px 0px;
-}
-@media (max-width: 768px) {
-#TOC {
-  position: relative;
-  width: 100%;
-}
-}
-
-@media print {
-.toc-content {
-  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
-  float: right;
-}
-}
-
-.toc-content {
-  padding-left: 30px;
-  padding-right: 40px;
-}
-
-div.main-container {
-  max-width: 1200px;
-}
-
-div.tocify {
-  width: 20%;
-  max-width: 260px;
-  max-height: 85%;
-}
-
-@media (min-width: 768px) and (max-width: 991px) {
-  div.tocify {
-    width: 25%;
-  }
-}
-
-@media (max-width: 767px) {
-  div.tocify {
-    width: 100%;
-    max-width: none;
-  }
-}
-
-.tocify ul, .tocify li {
-  line-height: 20px;
-}
-
-.tocify-subheader .tocify-item {
-  font-size: 0.90em;
-}
-
-.tocify .list-group-item {
-  border-radius: 0px;
-}
-
-
-</style>
-
-
 
 </head>
 
@@ -294,16 +228,6 @@ div.tocify {
 
 
 <div class="container-fluid main-container">
-
-
-<!-- setup 3col/9col grid for toc_float and main content  -->
-<div class="row">
-<div class="col-xs-12 col-sm-4 col-md-3">
-<div id="TOC" class="tocify">
-</div>
-</div>
-
-<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -321,20 +245,20 @@ div.tocify {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="tda-difficulty.html">TDA Difficulty</a>
+  <a href="tda-difficulty.html">Search Engine Results</a>
 </li>
 <li>
-  <a href="item-difficulty.html">Item Difficulty</a>
-</li>
-<li>
-  <a href="sample.html">Sample characteristics</a>
-</li>
-<li>
-  <a href="codebook-scored.html">Codebook</a>
+  <a href="item-difficulty.html">Ngram Results</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
+  <a href="https://psyarxiv.com">
+    <span class="fa fa-file"></span>
+     
+  </a>
+</li>
+<li>
   <a href="https://github.com/pie-lab/tda">
     <span class="fa fa-github"></span>
      
@@ -350,40 +274,26 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Trait Descriptive Adjectives</h1>
-<h3 class="subtitle">Frequency of use based on search engine results and ngrams in Google Books</h3>
-<h4 class="author">David M. Condon &amp; Sarah McDougald</h4>
+<h3 class="subtitle">Usage frequencies based on search engine results and ngrams in Google Books</h3>
+<h4 class="author">— author names blinded for review —</h4>
 
 </div>
 
 
-<p><u>To cite these data:</u></p>
-<p><font size="2">Condon, D. M., Coughlin, J., &amp; Weston, S. J. (2022). Personality Trait Descriptors: 2,818 Trait Descriptive Adjectives characterized by familiarity, frequency of use, and prior use in psycholexical research. <em>Journal of Open Psychology Data</em>.</font></p>
-<p>All data described on this website are available for download at <a href="https://doi.org/10.7910/DVN/5T80PF">https://doi.org/10.7910/DVN/5T80PF</a>.</p>
-<p>The code for cleaning the data is available at <a href="https://pie-lab.github.io/tda/data-cleaning.html">https://pie-lab.github.io/tda/data-cleaning.html</a>.</p>
-<p>The code used to create this website is available at <a href="https://github.com/pie-lab/tda">https://github.com/pie-lab/tda</a>.</p>
-<div id="background" class="section level1">
-<h1>Background</h1>
-<p>A foundational theory in personality assessment – the “Lexical Hypothesis” – posits that all relevant psychological differences between people are marked by trait descriptive adjectives (TDAs), and thus these adjectives could serve as the universe of stimuli which would inform the structure of personality. The full number of TDAs is in the many thousands, and so cannot be administered to any single participant; as a result, early personality psychologists subjectively reduced the set of adjectives administered. This is potentially problematic, as academic researchers may not recognize the obscure nature of some adjectives, especially for individuals with lower levels of literacy. Subsequent research on personality structure compounded such bias by using as participants homogenous samples of White, educated, and young individuals. The current study sought to quantify the knowledge of TDAs using a sample of participants recruited to be more representative of the U.S. population with respect to age, race/ethnicity, gender, and education.</p>
-<p>A thorough description of this work is given in Condon, Coughlin, and Weston (2022). The text below provides a brief summary of the design. To see the results of this work, begin with the <a href="https://pie-lab.github.io/tda/tda-difficulty.html">TDA Difficulty</a> page. For more information about the participants, see the <a href="https://pie-lab.github.io/tda/sample.html">Sample characteristics</a> page.</p>
+<div id="overview" class="section level3">
+<h3>Overview</h3>
+<p>[Insert something like the abstract from the submitted manuscript here.]</p>
+<p>For more details, see [— citation blinded for review —] <!-- 
+<font size="2">Condon, D. M., & McDougald, S. (under review). Article title. *Journal TBD*.</font>
+--></p>
 </div>
-<div id="study-design" class="section level1">
-<h1>Study Design</h1>
-<p>The study design involved several distinct steps, including (1) the aggregation of a trait descriptive adjective set with 2,818 terms, (2) sourcing definitions for all of the terms; (3) creating multiple choice vocabulary questions based on each term-definition pair; (4) designing and completing survey-based data collection on the pool of questions; and (5) developing tools to disseminate results from the analyses of these data and other characteristics of the 2,818 TDA set.</p>
-<p>Step 1 began with the 1,710 terms identified by Goldberg,<sup>1</sup> and supplemented these with previously dropped terms from Norman<sup>2</sup> and Allport &amp; Odbert,<sup>3</sup> plus some others. In Step 2, personality-relevant definitions for the 2,818 terms were sourced from Oxford Dictionaries via Google (see the manuscript for some exceptions). In Step 3, the term-definition pairs were used to generate two multiple-choice vocabulary questions for each term, and these were administered to a large and representative sample in Step 4. Finally, in Step 5, the data were analyzed and organized for dissemination through this website.</p>
-</div>
-<div id="references" class="section level1">
-<h1>References</h1>
-<ol style="list-style-type: decimal">
-<li><p>Goldberg, L. R. (1982). From Ace to Zombie: Some explorations in the language of personality. In Spielberger, C. D. and Butcher, J. N., (Eds.), <em>Advances in personality assessment: Vol. 1</em>, pages 203-234. Erlbaum, Hillsdale, NJ.</p></li>
-<li><p>Norman, W. T. (1967). <em>2800 personality trait descriptors: Normative operating characteristics for a university population.</em> University of Michigan, Department of Psychology, Ann Arbor.</p></li>
-<li><p>Allport, G. W., &amp; Odbert, H. S. (1936). Trait-names: A psycho-lexical study. <em>Psychological Monographs: General and Applied, 47</em>(1):1-170. <a href="https://doi.org/10.1037/h0093360" class="uri">https://doi.org/10.1037/h0093360</a></p></li>
-</ol>
+<div id="about-the-frequencies" class="section level3">
+<h3>About the frequencies</h3>
+<p>[Insert info about: the source files, downloading the data, and how users can provide feedback or suggestions.]</p>
 </div>
 
 
 
-</div>
-</div>
 
 </div>
 
@@ -416,35 +326,6 @@ $(document).ready(function () {
 
 <!-- code folding -->
 
-<script>
-$(document).ready(function ()  {
-
-    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
-    $('.unlisted.unnumbered').addClass('toc-ignore')
-
-    // move toc-ignore selectors from section div to header
-    $('div.section.toc-ignore')
-        .removeClass('toc-ignore')
-        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
-
-    // establish options
-    var options = {
-      selectors: "h1,h2",
-      theme: "bootstrap3",
-      context: '.toc-content',
-      hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
-      },
-      ignoreSelector: ".toc-ignore",
-      scrollTo: 0
-    };
-    options.showAndHide = true;
-    options.smoothScroll = true;
-
-    // tocify
-    var toc = $("#TOC").tocify(options).data("toc-tocify");
-});
-</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>
