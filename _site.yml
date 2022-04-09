@@ -1,0 +1,20 @@
+name: Trait Descriptive Adjectives
+output_dir: "."
+navbar:
+  title: "TDA"
+  left:
+    - text: TDA Difficulty
+      href: tda-difficulty.html
+    - text: Item Difficulty
+      href: item-difficulty.html
+    - text: Sample characteristics
+      href: sample.html
+    - text: Codebook
+      href: codebook-scored.html
+  right:
+    - icon: fa-github
+      href: https://github.com/pie-lab/tda
+output:
+  html_document:
+    lib_dir: site_libs
+    self_contained: no
