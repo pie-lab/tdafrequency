@@ -13,6 +13,8 @@ output:
 <font size="2">Condon, D. M., & McDougald, S. (under review). Frequency of use metrics for American English personality descriptors: Extensions of Roivainen's internet search methodology. *Journal TBD*.</font>
 -->
 
+Say something, especially about what blanks mean for ngrams.
+
 ```{r, include = F}
 knitr::opts_chunk$set(echo = T, message = F, warning = F)
 ```
@@ -26,7 +28,7 @@ library(dataverse)
 library(data.table)
 ```
 
-```{r}
+```{r, results='asis'}
 # create table 
 ngrams = read.csv(here("data/ngrams/ngrams_freq_index.csv"))
 ngrams$person_zscore <- round(ngrams$person_zscore, 4)
@@ -34,6 +36,7 @@ ngrams$woman_zscore <- round(ngrams$woman_zscore, 4)
 ngrams$man_zscore <- round(ngrams$man_zscore, 4)
 ngrams$girl_zscore <- round(ngrams$boy_zscore, 4)
 ngrams$boy_zscore <- round(ngrams$boy_zscore, 4)
+ngrams$freq_index <- round(ngrams$freq_index, 4)
 
 # fix characters
 #ngrams$TDA <- sub("blas\x8e", "blasé", ngrams$TDA)
@@ -49,6 +52,7 @@ ngrams_prop = ngrams %>%
     filter = "top", # can filter
     rownames = F # don't need rownames
   )
+ngrams_prop
 ```
 
 
