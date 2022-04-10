@@ -21,13 +21,7 @@ knitr::opts_chunk$set(echo = T, message = F, warning = F)
 library(here) # for engaging with working environment
 library(Hmisc) # for weighted means
 library(DT) # for viewing data tables
-library(conflicted)
 library(tidyverse) # for data cleaning and manipulation
-conflict_prefer("here", "here")
-conflict_prefer("filter", "dplyr")
-conflict_prefer("count", "dplyr")
-conflict_prefer("mutate", "dplyr")
-conflict_prefer("summarise", "dplyr")
 library(dataverse)
 library(data.table)
 ```

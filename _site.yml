@@ -6,7 +6,7 @@ navbar:
     - text: Estimates based on Search Engine Results  
       href: serps-frequency.html
     - text: Estimates based on Ngram Results  
-      href: item-difficulty.html
+      href: ngrams-frequency.html
     - text: Code  
       href: code.html
   right:

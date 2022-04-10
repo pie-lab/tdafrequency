@@ -251,7 +251,7 @@ $(document).ready(function () {
   <a href="serps-frequency.html">Estimates based on Search Engine Results</a>
 </li>
 <li>
-  <a href="item-difficulty.html">Estimates based on Ngram Results</a>
+  <a href="ngrams-frequency.html">Estimates based on Ngram Results</a>
 </li>
 <li>
   <a href="code.html">Code</a>
@@ -299,13 +299,7 @@ $(document).ready(function () {
 <pre class="r"><code>library(here) # for engaging with working environment
 library(Hmisc) # for weighted means
 library(DT) # for viewing data tables
-library(conflicted)
 library(tidyverse) # for data cleaning and manipulation
-conflict_prefer(&quot;here&quot;, &quot;here&quot;)
-conflict_prefer(&quot;filter&quot;, &quot;dplyr&quot;)
-conflict_prefer(&quot;count&quot;, &quot;dplyr&quot;)
-conflict_prefer(&quot;mutate&quot;, &quot;dplyr&quot;)
-conflict_prefer(&quot;summarise&quot;, &quot;dplyr&quot;)
 library(dataverse)
 library(data.table)</code></pre>
 <pre class="r"><code># create table 
