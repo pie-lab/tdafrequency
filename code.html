@@ -375,7 +375,7 @@ serps_boy &lt;- serps_boy %&gt;%
 
 ### RE-ORGANIZE SERPS DATASETS - COMBINE PERSON-WORD FORMS
 serps_all &lt;- tibble(
-  term = serps_person$term,
+  TDA = serps_person$term,
   person = serps_person$count,
   woman = serps_woman$count,
   man = serps_man$count,
@@ -384,7 +384,37 @@ serps_all &lt;- tibble(
 )
 
 serps_all_onlyFreq &lt;- serps_all %&gt;%
-  select(-term)</code></pre>
+  select(-TDA)</code></pre>
+<p>It’s also necessary to fix special characters for many of the adjectives.</p>
+<pre class="r"><code># fix characters
+serps_all$TDA &lt;- sub(&quot;acharn√©&quot;, &quot;achar&quot;, serps_all$TDA)
+serps_all$TDA &lt;- sub(&quot;b√™te&quot;, &quot;bête&quot;, serps_all$TDA)
+serps_all$TDA &lt;- sub(&quot;blas\x8e&quot;, &quot;blasé&quot;, serps_all$TDA)
+serps_all$TDA &lt;- sub(&quot;bont√©&quot;, &quot;bonté&quot;, serps_all$TDA)
+serps_all$TDA &lt;- sub(&quot;bo√∂pis&quot;, &quot;boöpis&quot;, serps_all$TDA)
+serps_all$TDA &lt;- sub(&quot;born√©&quot;, &quot;borné&quot;, serps_all$TDA)
+serps_all$TDA &lt;- sub(&quot;d√©gag√©&quot;, &quot;dégagé&quot;, serps_all$TDA)
+serps_all$TDA &lt;- sub(&quot;d√©pays√©&quot;, &quot;dépaysé&quot;, serps_all$TDA)
+serps_all$TDA &lt;- sub(&quot;d√©sorient√©&quot;, &quot;désorienté&quot;, serps_all$TDA)
+serps_all$TDA &lt;- sub(&quot;distingu√©&quot;, &quot;distingué&quot;, serps_all$TDA)
+serps_all$TDA &lt;- sub(&quot;d√ºreresque&quot;, &quot;düreresque&quot;, serps_all$TDA)
+serps_all$TDA &lt;- sub(&quot;√©clat&quot;, &quot;éclat&quot;, serps_all$TDA)
+serps_all$TDA &lt;- sub(&quot;effar√©&quot;, &quot;effaré&quot;, serps_all$TDA)
+serps_all$TDA &lt;- sub(&quot;√©l√©gante&quot;, &quot;élégante&quot;, serps_all$TDA)
+serps_all$TDA &lt;- sub(&quot;√©lite&quot;, &quot;élite&quot;, serps_all$TDA)
+serps_all$TDA &lt;- sub(&quot;ent√™t√©&quot;, &quot;entêté&quot;, serps_all$TDA)
+serps_all$TDA &lt;- sub(&quot;espi√®gle&quot;, &quot;espiègle&quot;, serps_all$TDA)
+serps_all$TDA &lt;- sub(&quot;fa√´rie&quot;, &quot;faërie&quot;, serps_all$TDA)
+serps_all$TDA &lt;- sub(&quot;fain√©ant&quot;, &quot;fainéant&quot;, serps_all$TDA)
+serps_all$TDA &lt;- sub(&quot;FALSE&quot;, &quot;false&quot;, serps_all$TDA)
+serps_all$TDA &lt;- sub(&quot;outr√©&quot;, &quot;outré&quot;, serps_all$TDA)
+serps_all$TDA &lt;- sub(&quot;pr√©cieuse&quot;, &quot;précieuse&quot;, serps_all$TDA)
+serps_all$TDA &lt;- sub(&quot;r√©chauff√©&quot;, &quot;réchauffé&quot;, serps_all$TDA)
+serps_all$TDA &lt;- sub(&quot;rou√©&quot;, &quot;roué&quot;, serps_all$TDA)
+serps_all$TDA &lt;- sub(&quot;TRUE&quot;, &quot;true&quot;, serps_all$TDA)
+serps_all$TDA &lt;- sub(&quot;unco√∂rdinated&quot;, &quot;uncoördinated&quot;, serps_all$TDA)
+serps_all$TDA &lt;- sub(&quot;zo√∂id&quot;, &quot;zoöid&quot;, serps_all$TDA)
+serps_all$TDA &lt;- sub(&quot;zo√∂philous&quot;, &quot;zoöphilous&quot;, serps_all$TDA)</code></pre>
 <div id="calculate-overall-means-and-compare-differences-using-t-tests" class="section level3">
 <h3>1. Calculate overall means and compare differences using t-tests</h3>
 <pre class="r"><code>serps_all_means &lt;- c()
@@ -568,13 +598,43 @@ ngrams_boy &lt;- ngrams_boy %&gt;%
 ### COMBINE INTO ONE TABLE
 
 ngrams_all_avgfreq &lt;- tibble(
-  term = ngrams_person$term,
+  TDA = ngrams_person$term,
   freq_avg_person = ngrams_person$freq_avg_all_years,
   freq_avg_woman = ngrams_woman$freq_avg_all_years,
   freq_avg_man = ngrams_man$freq_avg_all_years,
   freq_avg_girl = ngrams_girl$freq_avg_all_years,
   freq_avg_boy = ngrams_boy$freq_avg_all_years
 )</code></pre>
+<p>It’s also necessary to fix special characters for many of the adjectives.</p>
+<pre class="r"><code># fix characters
+ngrams_all_avgfreq$TDA &lt;- sub(&quot;acharn√©&quot;, &quot;acharné&quot;, ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA &lt;- sub(&quot;b√™te&quot;, &quot;bête&quot;, ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA &lt;- sub(&quot;blas\x8e&quot;, &quot;blasé&quot;, ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA &lt;- sub(&quot;bont√©&quot;, &quot;bonté&quot;, ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA &lt;- sub(&quot;bo√∂pis&quot;, &quot;boöpis&quot;, ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA &lt;- sub(&quot;born√©&quot;, &quot;borné&quot;, ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA &lt;- sub(&quot;d√©gag√©&quot;, &quot;dégagé&quot;, ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA &lt;- sub(&quot;d√©pays√©&quot;, &quot;dépaysé&quot;, ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA &lt;- sub(&quot;d√©sorient√©&quot;, &quot;désorienté&quot;, ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA &lt;- sub(&quot;distingu√©&quot;, &quot;distingué&quot;, ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA &lt;- sub(&quot;d√ºreresque&quot;, &quot;düreresque&quot;, ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA &lt;- sub(&quot;√©clat&quot;, &quot;éclat&quot;, ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA &lt;- sub(&quot;effar√©&quot;, &quot;effaré&quot;, ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA &lt;- sub(&quot;√©l√©gante&quot;, &quot;élégante&quot;, ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA &lt;- sub(&quot;√©lite&quot;, &quot;élite&quot;, ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA &lt;- sub(&quot;ent√™t√©&quot;, &quot;entêté&quot;, ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA &lt;- sub(&quot;espi√®gle&quot;, &quot;espiègle&quot;, ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA &lt;- sub(&quot;fa√´rie&quot;, &quot;faërie&quot;, ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA &lt;- sub(&quot;fain√©ant&quot;, &quot;fainéant&quot;, ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA &lt;- sub(&quot;FALSE&quot;, &quot;false&quot;, ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA &lt;- sub(&quot;outr√©&quot;, &quot;outré&quot;, ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA &lt;- sub(&quot;pr√©cieuse&quot;, &quot;précieuse&quot;, ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA &lt;- sub(&quot;r√©chauff√©&quot;, &quot;réchauffé&quot;, ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA &lt;- sub(&quot;rou√©&quot;, &quot;roué&quot;, ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA &lt;- sub(&quot;TRUE&quot;, &quot;true&quot;, ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA &lt;- sub(&quot;unco√∂rdinated&quot;, &quot;uncoördinated&quot;, ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA &lt;- sub(&quot;zo√∂id&quot;, &quot;zoöid&quot;, ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA &lt;- sub(&quot;zo√∂philous&quot;, &quot;zoöphilous&quot;, ngrams_all_avgfreq$TDA)</code></pre>
 </div>
 <div id="analyses" class="section level2">
 <h2>Analyses</h2>
@@ -582,7 +642,7 @@ ngrams_all_avgfreq &lt;- tibble(
 <h3>1. Calculate overall means and compare differences using t-tests</h3>
 <p>Calculate the overall means for each of the TDA + pronoun vectors. In other words, find the means for all the TDA + person ngrams, TDA + man ngrams, woman, girl, and boy. Then compare the means with t-tests. This is repeated using holm and bonferroni corrections.</p>
 <pre class="r"><code># drop the column of TDA labels
-ngrams_avgfreq &lt;- subset(ngrams_all_avgfreq, select = -c(term))
+ngrams_avgfreq &lt;- subset(ngrams_all_avgfreq, select = -c(TDA))
 means_vector &lt;- c()
 for (j in 1:ncol(ngrams_avgfreq))
 {

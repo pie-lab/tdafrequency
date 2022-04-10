@@ -38,10 +38,6 @@ ngrams$girl_zscore <- round(ngrams$boy_zscore, 4)
 ngrams$boy_zscore <- round(ngrams$boy_zscore, 4)
 ngrams$freq_index <- round(ngrams$freq_index, 4)
 
-# fix characters
-#ngrams$TDA <- sub("blas\x8e", "blasé", ngrams$TDA)
-#ngrams$TDA <- sub("FALSE", "false", ngrams$TDA)
-
 ngrams_prop = ngrams %>%
   DT::datatable( # put into interactive HTML table
     colnames = c("Adjective", "+person", "+woman", "+man", "+girl", "+boy", "index"), #colnames

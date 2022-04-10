@@ -34,7 +34,8 @@ serps = read.csv(here("data/serps/serps_freq_index.csv"))
 serps$person_zscore <- round(serps$person_zscore, 4)
 serps$woman_zscore <- round(serps$woman_zscore, 4)
 serps$man_zscore <- round(serps$man_zscore, 4)
-serps$girl_zscore <- round(serps$boy_zscore, 4)
+serps$girl_zscore <- round(serps$girl_zscore, 4)
+serps$boy_zscore <- round(serps$boy_zscore, 4)
 serps$freq_index <- round(serps$freq_index, 4)
 
 # fix characters

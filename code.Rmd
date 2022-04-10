@@ -87,7 +87,7 @@ serps_boy <- serps_boy %>%
 
 ### RE-ORGANIZE SERPS DATASETS - COMBINE PERSON-WORD FORMS
 serps_all <- tibble(
-  term = serps_person$term,
+  TDA = serps_person$term,
   person = serps_person$count,
   woman = serps_woman$count,
   man = serps_man$count,
@@ -96,7 +96,41 @@ serps_all <- tibble(
 )
 
 serps_all_onlyFreq <- serps_all %>%
-  select(-term)
+  select(-TDA)
+```
+
+It's also necessary to fix special characters for many of the adjectives.
+
+```{r, warning=FALSE, message=FALSE, label = "data-prep_serps_special_characters"}
+# fix characters
+serps_all$TDA <- sub("acharn√©", "achar", serps_all$TDA)
+serps_all$TDA <- sub("b√™te", "bête", serps_all$TDA)
+serps_all$TDA <- sub("blas\x8e", "blasé", serps_all$TDA)
+serps_all$TDA <- sub("bont√©", "bonté", serps_all$TDA)
+serps_all$TDA <- sub("bo√∂pis", "boöpis", serps_all$TDA)
+serps_all$TDA <- sub("born√©", "borné", serps_all$TDA)
+serps_all$TDA <- sub("d√©gag√©", "dégagé", serps_all$TDA)
+serps_all$TDA <- sub("d√©pays√©", "dépaysé", serps_all$TDA)
+serps_all$TDA <- sub("d√©sorient√©", "désorienté", serps_all$TDA)
+serps_all$TDA <- sub("distingu√©", "distingué", serps_all$TDA)
+serps_all$TDA <- sub("d√ºreresque", "düreresque", serps_all$TDA)
+serps_all$TDA <- sub("√©clat", "éclat", serps_all$TDA)
+serps_all$TDA <- sub("effar√©", "effaré", serps_all$TDA)
+serps_all$TDA <- sub("√©l√©gante", "élégante", serps_all$TDA)
+serps_all$TDA <- sub("√©lite", "élite", serps_all$TDA)
+serps_all$TDA <- sub("ent√™t√©", "entêté", serps_all$TDA)
+serps_all$TDA <- sub("espi√®gle", "espiègle", serps_all$TDA)
+serps_all$TDA <- sub("fa√´rie", "faërie", serps_all$TDA)
+serps_all$TDA <- sub("fain√©ant", "fainéant", serps_all$TDA)
+serps_all$TDA <- sub("FALSE", "false", serps_all$TDA)
+serps_all$TDA <- sub("outr√©", "outré", serps_all$TDA)
+serps_all$TDA <- sub("pr√©cieuse", "précieuse", serps_all$TDA)
+serps_all$TDA <- sub("r√©chauff√©", "réchauffé", serps_all$TDA)
+serps_all$TDA <- sub("rou√©", "roué", serps_all$TDA)
+serps_all$TDA <- sub("TRUE", "true", serps_all$TDA)
+serps_all$TDA <- sub("unco√∂rdinated", "uncoördinated", serps_all$TDA)
+serps_all$TDA <- sub("zo√∂id", "zoöid", serps_all$TDA)
+serps_all$TDA <- sub("zo√∂philous", "zoöphilous", serps_all$TDA)
 ```
 
 
@@ -332,13 +366,47 @@ ngrams_boy <- ngrams_boy %>%
 ### COMBINE INTO ONE TABLE
 
 ngrams_all_avgfreq <- tibble(
-  term = ngrams_person$term,
+  TDA = ngrams_person$term,
   freq_avg_person = ngrams_person$freq_avg_all_years,
   freq_avg_woman = ngrams_woman$freq_avg_all_years,
   freq_avg_man = ngrams_man$freq_avg_all_years,
   freq_avg_girl = ngrams_girl$freq_avg_all_years,
   freq_avg_boy = ngrams_boy$freq_avg_all_years
 )
+```
+
+It's also necessary to fix special characters for many of the adjectives.
+
+```{r, warning=FALSE, message=FALSE, label = "data-prep_ngrams_special_characters"}
+# fix characters
+ngrams_all_avgfreq$TDA <- sub("acharn√©", "acharné", ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA <- sub("b√™te", "bête", ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA <- sub("blas\x8e", "blasé", ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA <- sub("bont√©", "bonté", ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA <- sub("bo√∂pis", "boöpis", ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA <- sub("born√©", "borné", ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA <- sub("d√©gag√©", "dégagé", ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA <- sub("d√©pays√©", "dépaysé", ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA <- sub("d√©sorient√©", "désorienté", ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA <- sub("distingu√©", "distingué", ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA <- sub("d√ºreresque", "düreresque", ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA <- sub("√©clat", "éclat", ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA <- sub("effar√©", "effaré", ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA <- sub("√©l√©gante", "élégante", ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA <- sub("√©lite", "élite", ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA <- sub("ent√™t√©", "entêté", ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA <- sub("espi√®gle", "espiègle", ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA <- sub("fa√´rie", "faërie", ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA <- sub("fain√©ant", "fainéant", ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA <- sub("FALSE", "false", ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA <- sub("outr√©", "outré", ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA <- sub("pr√©cieuse", "précieuse", ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA <- sub("r√©chauff√©", "réchauffé", ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA <- sub("rou√©", "roué", ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA <- sub("TRUE", "true", ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA <- sub("unco√∂rdinated", "uncoördinated", ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA <- sub("zo√∂id", "zoöid", ngrams_all_avgfreq$TDA)
+ngrams_all_avgfreq$TDA <- sub("zo√∂philous", "zoöphilous", ngrams_all_avgfreq$TDA)
 ```
 
 
@@ -350,7 +418,7 @@ Calculate the overall means for each of the TDA + pronoun vectors. In other word
 
 ```{r, warning=FALSE, label = "analyses_ngrams_means"}
 # drop the column of TDA labels
-ngrams_avgfreq <- subset(ngrams_all_avgfreq, select = -c(term))
+ngrams_avgfreq <- subset(ngrams_all_avgfreq, select = -c(TDA))
 means_vector <- c()
 for (j in 1:ncol(ngrams_avgfreq))
 {
