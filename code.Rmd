@@ -18,15 +18,9 @@ library(here) # for engaging with working environment
 library(rio) # for importing excel files
 library(psych) # for scoring multiple choice items
 library(R.utils) # just for the insert() function
-#library(conflicted)
 library(tidyverse) # for data cleaning and manipulation
 library(matrixStats)
 library(kableExtra)
-#conflict_prefer("here", "here")
-#conflict_prefer("filter", "dplyr")
-#conflict_prefer("count", "dplyr")
-#conflict_prefer("mutate", "dplyr")
-#conflict_prefer("summarise", "dplyr")
 
 options(scipen=999)
 ```
@@ -196,9 +190,9 @@ write_csv(serps_all_zscores,
           file = here("data/serps/serps_all_zscores.csv"))
 ```
 
-This csv file (above) has been posted publicly on Dataverse (see doi). All subsequent analyses of the search engine results data are based on this file, including the database of search engine estimates (see here).
+This csv file (above) has been posted publicly on Dataverse (see doi). All subsequent analyses of the search engine results data are based on this file, including the database of search engine estimates (see [here](https://pie-lab.github.io/tdafrequency/serps-frequency.html)).
 
-*ADD HMTL LINK TO THE SENTENCE ABOVE*
+*ADD DOI LINK TO THE SENTENCE ABOVE*
 
 The following code clears the environment and loads the data directly from Dataverse.
 
@@ -268,9 +262,7 @@ cor_serps_ci
 
 Here, we find the frequencies index by finding the average of the z-scores across all 5 TDA + pronoun pairs for each TDA *after* removing the max z-score for each TDA. In other words, find the average among all but the largest z-score for each TDA. This approach is used to reduce the skew introduced in a few cases where the pairing of a specific TDA + pronoun is part of a song, book, famous individual, etc.
 
-Output from the following section of code is used to populate the serps column of the database of frequencies provided on this website.
-
-*ADD URL LINK WHEN COMPLETED*
+Output from the following section of code is used to populate the serps column of the [database of frequencies](https://pie-lab.github.io/tdafrequency/serps-frequency.html) provided on this website.
 
 ```{r, warning=FALSE, label = "analyses_serps_freq-index"}
 bucket <- c()
@@ -486,9 +478,9 @@ write_csv(ngrams_all_zscores,
           file = here("data/ngrams/ngrams_all_zscores.csv"))
 ```
 
-This csv file (above) has been posted publicly on Dataverse (see doi). All subsequent analyses of the ngrams data are based on this file, including the database of ngram estimates (see here).
+This csv file (above) has been posted publicly on Dataverse (see doi). All subsequent analyses of the ngrams data are based on this file, including the database of ngram estimates (see [here](https://pie-lab.github.io/tdafrequency/ngrams-frequency.html)).
 
-*ADD HMTL LINK TO THE SENTENCE ABOVE*
+*ADD DOI LINK TO THE SENTENCE ABOVE*
 
 The following code clears the environment and loads the data directly from Dataverse.
 
@@ -559,9 +551,7 @@ cor_ngrams_ci
 
 Here, we find the frequencies index by finding the average of the z-scores across all 5 TDA + pronoun pairs for each TDA *after* removing the max z-score for each TDA. In other words, find the average among all but the largest z-score for each TDA. This approach is used to reduce the skew introduced in a few cases where the pairing of a specific TDA + pronoun is part of a song, book, famous individual, etc.
 
-Output from the following section of code is used to populate the ngram column of the database of frequencies provided on this website.
-
-*ADD URL LINK WHEN COMPLETED*
+Output from the following section of code is used to populate the ngram column of the [database of frequencies](https://pie-lab.github.io/tdafrequency/ngrams-frequency.html) provided on this website.
 
 ```{r, warning=FALSE, label = "analyses_ngrams_freq-index"}
 bucket <- c()
