@@ -9,15 +9,14 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="— author names blinded for review —" />
 
 
-<title>Trait Descriptive Adjectives</title>
+<title>Frequency Estimates - Ngrams</title>
 
 <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -31,6 +30,7 @@
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
@@ -218,6 +218,9 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
 
 
@@ -274,32 +277,59 @@ $(document).ready(function () {
 
 <div id="header">
 
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
 
 
-<h1 class="title toc-ignore">Trait Descriptive Adjectives</h1>
-<h3 class="subtitle">Usage frequencies based on search engine results and ngrams in Google Books</h3>
-<h4 class="author">— author names blinded for review —</h4>
+
+<h1 class="title toc-ignore">Frequency Estimates - Ngrams</h1>
+<h4 class="date">Last updated 2022-04-09</h4>
 
 </div>
 
 
-<div id="overview" class="section level3">
-<h3>Overview</h3>
-<p>[Insert something like the abstract from the submitted manuscript here.]</p>
-</div>
-<div id="for-more-details" class="section level3">
-<h3>For more details</h3>
-<p>— A full description of the data is provided in [— citation blinded for review —] <!-- 
+<p><u>Please consult the reference listed below for more information about this project.</u><br> [— citation blinded for review —] <!-- 
 <font size="2">Condon, D. M., & McDougald, S. (under review). Frequency of use metrics for American English personality descriptors: Extensions of Roivainen's internet search methodology. *Journal TBD*.</font>
 --></p>
-<p>— The raw data are proprietary and cannot be shared by the authors. However z-scores of the frequency estimates for each TDA + pronoun have been made available for download at [add dataverse link here]</p>
-<p>— The analytic code used for this project is available at <a href="https://pie-lab.github.io/tdafrequency/code.html">https://pie-lab.github.io/tdafrequency/code.html</a>.</p>
-<p>— The code used to create this website is available at <a href="https://github.com/pie-lab/tdafrequency">https://github.com/pie-lab/tdafrequency</a>.</p>
-</div>
-<div id="about-the-frequencies" class="section level3">
-<h3>About the frequencies</h3>
-<p>[Insert info about: the source files, downloading the data, and how users can provide feedback or suggestions.]</p>
-</div>
+<pre class="r"><code>library(here) # for engaging with working environment
+library(Hmisc) # for weighted means
+library(DT) # for viewing data tables
+library(conflicted)
+library(tidyverse) # for data cleaning and manipulation
+conflict_prefer(&quot;here&quot;, &quot;here&quot;)
+conflict_prefer(&quot;filter&quot;, &quot;dplyr&quot;)
+conflict_prefer(&quot;count&quot;, &quot;dplyr&quot;)
+conflict_prefer(&quot;mutate&quot;, &quot;dplyr&quot;)
+conflict_prefer(&quot;summarise&quot;, &quot;dplyr&quot;)
+library(dataverse)
+library(data.table)</code></pre>
+<pre class="r"><code># create table 
+ngrams = read.csv(here(&quot;data/ngrams/ngrams_freq_index.csv&quot;))
+ngrams$person_zscore &lt;- round(ngrams$person_zscore, 4)
+ngrams$woman_zscore &lt;- round(ngrams$woman_zscore, 4)
+ngrams$man_zscore &lt;- round(ngrams$man_zscore, 4)
+ngrams$girl_zscore &lt;- round(ngrams$boy_zscore, 4)
+ngrams$boy_zscore &lt;- round(ngrams$boy_zscore, 4)
+
+# fix characters
+#ngrams$TDA &lt;- sub(&quot;blas\x8e&quot;, &quot;blasé&quot;, ngrams$TDA)
+#ngrams$TDA &lt;- sub(&quot;FALSE&quot;, &quot;false&quot;, ngrams$TDA)
+
+ngrams_prop = ngrams %&gt;%
+  DT::datatable( # put into interactive HTML table
+    colnames = c(&quot;Adjective&quot;, &quot;+person&quot;, &quot;+woman&quot;, &quot;+man&quot;, &quot;+girl&quot;, &quot;+boy&quot;, &quot;index&quot;), #colnames
+    options = list(
+      lengthMenu = list(c(10, 50, -1), c(&#39;10&#39;, &#39;50&#39;, &#39;All&#39;)),
+        pageLength = 10
+    ),
+    filter = &quot;top&quot;, # can filter
+    rownames = F # don&#39;t need rownames
+  )</code></pre>
 
 
 
@@ -334,6 +364,11 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
 
 <!-- dynamically load mathjax for compatibility with self-contained -->

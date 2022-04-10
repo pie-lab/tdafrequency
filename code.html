@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Analytic Code</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">TDA</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="serps-frequency.html">Estimates based on Search Engine Results</a>
+</li>
+<li>
+  <a href="item-difficulty.html">Estimates based on Ngram Results</a>
+</li>
+<li>
+  <a href="code.html">Code</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://psyarxiv.com">
+    <span class="fa fa-file"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/pie-lab/tdafrequency">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Analytic Code</h1>
+<h4 class="date">Last updated 2022-04-09</h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#prepare-the-environment">Prepare the environment</a></li>
+<li><a href="#derive-the-search-engine-frequency-estimates">Derive the search engine frequency estimates</a>
+<ul>
+<li><a href="#data-loading-and-preparation">Data loading and preparation</a>
+<ul>
+<li><a href="#calculate-overall-means-and-compare-differences-using-t-tests">1. Calculate overall means and compare differences using t-tests</a></li>
+<li><a href="#calculate-z-scores">2. Calculate z-scores</a></li>
+<li><a href="#correlations-between-the-5-tda-pronoun-vectors">3. Correlations between the 5 TDA + pronoun vectors</a></li>
+<li><a href="#calculate-the-search-engine-frequency-index">4. Calculate the search engine frequency index</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#derive-the-ngram-frequency-estimates">Derive the ngram frequency estimates</a>
+<ul>
+<li><a href="#data-loading-and-preparation-1">Data loading and preparation</a></li>
+<li><a href="#analyses">Analyses</a>
+<ul>
+<li><a href="#calculate-overall-means-and-compare-differences-using-t-tests-1">1. Calculate overall means and compare differences using t-tests</a></li>
+<li><a href="#calculate-z-scores-1">2. Calculate z-scores</a></li>
+<li><a href="#correlations-between-the-5-tda-pronoun-vectors-1">3. Correlations between the 5 TDA + pronoun vectors</a></li>
+<li><a href="#calculate-the-ngrams-frequency-index">4. Calculate the Ngrams frequency index</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+
+<div id="prepare-the-environment" class="section level1">
+<h1>Prepare the environment</h1>
+<pre class="r"><code>library(here) # for engaging with working environment
+library(rio) # for importing excel files
+library(psych) # for scoring multiple choice items
+library(R.utils) # just for the insert() function
+#library(conflicted)
+library(tidyverse) # for data cleaning and manipulation
+library(matrixStats)
+library(kableExtra)
+#conflict_prefer(&quot;here&quot;, &quot;here&quot;)
+#conflict_prefer(&quot;filter&quot;, &quot;dplyr&quot;)
+#conflict_prefer(&quot;count&quot;, &quot;dplyr&quot;)
+#conflict_prefer(&quot;mutate&quot;, &quot;dplyr&quot;)
+#conflict_prefer(&quot;summarise&quot;, &quot;dplyr&quot;)
+
+options(scipen=999)</code></pre>
+</div>
+<div id="derive-the-search-engine-frequency-estimates" class="section level1">
+<h1>Derive the search engine frequency estimates</h1>
+<div id="data-loading-and-preparation" class="section level2">
+<h2>Data loading and preparation</h2>
+<p>The csv files contain the raw data. These cannot be shared in raw form, but transformations of the raw data are publicly available on Dataverse (see the link below and on the home page). Here, we show how the raw data are loaded, for cleaning and description. Further down in the code, we show the data being saved into the format posted on Dataverse.</p>
+<pre class="r"><code>serps_person &lt;- read_csv(here(&quot;../../TDAfreqdata/SERPs/serps_rawdata_file_person.csv&quot;))
+serps_woman &lt;- read_csv(here(&quot;../../TDAfreqdata/SERPs/serps_rawdata_file_woman.csv&quot;))
+serps_man &lt;- read_csv(here(&quot;../../TDAfreqdata/SERPs/serps_rawdata_file_man.csv&quot;))
+serps_girl &lt;- read_csv(here(&quot;../../TDAfreqdata/SERPs/serps_rawdata_file_girl.csv&quot;))
+serps_boy &lt;- read_csv(here(&quot;../../TDAfreqdata/SERPs/serps_rawdata_file_boy.csv&quot;))</code></pre>
+<p>Once loaded, the data are re-coded in the instances where empty results are automatically replaced with results for similarly spelled terms. See the manuscript for more description of this issue. Once cleaned, the counts from each raw data file are combined into a single data frame with all of the TDA + pronoun pairings.</p>
+<pre class="r"><code>PRONOUNS_LIST &lt;- c(&quot;person&quot;, &quot;woman&quot;, &quot;man&quot;, &quot;girl&quot;, &quot;boy&quot;)
+
+serps_person &lt;- serps_person %&gt;%
+  mutate(
+    count = if_else(condition = type == &quot;Empty showing fixed spelling results&quot;,
+                    true = 0,
+                    false = count)
+  )
+
+serps_woman &lt;- serps_woman %&gt;%
+  mutate(
+    count = if_else(condition = type == &quot;Empty showing fixed spelling results&quot;,
+                    true = 0,
+                    false = count)
+  )
+
+serps_man &lt;- serps_man %&gt;%
+  mutate(
+    count = if_else(condition = type == &quot;Empty showing fixed spelling results&quot;,
+                    true = 0,
+                    false = count)
+  )
+
+serps_girl &lt;- serps_girl %&gt;%
+  mutate(
+    count = if_else(condition = type == &quot;Empty showing fixed spelling results&quot;,
+                    true = 0,
+                    false = count)
+  )
+
+serps_boy &lt;- serps_boy %&gt;%
+  mutate(
+    count = if_else(condition = type == &quot;Empty showing fixed spelling results&quot;,
+                    true = 0,
+                    false = count)
+  )
+
+### RE-ORGANIZE SERPS DATASETS - COMBINE PERSON-WORD FORMS
+serps_all &lt;- tibble(
+  term = serps_person$term,
+  person = serps_person$count,
+  woman = serps_woman$count,
+  man = serps_man$count,
+  girl = serps_girl$count,
+  boy = serps_boy$count
+)
+
+serps_all_onlyFreq &lt;- serps_all %&gt;%
+  select(-term)</code></pre>
+<div id="calculate-overall-means-and-compare-differences-using-t-tests" class="section level3">
+<h3>1. Calculate overall means and compare differences using t-tests</h3>
+<pre class="r"><code>serps_all_means &lt;- c()
+for (j in 1:ncol(serps_person))
+{
+  serps_all_means[j] &lt;- mean(unname(unlist(serps_all_onlyFreq[,j])), na.rm = TRUE)
+}
+names(serps_all_means) &lt;- PRONOUNS_LIST
+serps_all_means</code></pre>
+<pre><code>##   person    woman      man     girl      boy 
+## 157458.3 129931.3 266361.2 378681.0 194969.2</code></pre>
+<pre class="r"><code>serps_all_longForm &lt;- serps_all %&gt;%
+  gather(form, value, person:boy)
+serps_uncorrected_ttests &lt;- pairwise.t.test(x = serps_all_longForm$value, 
+                                             g = serps_all_longForm$form, 
+                                             p.adjust.method = &quot;none&quot;)
+serps_holm_ttests &lt;- pairwise.t.test(x = serps_all_longForm$value, 
+                                             g = serps_all_longForm$form, 
+                                             p.adjust.method = &quot;holm&quot;)
+serps_bonferroni_ttests &lt;- pairwise.t.test(x = serps_all_longForm$value, 
+                                             g = serps_all_longForm$form, 
+                                             p.adjust.method = &quot;bonferroni&quot;)</code></pre>
+<p>Next, show the p-values for the uncorrected t-tests of means, then the holm-corrected and bonferroni-corrected p-values. None of the t-tests are significant when using corrections of either type. If using uncorrected means (not recommended), the only significant difference in means is for girl-woman; the p-value for girl-person is just above the significance threshold at p&gt;.05.</p>
+<pre class="r"><code>round(serps_uncorrected_ttests$p.value, 3)</code></pre>
+<pre><code>##          boy  girl   man person
+## girl   0.105    NA    NA     NA
+## man    0.528 0.321    NA     NA
+## person 0.740 0.051 0.336     NA
+## woman  0.566 0.028 0.228  0.808</code></pre>
+<pre class="r"><code>round(serps_holm_ttests$p.value, 3)</code></pre>
+<pre><code>##          boy  girl man person
+## girl   0.837    NA  NA     NA
+## man    1.000 1.000  NA     NA
+## person 1.000 0.456   1     NA
+## woman  1.000 0.280   1      1</code></pre>
+<pre class="r"><code>round(serps_bonferroni_ttests$p.value, 3)</code></pre>
+<pre><code>##        boy  girl man person
+## girl     1    NA  NA     NA
+## man      1 1.000  NA     NA
+## person   1 0.506   1     NA
+## woman    1 0.280   1      1</code></pre>
+</div>
+<div id="calculate-z-scores" class="section level3">
+<h3>2. Calculate z-scores</h3>
+<p>Now that we have compared the raw means in the prior step, we create a table of the zscores of the 10-year averages for each TDA + pronoun ngram. These are the data posted on Dataverse, as shown below.</p>
+<pre class="r"><code>serps_all_zscores &lt;- serps_all %&gt;%
+  mutate(
+    TDA = serps_person$term,
+    person_zscore = (person - mean(person, na.rm = TRUE))/sd(person, na.rm = TRUE),
+    woman_zscore = (woman - mean(woman, na.rm = TRUE))/sd(woman, na.rm = TRUE),
+    girl_zscore = (girl - mean(girl, na.rm = TRUE))/sd(girl, na.rm = TRUE),
+    man_zscore = (man - mean(man, na.rm = TRUE))/sd(man, na.rm = TRUE),
+    boy_zscore = (boy - mean(boy, na.rm = TRUE))/sd(boy, na.rm = TRUE)
+  ) %&gt;%
+  select(TDA, person_zscore:boy_zscore)</code></pre>
+<pre class="r"><code>write_csv(serps_all_zscores, 
+          file = here(&quot;data/serps/serps_all_zscores.csv&quot;))</code></pre>
+<p>This csv file (above) has been posted publicly on Dataverse (see doi). All subsequent analyses of the search engine results data are based on this file, including the database of search engine estimates (see here).</p>
+<p><em>ADD HMTL LINK TO THE SENTENCE ABOVE</em></p>
+<p>The following code clears the environment and loads the data directly from Dataverse.</p>
+<p><em>CHANGE THIS TO PULL THE ZSCORES FILE FROM DATAVERSE.</em></p>
+<pre class="r"><code>rm(list=ls())
+serps_all_zscores &lt;- read_csv(here(&quot;data/serps/serps_all_zscores.csv&quot;))</code></pre>
+<pre class="r"><code>library(dataverse)
+library(data.table)
+
+Sys.setenv(&quot;DATAVERSE_SERVER&quot; = &quot;dataverse.harvard.edu&quot;)
+writeBin(get_file(&quot;TDA_data_scored.tab&quot;, &quot;doi:10.7910/DVN/5T80PF&quot;), &quot;TDA_data_scored.tab&quot;)
+TDA_data_scored.tab &lt;- fread(&quot;TDA_data_scored.tab&quot;, na.strings=getOption(&quot;&lt;NA&gt;&quot;,&quot;NA&quot;))
+data &lt;- as.data.frame(TDA_data_scored.tab)
+rm(TDA_data_scored.tab)</code></pre>
+</div>
+<div id="correlations-between-the-5-tda-pronoun-vectors" class="section level3">
+<h3>3. Correlations between the 5 TDA + pronoun vectors</h3>
+<pre class="r"><code>serps_zscores &lt;- subset(serps_all_zscores, select = -c(TDA))
+cor_table_serps &lt;- corr.test(serps_zscores, 
+                                    use = &quot;pairwise&quot;,
+                                    method = &quot;pearson&quot;,
+                                    alpha = .05,
+                                    ci = TRUE)
+
+cor_serps_ci &lt;- tibble(
+  group1 = c(&quot;person&quot;, &quot;person&quot;, &quot;person&quot;, &quot;person&quot;, &quot;woman&quot;, 
+             &quot;woman&quot;, &quot;woman&quot;, &quot;man&quot;, &quot;man&quot;, &quot;girl&quot;),
+  group2 = c(&quot;woman&quot;, &quot;man&quot;, &quot;girl&quot;, &quot;boy&quot;, &quot;man&quot;, 
+             &quot;girl&quot;, &quot;boy&quot;, &quot;girl&quot;, &quot;boy&quot;, &quot;boy&quot;),
+  lower_bound = cor_table_serps$ci$lower,
+  r = cor_table_serps$ci$r,
+  upper_bound = cor_table_serps$ci$upper,
+  p_value = cor_table_serps$ci$p
+)</code></pre>
+<p>The table below shows the correlations between pronoun pairs with the lower and upper bounds of the 95% confidence intervals.</p>
+<pre><code>##    group1 group2 lower_bound     r upper_bound p_value
+## 1  person  woman       0.058 0.072       0.086       0
+## 2  person    man       0.055 0.069       0.084       0
+## 3  person   girl       0.055 0.070       0.084       0
+## 4  person    boy       0.049 0.063       0.078       0
+## 5   woman    man       0.344 0.357       0.369       0
+## 6   woman   girl       0.388 0.400       0.412       0
+## 7   woman    boy       0.196 0.210       0.224       0
+## 8     man   girl       0.942 0.944       0.945       0
+## 9     man    boy       0.959 0.960       0.961       0
+## 10   girl    boy       0.940 0.941       0.943       0</code></pre>
+</div>
+<div id="calculate-the-search-engine-frequency-index" class="section level3">
+<h3>4. Calculate the search engine frequency index</h3>
+<p>Here, we find the frequencies index by finding the average of the z-scores across all 5 TDA + pronoun pairs for each TDA <em>after</em> removing the max z-score for each TDA. In other words, find the average among all but the largest z-score for each TDA. This approach is used to reduce the skew introduced in a few cases where the pairing of a specific TDA + pronoun is part of a song, book, famous individual, etc.</p>
+<p>Output from the following section of code is used to populate the serps column of the database of frequencies provided on this website.</p>
+<p><em>ADD URL LINK WHEN COMPLETED</em></p>
+<pre class="r"><code>bucket &lt;- c()
+for (j in 1:nrow(serps_zscores)) 
+{
+  vector_i &lt;- c()
+  vector_i &lt;- unname(unlist(serps_zscores[j,]))
+  vector_i &lt;- vector_i[vector_i != max(vector_i, na.rm = TRUE)]
+  freq_val &lt;- mean(vector_i, na.rm = TRUE)
+  bucket[j] &lt;- freq_val
+}
+
+serps_freq_index &lt;- serps_zscores %&gt;%
+  mutate(
+    TDA = serps_all_zscores$TDA,
+    freq_index = bucket
+  )  %&gt;%
+    select(TDA, everything())</code></pre>
+</div>
+</div>
+</div>
+<div id="derive-the-ngram-frequency-estimates" class="section level1">
+<h1>Derive the ngram frequency estimates</h1>
+<div id="data-loading-and-preparation-1" class="section level2">
+<h2>Data loading and preparation</h2>
+<p>The csv files contain the raw data. As with the search engine results, these cannot be shared in raw form, but transformations of the raw data are publicly available on Dataverse (see the link below and on the home page). Here, we show how the raw data are loaded, for cleaning and description. Further down in the code, we show the data being saved into the format available on Dataverse.</p>
+<pre class="r"><code>ngrams_person &lt;- read_csv(&quot;../../TDAfreqdata/ngrams/ngrams_rawdata_file_person.csv&quot;)
+ngrams_woman &lt;- read_csv(&quot;../../TDAfreqdata/ngrams/ngrams_rawdata_file_woman.csv&quot;)
+ngrams_man &lt;- read_csv(&quot;../../TDAfreqdata/ngrams/ngrams_rawdata_file_man.csv&quot;)
+ngrams_girl &lt;- read_csv(&quot;../../TDAfreqdata/ngrams/ngrams_rawdata_file_girl.csv&quot;)
+ngrams_boy &lt;- read_csv(&quot;../../TDAfreqdata/ngrams/ngrams_rawdata_file_boy.csv&quot;)</code></pre>
+<p>Once loaded, we derive the means for each term + pronoun ngram across the 10 year period from 2010 to 2019. These averages are then combined in a new data frame.</p>
+<pre class="r"><code>PRONOUNS_LIST &lt;- c(&quot;person&quot;, &quot;woman&quot;, &quot;man&quot;, &quot;girl&quot;, &quot;boy&quot;)
+
+### AVERAGE NGRAMS DATA ACROSS YEARS
+select_vars &lt;- c(&quot;freq.2010&quot;,&quot;freq.2011&quot;,&quot;freq.2012&quot;,&quot;freq.2013&quot;,&quot;freq.2014&quot;,
+                            &quot;freq.2015&quot;,&quot;freq.2016&quot;,&quot;freq.2017&quot;,&quot;freq.2018&quot;,&quot;freq.2019&quot;)
+
+ngrams_person &lt;- ngrams_person %&gt;%
+  mutate(
+    freq_avg_all_years = rowMeans(select(., select_vars)),
+    zscore = (freq_avg_all_years - mean(freq_avg_all_years, na.rm = TRUE)) / 
+      sd(freq_avg_all_years, na.rm = TRUE)
+  )
+
+ngrams_woman &lt;- ngrams_woman %&gt;%
+  mutate(
+    freq_avg_all_years = rowMeans(select(., select_vars)),
+    zscore = (freq_avg_all_years - mean(freq_avg_all_years, na.rm = TRUE)) / 
+      sd(freq_avg_all_years, na.rm = TRUE)
+  )
+
+ngrams_man &lt;- ngrams_man %&gt;%
+  mutate(
+    freq_avg_all_years = rowMeans(select(., select_vars)),
+    zscore = (freq_avg_all_years - mean(freq_avg_all_years, na.rm = TRUE)) / 
+      sd(freq_avg_all_years, na.rm = TRUE)
+  )
+
+ngrams_girl &lt;- ngrams_girl %&gt;%
+  mutate(
+    freq_avg_all_years = rowMeans(select(., select_vars)),
+    zscore = (freq_avg_all_years - mean(freq_avg_all_years, na.rm = TRUE)) / 
+      sd(freq_avg_all_years, na.rm = TRUE)
+  )
+
+ngrams_boy &lt;- ngrams_boy %&gt;%
+  mutate(
+    freq_avg_all_years = rowMeans(select(., select_vars)),
+    zscore = (freq_avg_all_years - mean(freq_avg_all_years, na.rm = TRUE)) / 
+      sd(freq_avg_all_years, na.rm = TRUE)
+  )
+
+### COMBINE INTO ONE TABLE
+
+ngrams_all_avgfreq &lt;- tibble(
+  term = ngrams_person$term,
+  freq_avg_person = ngrams_person$freq_avg_all_years,
+  freq_avg_woman = ngrams_woman$freq_avg_all_years,
+  freq_avg_man = ngrams_man$freq_avg_all_years,
+  freq_avg_girl = ngrams_girl$freq_avg_all_years,
+  freq_avg_boy = ngrams_boy$freq_avg_all_years
+)</code></pre>
+</div>
+<div id="analyses" class="section level2">
+<h2>Analyses</h2>
+<div id="calculate-overall-means-and-compare-differences-using-t-tests-1" class="section level3">
+<h3>1. Calculate overall means and compare differences using t-tests</h3>
+<p>Calculate the overall means for each of the TDA + pronoun vectors. In other words, find the means for all the TDA + person ngrams, TDA + man ngrams, woman, girl, and boy. Then compare the means with t-tests. This is repeated using holm and bonferroni corrections.</p>
+<pre class="r"><code># drop the column of TDA labels
+ngrams_avgfreq &lt;- subset(ngrams_all_avgfreq, select = -c(term))
+means_vector &lt;- c()
+for (j in 1:ncol(ngrams_avgfreq))
+{
+  means_vector[j] &lt;- mean( unname(unlist(ngrams_avgfreq[,j])), na.rm = TRUE)
+}
+
+names(means_vector) &lt;- PRONOUNS_LIST
+means_vector</code></pre>
+<pre><code>##            person             woman               man              girl 
+## 0.000000009147355 0.000000009897305 0.000000018108562 0.000000008428365 
+##               boy 
+## 0.000000005711492</code></pre>
+<pre class="r"><code>ngrams_all_longForm &lt;- ngrams_avgfreq %&gt;%
+  gather(form, value, freq_avg_person:freq_avg_boy)
+
+ngrams_uncorrected_ttests &lt;- pairwise.t.test(x = ngrams_all_longForm$value, 
+                                             g = ngrams_all_longForm$form, 
+                                             p.adjust.method = &quot;none&quot;)
+ngrams_holm_ttests &lt;- pairwise.t.test(x = ngrams_all_longForm$value, 
+                                             g = ngrams_all_longForm$form, 
+                                             p.adjust.method = &quot;holm&quot;)
+ngrams_bonferroni_ttests &lt;- pairwise.t.test(x = ngrams_all_longForm$value, 
+                                             g = ngrams_all_longForm$form, 
+                                             p.adjust.method = &quot;bonferroni&quot;)</code></pre>
+<p>Next, show the p-values for the uncorrected t-tests of means, then the holm-corrected and bonferroni-corrected p-values. None of the t-tests are significant when using corrections of either type. If using uncorrected means (not recommended), the largest differences in means are for boy-man, person-man, girl-man, woman-man (in that order).</p>
+<pre class="r"><code>round(ngrams_uncorrected_ttests$p.value, 3)</code></pre>
+<pre><code>##                 freq_avg_boy freq_avg_girl freq_avg_man freq_avg_person
+## freq_avg_girl          0.607            NA           NA              NA
+## freq_avg_man           0.007         0.034           NA              NA
+## freq_avg_person        0.485         0.883        0.031              NA
+## freq_avg_woman         0.392         0.762        0.046           0.866</code></pre>
+<pre class="r"><code>round(ngrams_holm_ttests$p.value, 3)</code></pre>
+<pre><code>##                 freq_avg_boy freq_avg_girl freq_avg_man freq_avg_person
+## freq_avg_girl          1.000            NA           NA              NA
+## freq_avg_man           0.072         0.279           NA              NA
+## freq_avg_person        1.000         1.000        0.279              NA
+## freq_avg_woman         1.000         1.000        0.324               1</code></pre>
+<pre class="r"><code>round(ngrams_bonferroni_ttests$p.value, 3)</code></pre>
+<pre><code>##                 freq_avg_boy freq_avg_girl freq_avg_man freq_avg_person
+## freq_avg_girl          1.000            NA           NA              NA
+## freq_avg_man           0.072         0.344           NA              NA
+## freq_avg_person        1.000         1.000        0.310              NA
+## freq_avg_woman         1.000         1.000        0.462               1</code></pre>
+</div>
+<div id="calculate-z-scores-1" class="section level3">
+<h3>2. Calculate z-scores</h3>
+<p>Now that we have compared the raw means in the prior step, we create a table of the zscores of the 10-year averages for each TDA + pronoun ngram. These are the data posted on Dataverse, as shown below.</p>
+<pre class="r"><code>ngrams_all_zscores &lt;- tibble(
+  TDA = ngrams_person$term,
+  coded = ngrams_person$coded,
+  person_zscore = ngrams_person$zscore,
+  woman_zscore = ngrams_woman$zscore,
+  man_zscore = ngrams_man$zscore,
+  girl_zscore = ngrams_girl$zscore,
+  boy_zscore = ngrams_boy$zscore
+)</code></pre>
+<pre class="r"><code>write_csv(ngrams_all_zscores, 
+          file = here(&quot;data/ngrams/ngrams_all_zscores.csv&quot;))</code></pre>
+<p>This csv file (above) has been posted publicly on Dataverse (see doi). All subsequent analyses of the ngrams data are based on this file, including the database of ngram estimates (see here).</p>
+<p><em>ADD HMTL LINK TO THE SENTENCE ABOVE</em></p>
+<p>The following code clears the environment and loads the data directly from Dataverse.</p>
+<p><em>CHANGE THIS TO PULL THE ZSCORES FILE FROM DATAVERSE.</em></p>
+<pre class="r"><code>rm(list=ls())
+ngrams_all_zscores &lt;- read_csv(here(&quot;data/ngrams/ngrams_all_zscores.csv&quot;))</code></pre>
+<pre class="r"><code>library(dataverse)
+library(data.table)
+
+Sys.setenv(&quot;DATAVERSE_SERVER&quot; = &quot;dataverse.harvard.edu&quot;)
+writeBin(get_file(&quot;TDA_data_scored.tab&quot;, &quot;doi:10.7910/DVN/5T80PF&quot;), &quot;TDA_data_scored.tab&quot;)
+TDA_data_scored.tab &lt;- fread(&quot;TDA_data_scored.tab&quot;, na.strings=getOption(&quot;&lt;NA&gt;&quot;,&quot;NA&quot;))
+data &lt;- as.data.frame(TDA_data_scored.tab)
+rm(TDA_data_scored.tab)</code></pre>
+</div>
+<div id="correlations-between-the-5-tda-pronoun-vectors-1" class="section level3">
+<h3>3. Correlations between the 5 TDA + pronoun vectors</h3>
+<pre class="r"><code># drop the column of TDA labels
+ngrams_zscores &lt;- subset(ngrams_all_zscores, select = -c(TDA, coded))
+cor_ngrams &lt;- corr.test(ngrams_zscores,
+                        use = &quot;pairwise&quot;, 
+                        method = &quot;pearson&quot;, 
+                        alpha = 0.05,
+                        ci = TRUE)
+
+cor_ngrams_ci &lt;- tibble(
+  pronoun1 = c(&quot;person&quot;, &quot;person&quot;, &quot;person&quot;, &quot;person&quot;, &quot;woman&quot;, 
+             &quot;woman&quot;, &quot;woman&quot;, &quot;man&quot;, &quot;man&quot;, &quot;girl&quot;),
+  pronoun2 = c(&quot;woman&quot;, &quot;man&quot;, &quot;girl&quot;, &quot;boy&quot;, &quot;man&quot;, 
+             &quot;girl&quot;, &quot;boy&quot;, &quot;girl&quot;, &quot;boy&quot;, &quot;boy&quot;),
+  lower_bound = cor_ngrams$ci$lower,
+  r = cor_ngrams$ci$r,
+  upper_bound = cor_ngrams$ci$upper,
+  p_value = cor_ngrams$ci$p
+)</code></pre>
+<p>The table below shows the correlations between pronoun pairs with the lower and upper bounds of the 95% confidence intervals.</p>
+<pre><code>##    pronoun1 pronoun2 lower_bound     r upper_bound p_value
+## 1    person    woman       0.344 0.371       0.397       0
+## 2    person      man       0.313 0.339       0.364       0
+## 3    person     girl       0.164 0.198       0.232       0
+## 4    person      boy       0.179 0.214       0.248       0
+## 5     woman      man       0.959 0.961       0.963       0
+## 6     woman     girl       0.427 0.454       0.481       0
+## 7     woman      boy       0.532 0.557       0.581       0
+## 8       man     girl       0.443 0.469       0.495       0
+## 9       man      boy       0.589 0.610       0.631       0
+## 10     girl      boy       0.952 0.956       0.959       0</code></pre>
+</div>
+<div id="calculate-the-ngrams-frequency-index" class="section level3">
+<h3>4. Calculate the Ngrams frequency index</h3>
+<p>Here, we find the frequencies index by finding the average of the z-scores across all 5 TDA + pronoun pairs for each TDA <em>after</em> removing the max z-score for each TDA. In other words, find the average among all but the largest z-score for each TDA. This approach is used to reduce the skew introduced in a few cases where the pairing of a specific TDA + pronoun is part of a song, book, famous individual, etc.</p>
+<p>Output from the following section of code is used to populate the ngram column of the database of frequencies provided on this website.</p>
+<p><em>ADD URL LINK WHEN COMPLETED</em></p>
+<pre class="r"><code>bucket &lt;- c()
+for (j in 1:nrow(ngrams_zscores)) 
+{
+  vector_i &lt;- c()
+  vector_i &lt;- unname(unlist(ngrams_zscores[j,]))
+  vector_i &lt;- vector_i[vector_i != max(vector_i, na.rm = TRUE)] #remove max zsc
+  freq_val &lt;- mean(vector_i, na.rm = TRUE)
+  bucket[j] &lt;- freq_val
+}
+
+ngrams_freq_index &lt;- ngrams_zscores %&gt;%
+  mutate(
+    freq_index = bucket
+  ) 
+
+ngrams_freq_index &lt;- ngrams_freq_index %&gt;%
+  mutate(
+    TDA = ngrams_all_zscores$TDA,
+    freq_index = if_else(condition = is.nan(freq_index), 
+                         true = as.double(NA), 
+                         false = freq_index),
+  ) %&gt;%
+    select(TDA, everything())</code></pre>
+</div>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

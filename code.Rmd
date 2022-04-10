@@ -11,375 +11,527 @@ knitr::opts_chunk$set(message = F, warning = F)
 ```
 
 
-# Load data and packages
+# Prepare the environment
 
-```{r, message = F, warning = F}
+```{r, warning=FALSE, message=FALSE, label = "libraries_data"}
 library(here) # for engaging with working environment
 library(rio) # for importing excel files
 library(psych) # for scoring multiple choice items
 library(R.utils) # just for the insert() function
-library(conflicted)
+#library(conflicted)
 library(tidyverse) # for data cleaning and manipulation
-conflict_prefer("here", "here")
-conflict_prefer("filter", "dplyr")
-conflict_prefer("count", "dplyr")
-conflict_prefer("mutate", "dplyr")
-conflict_prefer("summarise", "dplyr")
+library(matrixStats)
+library(kableExtra)
+#conflict_prefer("here", "here")
+#conflict_prefer("filter", "dplyr")
+#conflict_prefer("count", "dplyr")
+#conflict_prefer("mutate", "dplyr")
+#conflict_prefer("summarise", "dplyr")
+
+options(scipen=999)
 ```
 
-## Qualtrics survey responses
+# Derive the search engine frequency estimates
 
-The excel files contain raw data exported from Qualtrics. The first row of this file contains variable names, but rows 2 and 3 contain meta data. To account, we first load in all data as a "names" data frame and then data starting at row 4, for the raw data. 
+## Data loading and preparation
 
-```{r, message = F, warning = F, eval = F}
-# read in form A (Prolific)
-formA_names = read_csv(
-  here("data/Form+A_Prolific_April+2,+2021_15.27.csv"))
+The csv files contain the raw data. These cannot be shared in raw form, but transformations of the raw data are publicly available on Dataverse (see the link below and on the home page). Here, we show how the raw data are loaded, for cleaning and description. Further down in the code, we show the data being saved into the format posted on Dataverse.
 
-formA = read_csv(
-  here("data/Form+A_Prolific_April+2,+2021_15.27.csv"), 
-  col_names = F, skip = 3)
-
-names(formA) = names(formA_names)
-rm(formA_names)
-
-# read in form A (MTurk)
-formA_names = read_csv(
-  here("data/Form A_April 2, 2021_15.41.numeric.csv"))
-
-formA2 = read_csv(
-  here("data/Form A_April 2, 2021_15.41.numeric.csv"), 
-  col_names = F, skip = 3)
-
-names(formA2) = names(formA_names)
-rm(formA_names)
-
-formA = full_join(formA, formA2)
-rm(formA2)
-
-# read in form B (Prolific)
-formB_names = read_csv(
-  here("data/Form+B_Prolific_April+2,+2021_15.27.csv"))
-
-formB = read_csv(
-  here("data/Form+B_Prolific_April+2,+2021_15.27.csv"), 
-  col_names = F, skip = 3)
-
-names(formB) = names(formB_names)
-rm(formB_names)
-
-
-# read in form B (MTurk)
-formB_names = read_csv(
-  here("data/Form B_April 2, 2021_15.44.numeric.csv"))
-
-formB2 = read_csv(
-  here("data/Form B_April 2, 2021_15.44.numeric.csv"), 
-  col_names = F, skip = 3)
-
-names(formB2) = names(formB_names)
-rm(formB_names)
-
-formB = full_join(formB, formB2)
-rm(formB2)
-
-# read in form C (Prolific)
-formC_names = read_csv(
-  here("data/Form+C_April+16,+2021_17.21.csv"))
-
-formC = read_csv(
-  here("data/Form+C_April+16,+2021_17.21.csv"), 
-  col_names = F, skip = 3)
-
-names(formC) = names(formC_names)
-rm(formC_names)
+```{r, message = F, warning = F, eval = T, label = "load_raw_data_serps"}
+serps_person <- read_csv(here("../../TDAfreqdata/SERPs/serps_rawdata_file_person.csv"))
+serps_woman <- read_csv(here("../../TDAfreqdata/SERPs/serps_rawdata_file_woman.csv"))
+serps_man <- read_csv(here("../../TDAfreqdata/SERPs/serps_rawdata_file_man.csv"))
+serps_girl <- read_csv(here("../../TDAfreqdata/SERPs/serps_rawdata_file_girl.csv"))
+serps_boy <- read_csv(here("../../TDAfreqdata/SERPs/serps_rawdata_file_boy.csv"))
 ```
 
-```{r, eval = F, echo = F}
-save(formA, formB, formC, file = here("data/raw_data.Rdata"))
+Once loaded, the data are re-coded in the instances where empty results are automatically replaced with results for similarly spelled terms. See the manuscript for more description of this issue. Once cleaned, the counts from each raw data file are combined into a single data frame with all of the TDA + pronoun pairings.
+
+```{r, warning=FALSE, message=FALSE, label = "data-prep_serps"}
+PRONOUNS_LIST <- c("person", "woman", "man", "girl", "boy")
+
+serps_person <- serps_person %>%
+  mutate(
+    count = if_else(condition = type == "Empty showing fixed spelling results",
+                    true = 0,
+                    false = count)
+  )
+
+serps_woman <- serps_woman %>%
+  mutate(
+    count = if_else(condition = type == "Empty showing fixed spelling results",
+                    true = 0,
+                    false = count)
+  )
+
+serps_man <- serps_man %>%
+  mutate(
+    count = if_else(condition = type == "Empty showing fixed spelling results",
+                    true = 0,
+                    false = count)
+  )
+
+serps_girl <- serps_girl %>%
+  mutate(
+    count = if_else(condition = type == "Empty showing fixed spelling results",
+                    true = 0,
+                    false = count)
+  )
+
+serps_boy <- serps_boy %>%
+  mutate(
+    count = if_else(condition = type == "Empty showing fixed spelling results",
+                    true = 0,
+                    false = count)
+  )
+
+### RE-ORGANIZE SERPS DATASETS - COMBINE PERSON-WORD FORMS
+serps_all <- tibble(
+  term = serps_person$term,
+  person = serps_person$count,
+  woman = serps_woman$count,
+  man = serps_man$count,
+  girl = serps_girl$count,
+  boy = serps_boy$count
+)
+
+serps_all_onlyFreq <- serps_all %>%
+  select(-term)
 ```
 
-```{r, echo = F}
-load(here("data/raw_data.Rdata"))
+
+### 1. Calculate overall means and compare differences using t-tests
+
+```{r, warning=FALSE, "analyses_serps_means"}
+serps_all_means <- c()
+for (j in 1:ncol(serps_person))
+{
+  serps_all_means[j] <- mean(unname(unlist(serps_all_onlyFreq[,j])), na.rm = TRUE)
+}
+names(serps_all_means) <- PRONOUNS_LIST
+serps_all_means
+
+serps_all_longForm <- serps_all %>%
+  gather(form, value, person:boy)
+serps_uncorrected_ttests <- pairwise.t.test(x = serps_all_longForm$value, 
+                                             g = serps_all_longForm$form, 
+                                             p.adjust.method = "none")
+serps_holm_ttests <- pairwise.t.test(x = serps_all_longForm$value, 
+                                             g = serps_all_longForm$form, 
+                                             p.adjust.method = "holm")
+serps_bonferroni_ttests <- pairwise.t.test(x = serps_all_longForm$value, 
+                                             g = serps_all_longForm$form, 
+                                             p.adjust.method = "bonferroni")
 ```
 
-In forms A and B, variable names composed solely of numbers (e.g., 20001) refer to the specific variable number as included in the dictionary. These must be prefaced by `q_` for readability. 
+Next, show the p-values for the uncorrected t-tests of means, then the holm-corrected and bonferroni-corrected p-values. None of the t-tests are significant when using corrections of either type. If using uncorrected means (not recommended), the only significant difference in means is for girl-woman; the p-value for girl-person is just above the significance threshold at p>.05.
 
-```{r}
-names(formA) = str_replace(names(formA), # look in this vector of strings
-                           "(^)([0-9]*$)", #match two parts. part 1: beginning of string, second part: digits 0 or more times and then the string ends
-                           "q_\\2") # replace with q_ followed by the second part of the match
-
-names(formB) = str_replace(names(formB), 
-                           "(^)([0-9]*$)", 
-                           "q_\\2") 
-
-names(formC) = str_replace(names(formC), 
-                           "^Q", 
-                           "q_") 
-
-# an additional error in form C -- some variable names were coded with only the last 4 digits (i.e., missing the first "2")
-names(formC) = str_replace(names(formC), 
-                           "(q_)(\\d{4}$)", "\\12\\2")
+```{r, warning=FALSE, label = "analyses_serps_means_pvalues"}
+round(serps_uncorrected_ttests$p.value, 3)
+round(serps_holm_ttests$p.value, 3)
+round(serps_bonferroni_ttests$p.value, 3)
 ```
 
-Remove participants without valid Prolific or MTurk IDs.
-
-```{r}
-formA = formA %>%
-  dplyr::filter(!is.na(mTurkCode) | str_length(PROLIFIC_PID) > 3)
-formB = formB %>%
-  dplyr::filter(!is.na(mTurkCode) | str_length(PROLIFIC_PID) > 3)
-formC = formC %>%
-  dplyr::filter(str_length(PROLIFIC_PID) > 3)
+```{r, eval = F, echo = F, label = "serps_ttest_tables_apa"}
+apa_table(serps_uncorrected_ttests$p.value, caption = "P-values of uncorrected t-tests comparing mean adjective SERPs count by person-word.", placement = "h")
+apa_table(serps_holm_ttests$p.value, caption = "P-values of Holm-corrected t-tests comparing mean adjective SERPs count by person-word.", placement = "h")
+apa_table(serps_bonferroni_ttests$p.value, caption = "P-values of Bonferroni-corrected t-tests comparing mean adjective SERPs count by person-word.", placement = "h")
 ```
 
-## Scoring keys
 
-```{r, message = F, warning = F}
-keyA = read.csv(here("keys/key_A.csv"))
-keyB = read.csv(here("keys/key_B.csv"))
-keyC = import(here("keys/key_C.xlsx"), sheet = 1)
+### 2. Calculate z-scores
+
+Now that we have compared the raw means in the prior step, we create a table of the zscores of the 10-year averages for each TDA + pronoun ngram. These are the data posted on Dataverse, as shown below.
+
+```{r, warning=FALSE, "analyses_serps_zscores"}
+serps_all_zscores <- serps_all %>%
+  mutate(
+    TDA = serps_person$term,
+    person_zscore = (person - mean(person, na.rm = TRUE))/sd(person, na.rm = TRUE),
+    woman_zscore = (woman - mean(woman, na.rm = TRUE))/sd(woman, na.rm = TRUE),
+    girl_zscore = (girl - mean(girl, na.rm = TRUE))/sd(girl, na.rm = TRUE),
+    man_zscore = (man - mean(man, na.rm = TRUE))/sd(man, na.rm = TRUE),
+    boy_zscore = (boy - mean(boy, na.rm = TRUE))/sd(boy, na.rm = TRUE)
+  ) %>%
+  select(TDA, person_zscore:boy_zscore)
 ```
 
-Variable names composed solely of numbers (e.g., 1) refer to the response choice number as presented to participants. These must be prefaced by `R_` for readability. 
 
-```{r}
-names(keyA) = str_replace(names(keyA), 
-                           "(^X)([0-9]{1}$)", 
-                           "R_\\2") 
-
-names(keyB) = str_replace(names(keyB), 
-                           "(^X)([0-9]{1}$)", 
-                           "R_\\2") 
-
-names(keyC) = str_replace(names(keyC), 
-                           "(^)([0-9]{1}$)", 
-                           "R_\\2") 
-keyC = dplyr::rename(keyC, X = .)
+```{r, eval = T, echo = T, label = "save_serps_zscores"}
+write_csv(serps_all_zscores, 
+          file = here("data/serps/serps_all_zscores.csv"))
 ```
 
-The `Key` column indicates the position of the correct response. We create a key vector that contains the value of the correct response, not the position.
+This csv file (above) has been posted publicly on Dataverse (see doi). All subsequent analyses of the search engine results data are based on this file, including the database of search engine estimates (see here).
 
-```{r}
+*ADD HMTL LINK TO THE SENTENCE ABOVE*
 
-create_key = function(keydf){
-  # select only response variables and concatonate by row into vectors
-  keydf$response_vector = keydf %>%
-    select(starts_with("R")) %>%
-    pmap(~c(..1, ..2, ..3, ..4, ..5, ..6))
+The following code clears the environment and loads the data directly from Dataverse.
 
-  # map across response vectors and key positions to pull out correct answer
-  keydf = keydf %>%
-    mutate(answer = map2_chr(response_vector, Key,
-                         ~.x[.y]))
-  return(keydf)
+*CHANGE THIS TO PULL THE ZSCORES FILE FROM DATAVERSE.*
+```{r, echo = T, label = "load_serps_zscores"}
+rm(list=ls())
+serps_all_zscores <- read_csv(here("data/serps/serps_all_zscores.csv"))
+```
+
+```{r, eval = F, echo = T, label = "load_serps_zscores_dataverse"}
+library(dataverse)
+library(data.table)
+
+Sys.setenv("DATAVERSE_SERVER" = "dataverse.harvard.edu")
+writeBin(get_file("TDA_data_scored.tab", "doi:10.7910/DVN/5T80PF"), "TDA_data_scored.tab")
+TDA_data_scored.tab <- fread("TDA_data_scored.tab", na.strings=getOption("<NA>","NA"))
+data <- as.data.frame(TDA_data_scored.tab)
+rm(TDA_data_scored.tab)
+```
+
+
+### 3. Correlations between the 5 TDA + pronoun vectors
+
+```{r, warning=FALSE, label = "analyses_serps_cors"}
+serps_zscores <- subset(serps_all_zscores, select = -c(TDA))
+cor_table_serps <- corr.test(serps_zscores, 
+                                    use = "pairwise",
+                                    method = "pearson",
+                                    alpha = .05,
+                                    ci = TRUE)
+
+cor_serps_ci <- tibble(
+  group1 = c("person", "person", "person", "person", "woman", 
+             "woman", "woman", "man", "man", "girl"),
+  group2 = c("woman", "man", "girl", "boy", "man", 
+             "girl", "boy", "girl", "boy", "boy"),
+  lower_bound = cor_table_serps$ci$lower,
+  r = cor_table_serps$ci$r,
+  upper_bound = cor_table_serps$ci$upper,
+  p_value = cor_table_serps$ci$p
+)
+```
+
+```{r , echo = F, label = "serps_cor_tables_apa"}
+cor_serps_ci <- as.data.frame(cor_serps_ci)
+cor_serps_ci$p_value <- round(cor_serps_ci$p_value, 3)
+cor_serps_ci$lower_bound <- round(cor_serps_ci$lower_bound, 3)
+cor_serps_ci$r <- round(cor_serps_ci$r, 3)
+cor_serps_ci$upper_bound <- round(cor_serps_ci$upper_bound, 3)
+
+#apa_table(cor_table_serps$r,
+#          caption = "Correlations between SERPs person-words.",
+#          placement= "h")
+#apa_table(cor_serps_ci,
+#          caption = "Correlations between SERPs person-words, with confidence intervals.",
+#          placement= "h")
+```
+
+The table below shows the correlations between pronoun pairs with the lower and upper bounds of the 95% confidence intervals.
+
+```{r, warning=FALSE, echo = F, label = "analyses_serps_cors_cis"}
+cor_serps_ci
+```
+
+
+### 4. Calculate the search engine frequency index
+
+Here, we find the frequencies index by finding the average of the z-scores across all 5 TDA + pronoun pairs for each TDA *after* removing the max z-score for each TDA. In other words, find the average among all but the largest z-score for each TDA. This approach is used to reduce the skew introduced in a few cases where the pairing of a specific TDA + pronoun is part of a song, book, famous individual, etc.
+
+Output from the following section of code is used to populate the serps column of the database of frequencies provided on this website.
+
+*ADD URL LINK WHEN COMPLETED*
+
+```{r, warning=FALSE, label = "analyses_serps_freq-index"}
+bucket <- c()
+for (j in 1:nrow(serps_zscores)) 
+{
+  vector_i <- c()
+  vector_i <- unname(unlist(serps_zscores[j,]))
+  vector_i <- vector_i[vector_i != max(vector_i, na.rm = TRUE)]
+  freq_val <- mean(vector_i, na.rm = TRUE)
+  bucket[j] <- freq_val
 }
 
-keyA = create_key(keyA) %>%
-  mutate(form = "A")
-keyB = create_key(keyB) %>%
-  mutate(form = "B")
-keyC = create_key(keyC) %>%
-  group_by(Stimulus) %>%
-  dplyr::mutate(form = ifelse(dplyr::row_number() == 1, "C", "D")) %>%
-  ungroup()
+serps_freq_index <- serps_zscores %>%
+  mutate(
+    TDA = serps_all_zscores$TDA,
+    freq_index = bucket
+  )  %>%
+    select(TDA, everything())
 ```
 
-Merge keys together.
+```{r , echo = F, label = "top_serps_table_apa"}
+write_csv(serps_freq_index, 
+          file = here("data/serps/serps_freq_index.csv"))
 
-```{r}
-masterKey = keyA %>%
-  full_join(keyB) %>%
-  full_join(keyC) %>%
-  select(X:Key, answer, form) %>%
-  dplyr::rename(item = X)
-```
+present_table2 <- serps_freq_index %>%
+  arrange(desc(freq_index)) %>%
+  select(TDA, freq_index)
 
-
-# Score data new
-
-First, we merge all raw datasets.
-
-```{r}
-all_data = formA %>%
-  full_join(formB) %>%
-  full_join(formC)
-```
-
-```{r}
-alldata_scored = score.multiple.choice(
-  key = masterKey$Key, 
-  data = all_data[, masterKey$item], 
-  score = FALSE)
-```
-
-Remove items which were mistakes (see key_C, sheet entitled linking C to A and B.)
-
-```{r, eval = T}
-remove_items = c(
-    "q_21148",
-    "q_22573",
-    "q_22496",
-    "q_20052",
-    "q_21409",
-    "q_22068",
-    "q_22169",
-    "q_21911",
-    "q_21185",
-    "q_21288",
-    "q_20790",
-    "q_20033",
-    "q_24285",
-    "q_23402",
-    "q_24824",
-    "q_23044",
-    "q_25399",
-    "q_23847",
-    "q_23990",
-    "q_23485",
-    "q_24709",
-    "q_23602",
-    "q_24676",
-    "q_25281",
-    "q_23456",
-    "q_20479",
-    "q_23832")
-
-remove_which = which(masterKey$item %in% remove_items)
-
-alldata_scored = alldata_scored[, -remove_which]
-masterKey = dplyr::filter(masterKey, !(item %in% remove_items))
-all_data = select(all_data, -all_of(remove_items))
-```
-
-# Data for publication
-
-## Demographics
-
-```{r}
-demo = all_data %>%
-  mutate(comb_id = case_when(
-    !is.na(prolificID) ~ prolificID,
-    !is.na(mTurkCode) ~ as.character(mTurkCode),
-    TRUE ~ NA_character_)) %>%
-  mutate(source = case_when(
-    !is.na(prolificID) ~ "Prolific",
-    !is.na(mTurkCode) ~ "MTurk",
-    TRUE ~ NA_character_)) %>%
-  dplyr::mutate(row = row_number() + 1000) %>%
-  group_by(comb_id) %>%
-  dplyr::mutate(row = min(row)) %>%
-  dplyr::mutate(PID = paste0("R", row)) %>%
-  ungroup() %>%
-  dplyr::rename(duration = `Duration (in seconds)`) %>%
-  dplyr::mutate(
-    english_cat = case_when(
-      english == 1 ~ "Very well (fluent/native)",
-      english == 2 ~ "Well",
-      english == 3 ~ "Not well",
-      english == 4 ~ "Not at all (Need translation)",
-      TRUE ~ NA_character_),
-    growup_cat = case_when(
-      growup == 1 ~ "United States of America",
-      growup == 2 ~ "Outside of the US"),
-    live_cat = case_when(
-      live == 1 ~ "Yes",
-      live == 2 ~ "No"),
-    state = recode(states, 
-                    !!!c(state.name[1:50], "District of Columbia")
-                    ),
-    sex = case_when(
-      sex == 1 ~ "Male",
-      sex == 2 ~ "Female",
-      sex == 3 ~ "Other",
-      sex == 4 ~ "Prefer not to say"),
-    edu = case_when(
-      edu == 0 ~ "Less than 12 years", 
-      edu == 1 ~  "High school grad/GED",
-      edu == 2 ~  "Currently in college/university",
-      edu == 3 ~  "Some college/university, but did not graduate",
-      edu == 4 ~  "Associate degree (2 yr)",
-      edu == 5 ~  "College/university degree (4 yr)",
-      edu == 6 ~  "Currently in grad/professional school",
-      edu == 7 ~  "Grad/professional degree"),
-    ethnic = case_when(
-     ethnic == 1 ~ "American Indian/Alaskan Native",
-     ethnic == 2 ~ "Asian",
-     ethnic == 3 ~ "Black",
-     ethnic == 4 ~ "Hispanic",
-     ethnic == 5 ~ "White",
-     ethnic == 6 ~ "Mixed (two or more)",
-     ethnic == 7 ~ "Other"),
-    hhinc = case_when(
-      hhinc == 1 ~ "< 20K",
-      hhinc == 2 ~ "20K-40K",
-      hhinc == 3 ~ "40K-60K",
-      hhinc == 4 ~ "60K-80K",
-      hhinc == 5 ~ "80K-100K",
-      hhinc == 6 ~ "100K-120K",
-      hhinc == 7 ~ "120K-150K",
-      hhinc == 8 ~ "150K-200K",
-      hhinc == 9 ~ "200K-250K",
-      hhinc == 10 ~ "250K-350K",
-      hhinc == 11 ~ "350K-500K",
-      hhinc == 12 ~ "> 500K",
-      hhinc == 13 ~ "Prefer not to say"))
-```
-
-Participants are excluded from analyses if they
-* complete the survey in less than 3 minutes (180 seconds),
-* don't speak fluent English,
-* grew up outside the US, or
-* are currently living outside the US.
-
-```{r}
-demo = demo %>%
-  mutate(included = case_when(
-    duration < 180 ~ "No",
-    english > 2 ~ "No",
-    growup == 2 ~ "No",
-    live == 2 ~ "No",
-    TRUE ~ "Yes"
-  ))
-```
-
-163 rows are excluded on this basis.
-
-```{r}
-demo = demo %>%
-  select(PID, source, StartDate, duration, english_cat, growup_cat, live_cat, state, age, sex, edu, ethnic, hhinc, included)
-
-names(demo) = str_remove(names(demo), "_cat")
-
-demo$prop_correct <- alldata_scored %>% rowMeans(na.rm = T)
-
+#apa_table(present_table2[1:10,],
+        #  caption = "Top 10 adjectives with the highest frequency index.",
+        #  placement= "h")
 ```
 
 
-```{r}
-alldata_scored_df = as.data.frame(alldata_scored)
-data_scored = cbind(demo, alldata_scored)
-write_csv(data_scored, 
-          file = here("data/TDA_data_scored.csv"))
+# Derive the ngram frequency estimates
 
-# This output file has been posted on Dataverse at
-# https://doi.org/10.7910/DVN/5T80PF
+## Data loading and preparation
+
+The csv files contain the raw data. As with the search engine results, these cannot be shared in raw form, but transformations of the raw data are publicly available on Dataverse (see the link below and on the home page). Here, we show how the raw data are loaded, for cleaning and description. Further down in the code, we show the data being saved into the format available on Dataverse.
+
+```{r, message = F, warning = F, eval = T, label = "load_raw_data"}
+ngrams_person <- read_csv("../../TDAfreqdata/ngrams/ngrams_rawdata_file_person.csv")
+ngrams_woman <- read_csv("../../TDAfreqdata/ngrams/ngrams_rawdata_file_woman.csv")
+ngrams_man <- read_csv("../../TDAfreqdata/ngrams/ngrams_rawdata_file_man.csv")
+ngrams_girl <- read_csv("../../TDAfreqdata/ngrams/ngrams_rawdata_file_girl.csv")
+ngrams_boy <- read_csv("../../TDAfreqdata/ngrams/ngrams_rawdata_file_boy.csv")
+```
+
+Once loaded, we derive the means for each term + pronoun ngram across the 10 year period from 2010 to 2019. These averages are then combined in a new data frame.
+
+```{r, warning=FALSE, message=FALSE, label = "data-prep_ngrams"}
+PRONOUNS_LIST <- c("person", "woman", "man", "girl", "boy")
+
+### AVERAGE NGRAMS DATA ACROSS YEARS
+select_vars <- c("freq.2010","freq.2011","freq.2012","freq.2013","freq.2014",
+                            "freq.2015","freq.2016","freq.2017","freq.2018","freq.2019")
+
+ngrams_person <- ngrams_person %>%
+  mutate(
+    freq_avg_all_years = rowMeans(select(., select_vars)),
+    zscore = (freq_avg_all_years - mean(freq_avg_all_years, na.rm = TRUE)) / 
+      sd(freq_avg_all_years, na.rm = TRUE)
+  )
+
+ngrams_woman <- ngrams_woman %>%
+  mutate(
+    freq_avg_all_years = rowMeans(select(., select_vars)),
+    zscore = (freq_avg_all_years - mean(freq_avg_all_years, na.rm = TRUE)) / 
+      sd(freq_avg_all_years, na.rm = TRUE)
+  )
+
+ngrams_man <- ngrams_man %>%
+  mutate(
+    freq_avg_all_years = rowMeans(select(., select_vars)),
+    zscore = (freq_avg_all_years - mean(freq_avg_all_years, na.rm = TRUE)) / 
+      sd(freq_avg_all_years, na.rm = TRUE)
+  )
+
+ngrams_girl <- ngrams_girl %>%
+  mutate(
+    freq_avg_all_years = rowMeans(select(., select_vars)),
+    zscore = (freq_avg_all_years - mean(freq_avg_all_years, na.rm = TRUE)) / 
+      sd(freq_avg_all_years, na.rm = TRUE)
+  )
+
+ngrams_boy <- ngrams_boy %>%
+  mutate(
+    freq_avg_all_years = rowMeans(select(., select_vars)),
+    zscore = (freq_avg_all_years - mean(freq_avg_all_years, na.rm = TRUE)) / 
+      sd(freq_avg_all_years, na.rm = TRUE)
+  )
+
+### COMBINE INTO ONE TABLE
+
+ngrams_all_avgfreq <- tibble(
+  term = ngrams_person$term,
+  freq_avg_person = ngrams_person$freq_avg_all_years,
+  freq_avg_woman = ngrams_woman$freq_avg_all_years,
+  freq_avg_man = ngrams_man$freq_avg_all_years,
+  freq_avg_girl = ngrams_girl$freq_avg_all_years,
+  freq_avg_boy = ngrams_boy$freq_avg_all_years
+)
 ```
 
 
-We also save a shortened version of the master key object.
+## Analyses
 
-```{r}
-masterKey %>%
-  select(item, answer, form) %>%
-  dplyr::rename(adjective = answer) %>%
-  write_csv(file = here("data/masterkey.csv"))
+### 1. Calculate overall means and compare differences using t-tests
 
-# This output file has been posted on Dataverse at
-# https://doi.org/10.7910/DVN/5T80PF
+Calculate the overall means for each of the TDA + pronoun vectors. In other words, find the means for all the TDA + person ngrams, TDA + man ngrams, woman, girl, and boy. Then compare the means with t-tests. This is repeated using holm and bonferroni corrections.
+
+```{r, warning=FALSE, label = "analyses_ngrams_means"}
+# drop the column of TDA labels
+ngrams_avgfreq <- subset(ngrams_all_avgfreq, select = -c(term))
+means_vector <- c()
+for (j in 1:ncol(ngrams_avgfreq))
+{
+  means_vector[j] <- mean( unname(unlist(ngrams_avgfreq[,j])), na.rm = TRUE)
+}
+
+names(means_vector) <- PRONOUNS_LIST
+means_vector
+
+ngrams_all_longForm <- ngrams_avgfreq %>%
+  gather(form, value, freq_avg_person:freq_avg_boy)
+
+ngrams_uncorrected_ttests <- pairwise.t.test(x = ngrams_all_longForm$value, 
+                                             g = ngrams_all_longForm$form, 
+                                             p.adjust.method = "none")
+ngrams_holm_ttests <- pairwise.t.test(x = ngrams_all_longForm$value, 
+                                             g = ngrams_all_longForm$form, 
+                                             p.adjust.method = "holm")
+ngrams_bonferroni_ttests <- pairwise.t.test(x = ngrams_all_longForm$value, 
+                                             g = ngrams_all_longForm$form, 
+                                             p.adjust.method = "bonferroni")
+```
+
+Next, show the p-values for the uncorrected t-tests of means, then the holm-corrected and bonferroni-corrected p-values. None of the t-tests are significant when using corrections of either type. If using uncorrected means (not recommended), the largest differences in means are for boy-man, person-man, girl-man, woman-man (in that order).
+
+```{r, warning=FALSE, label = "analyses_ngrams_means_pvalues"}
+round(ngrams_uncorrected_ttests$p.value, 3)
+round(ngrams_holm_ttests$p.value, 3)
+round(ngrams_bonferroni_ttests$p.value, 3)
+```
+
+```{r, eval = F, echo = F, label = "ngrams_ttest_tables_apa"}
+# These tables are unnecessary for the website version
+
+apa_table(ngrams_uncorrected_ttests$p.value,
+          caption = "P-values of uncorrected t-tests comparing mean adjective ngrams frequency by person-word.",
+          placement= "h")
+apa_table(ngrams_holm_ttests$p.value,
+          caption = "P-values of Holm-corrected t-tests comparing mean adjective ngrams frequency by person-word.",
+          placement= "h")
+apa_table(ngrams_bonferroni_ttests$p.value,
+          caption = "P-values of Bonferroni-corrected t-tests comparing mean adjective ngrams frequency by person-word.",
+          placement= "h")
 ```
 
 
+### 2. Calculate z-scores
+
+Now that we have compared the raw means in the prior step, we create a table of the zscores of the 10-year averages for each TDA + pronoun ngram. These are the data posted on Dataverse, as shown below.
+
+```{r, warning=FALSE, label = "analyses_ngrams_zscores"}
+ngrams_all_zscores <- tibble(
+  TDA = ngrams_person$term,
+  coded = ngrams_person$coded,
+  person_zscore = ngrams_person$zscore,
+  woman_zscore = ngrams_woman$zscore,
+  man_zscore = ngrams_man$zscore,
+  girl_zscore = ngrams_girl$zscore,
+  boy_zscore = ngrams_boy$zscore
+)
+```
+
+```{r, eval = T, echo = T, label = "save_ngrams_zscores"}
+write_csv(ngrams_all_zscores, 
+          file = here("data/ngrams/ngrams_all_zscores.csv"))
+```
+
+This csv file (above) has been posted publicly on Dataverse (see doi). All subsequent analyses of the ngrams data are based on this file, including the database of ngram estimates (see here).
+
+*ADD HMTL LINK TO THE SENTENCE ABOVE*
+
+The following code clears the environment and loads the data directly from Dataverse.
+
+*CHANGE THIS TO PULL THE ZSCORES FILE FROM DATAVERSE.*
+```{r, echo = T, label = "load_ngrams_zscores"}
+rm(list=ls())
+ngrams_all_zscores <- read_csv(here("data/ngrams/ngrams_all_zscores.csv"))
+```
+
+```{r, eval = F, echo = T, label = "load_ngrams_zscores_dataverse"}
+library(dataverse)
+library(data.table)
+
+Sys.setenv("DATAVERSE_SERVER" = "dataverse.harvard.edu")
+writeBin(get_file("TDA_data_scored.tab", "doi:10.7910/DVN/5T80PF"), "TDA_data_scored.tab")
+TDA_data_scored.tab <- fread("TDA_data_scored.tab", na.strings=getOption("<NA>","NA"))
+data <- as.data.frame(TDA_data_scored.tab)
+rm(TDA_data_scored.tab)
+```
+
+
+### 3. Correlations between the 5 TDA + pronoun vectors
+
+```{r, warning=FALSE, label = "analyses_ngrams_cors"}
+# drop the column of TDA labels
+ngrams_zscores <- subset(ngrams_all_zscores, select = -c(TDA, coded))
+cor_ngrams <- corr.test(ngrams_zscores,
+                        use = "pairwise", 
+                        method = "pearson", 
+                        alpha = 0.05,
+                        ci = TRUE)
+
+cor_ngrams_ci <- tibble(
+  pronoun1 = c("person", "person", "person", "person", "woman", 
+             "woman", "woman", "man", "man", "girl"),
+  pronoun2 = c("woman", "man", "girl", "boy", "man", 
+             "girl", "boy", "girl", "boy", "boy"),
+  lower_bound = cor_ngrams$ci$lower,
+  r = cor_ngrams$ci$r,
+  upper_bound = cor_ngrams$ci$upper,
+  p_value = cor_ngrams$ci$p
+)
+```
+
+```{r , echo = F, label = "ngrams_cor_tables_apa"}
+cor_ngrams_ci <- as.data.frame(cor_ngrams_ci)
+cor_ngrams_ci$p_value <- round(cor_ngrams_ci$p_value, 3)
+cor_ngrams_ci$lower_bound <- round(cor_ngrams_ci$lower_bound, 3)
+cor_ngrams_ci$r <- round(cor_ngrams_ci$r, 3)
+cor_ngrams_ci$upper_bound <- round(cor_ngrams_ci$upper_bound, 3)
+
+# apa_table(cor_ngrams$r,
+#           caption = "Correlations between ngram person-words.",
+#           placement= "h")
+# apa_table(cor_ngrams_ci,
+#           caption = "Correlations between ngram person-words, with confidence intervals.",
+#           placement= "h")
+```
+
+The table below shows the correlations between pronoun pairs with the lower and upper bounds of the 95% confidence intervals.
+
+```{r, warning=FALSE, echo = F, label = "analyses_ngrams_cors_cis"}
+cor_ngrams_ci
+```
+
+
+### 4. Calculate the Ngrams frequency index
+
+Here, we find the frequencies index by finding the average of the z-scores across all 5 TDA + pronoun pairs for each TDA *after* removing the max z-score for each TDA. In other words, find the average among all but the largest z-score for each TDA. This approach is used to reduce the skew introduced in a few cases where the pairing of a specific TDA + pronoun is part of a song, book, famous individual, etc.
+
+Output from the following section of code is used to populate the ngram column of the database of frequencies provided on this website.
+
+*ADD URL LINK WHEN COMPLETED*
+
+```{r, warning=FALSE, label = "analyses_ngrams_freq-index"}
+bucket <- c()
+for (j in 1:nrow(ngrams_zscores)) 
+{
+  vector_i <- c()
+  vector_i <- unname(unlist(ngrams_zscores[j,]))
+  vector_i <- vector_i[vector_i != max(vector_i, na.rm = TRUE)] #remove max zsc
+  freq_val <- mean(vector_i, na.rm = TRUE)
+  bucket[j] <- freq_val
+}
+
+ngrams_freq_index <- ngrams_zscores %>%
+  mutate(
+    freq_index = bucket
+  ) 
+
+ngrams_freq_index <- ngrams_freq_index %>%
+  mutate(
+    TDA = ngrams_all_zscores$TDA,
+    freq_index = if_else(condition = is.nan(freq_index), 
+                         true = as.double(NA), 
+                         false = freq_index),
+  ) %>%
+    select(TDA, everything())
+```
+
+```{r , echo = F, label = "top_ngrams_table_apa"}
+write_csv(ngrams_freq_index, 
+          file = here("data/ngrams/ngrams_freq_index.csv"))
+
+present_table1 <- ngrams_freq_index %>%
+  arrange(desc(freq_index)) %>%
+  select(TDA, freq_index)
+
+# apa_table(present_table1[1:10,],
+        # caption = "Top 10 adjectives with the highest frequency index.",
+          # placement= "h")
+```
 
 

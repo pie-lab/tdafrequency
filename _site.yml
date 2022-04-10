@@ -4,11 +4,11 @@ navbar:
   title: "TDA"
   left:
     - text: Estimates based on Search Engine Results  
-      href: tda-difficulty.html
+      href: serps-frequency.html
     - text: Estimates based on Ngram Results  
       href: item-difficulty.html
     - text: Code  
-      href: data-cleaning.html
+      href: code.html
   right:
     - icon: fa-file
       href: https://psyarxiv.com

@@ -1,0 +1,61 @@
+---
+title: "Frequency Estimates - Ngrams"
+date: "Last updated `r Sys.Date()`"
+output: 
+  html_document:
+    toc: TRUE
+    code_folding: hide
+---
+
+<u>Please consult the reference listed below for more information about this project.</u><br>
+[--- citation blinded for review ---]
+<!-- 
+<font size="2">Condon, D. M., & McDougald, S. (under review). Frequency of use metrics for American English personality descriptors: Extensions of Roivainen's internet search methodology. *Journal TBD*.</font>
+-->
+
+```{r, include = F}
+knitr::opts_chunk$set(echo = T, message = F, warning = F)
+```
+
+```{r}
+library(here) # for engaging with working environment
+library(Hmisc) # for weighted means
+library(DT) # for viewing data tables
+library(conflicted)
+library(tidyverse) # for data cleaning and manipulation
+conflict_prefer("here", "here")
+conflict_prefer("filter", "dplyr")
+conflict_prefer("count", "dplyr")
+conflict_prefer("mutate", "dplyr")
+conflict_prefer("summarise", "dplyr")
+library(dataverse)
+library(data.table)
+```
+
+```{r}
+# create table 
+ngrams = read.csv(here("data/ngrams/ngrams_freq_index.csv"))
+ngrams$person_zscore <- round(ngrams$person_zscore, 4)
+ngrams$woman_zscore <- round(ngrams$woman_zscore, 4)
+ngrams$man_zscore <- round(ngrams$man_zscore, 4)
+ngrams$girl_zscore <- round(ngrams$boy_zscore, 4)
+ngrams$boy_zscore <- round(ngrams$boy_zscore, 4)
+
+# fix characters
+#ngrams$TDA <- sub("blas\x8e", "blasé", ngrams$TDA)
+#ngrams$TDA <- sub("FALSE", "false", ngrams$TDA)
+
+ngrams_prop = ngrams %>%
+  DT::datatable( # put into interactive HTML table
+    colnames = c("Adjective", "+person", "+woman", "+man", "+girl", "+boy", "index"), #colnames
+    options = list(
+      lengthMenu = list(c(10, 50, -1), c('10', '50', 'All')),
+        pageLength = 10
+    ),
+    filter = "top", # can filter
+    rownames = F # don't need rownames
+  )
+```
+
+
+
