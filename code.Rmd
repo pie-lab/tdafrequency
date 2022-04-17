@@ -39,10 +39,10 @@ serps_girl <- read_csv(here("../../TDAfreqdata/SERPs/serps_rawdata_file_girl.csv
 serps_boy <- read_csv(here("../../TDAfreqdata/SERPs/serps_rawdata_file_boy.csv"))
 ```
 
-Once loaded, the data are re-coded in the instances where empty results are automatically replaced with results for similarly spelled terms. See the manuscript for more description of this issue. Once cleaned, the counts from each raw data file are combined into a single data frame with all of the TDA + pronoun pairings.
+Once loaded, the data are re-coded in the instances where empty results are automatically replaced with results for similarly spelled terms. See the manuscript for more description of this issue. Once cleaned, the counts from each raw data file are combined into a single data frame with all of the TDA + noun pairings.
 
 ```{r, warning=FALSE, message=FALSE, label = "data-prep_serps"}
-PRONOUNS_LIST <- c("person", "woman", "man", "girl", "boy")
+NOUNS_LIST <- c("person", "woman", "man", "girl", "boy")
 
 serps_person <- serps_person %>%
   mutate(
@@ -136,7 +136,7 @@ for (j in 1:ncol(serps_person))
 {
   serps_all_means[j] <- mean(unname(unlist(serps_all_onlyFreq[,j])), na.rm = TRUE)
 }
-names(serps_all_means) <- PRONOUNS_LIST
+names(serps_all_means) <- NOUNS_LIST
 serps_all_means
 
 serps_all_longForm <- serps_all %>%
@@ -169,7 +169,7 @@ apa_table(serps_bonferroni_ttests$p.value, caption = "P-values of Bonferroni-cor
 
 ### 2. Calculate z-scores
 
-Now that we have compared the raw means in the prior step, we create a table of the zscores of the 10-year averages for each TDA + pronoun ngram. These are the data posted on Dataverse, as shown below.
+Now that we have compared the raw means in the prior step, we create a table of the zscores of the 10-year averages for each TDA + noun ngram. These are the data posted on Dataverse, as shown below.
 
 ```{r, warning=FALSE, "analyses_serps_zscores"}
 serps_all_zscores <- serps_all %>%
@@ -214,7 +214,7 @@ rm(TDA_data_scored.tab)
 ```
 
 
-### 3. Correlations between the 5 TDA + pronoun vectors
+### 3. Correlations between the 5 TDA + noun vectors
 
 ```{r, warning=FALSE, label = "analyses_serps_cors"}
 serps_zscores <- subset(serps_all_zscores, select = -c(TDA))
@@ -251,7 +251,7 @@ cor_serps_ci$upper_bound <- round(cor_serps_ci$upper_bound, 3)
 #          placement= "h")
 ```
 
-The table below shows the correlations between pronoun pairs with the lower and upper bounds of the 95% confidence intervals.
+The table below shows the correlations between noun pairs with the lower and upper bounds of the 95% confidence intervals.
 
 ```{r, warning=FALSE, echo = F, label = "analyses_serps_cors_cis"}
 cor_serps_ci
@@ -260,7 +260,7 @@ cor_serps_ci
 
 ### 4. Calculate the search engine frequency index
 
-Here, we find the frequencies index by finding the average of the z-scores across all 5 TDA + pronoun pairs for each TDA *after* removing the max z-score for each TDA. In other words, find the average among all but the largest z-score for each TDA. This approach is used to reduce the skew introduced in a few cases where the pairing of a specific TDA + pronoun is part of a song, book, famous individual, etc.
+Here, we find the frequencies index by finding the average of the z-scores across all 5 TDA + noun pairs for each TDA *after* removing the max z-score for each TDA. In other words, find the average among all but the largest z-score for each TDA. This approach is used to reduce the skew introduced in a few cases where the pairing of a specific TDA + noun is part of a song, book, famous individual, etc.
 
 Output from the following section of code is used to populate the serps column of the [database of frequencies](https://pie-lab.github.io/tdafrequency/serps-frequency.html) provided on this website.
 
@@ -311,10 +311,10 @@ ngrams_girl <- read_csv("../../TDAfreqdata/ngrams/ngrams_rawdata_file_girl.csv")
 ngrams_boy <- read_csv("../../TDAfreqdata/ngrams/ngrams_rawdata_file_boy.csv")
 ```
 
-Once loaded, we derive the means for each term + pronoun ngram across the 10 year period from 2010 to 2019. These averages are then combined in a new data frame.
+Once loaded, we derive the means for each term + noun ngram across the 10 year period from 2010 to 2019. These averages are then combined in a new data frame.
 
 ```{r, warning=FALSE, message=FALSE, label = "data-prep_ngrams"}
-PRONOUNS_LIST <- c("person", "woman", "man", "girl", "boy")
+NOUNS_LIST <- c("person", "woman", "man", "girl", "boy")
 
 ### AVERAGE NGRAMS DATA ACROSS YEARS
 select_vars <- c("freq.2010","freq.2011","freq.2012","freq.2013","freq.2014",
@@ -406,7 +406,7 @@ ngrams_all_avgfreq$TDA <- sub("zo√∂philous", "zoöphilous", ngrams_all_avgfr
 
 ### 1. Calculate overall means and compare differences using t-tests
 
-Calculate the overall means for each of the TDA + pronoun vectors. In other words, find the means for all the TDA + person ngrams, TDA + man ngrams, woman, girl, and boy. Then compare the means with t-tests. This is repeated using holm and bonferroni corrections.
+Calculate the overall means for each of the TDA + noun vectors. In other words, find the means for all the TDA + person ngrams, TDA + man ngrams, woman, girl, and boy. Then compare the means with t-tests. This is repeated using holm and bonferroni corrections.
 
 ```{r, warning=FALSE, label = "analyses_ngrams_means"}
 # drop the column of TDA labels
@@ -417,7 +417,7 @@ for (j in 1:ncol(ngrams_avgfreq))
   means_vector[j] <- mean( unname(unlist(ngrams_avgfreq[,j])), na.rm = TRUE)
 }
 
-names(means_vector) <- PRONOUNS_LIST
+names(means_vector) <- NOUNS_LIST
 means_vector
 
 ngrams_all_longForm <- ngrams_avgfreq %>%
@@ -459,7 +459,7 @@ apa_table(ngrams_bonferroni_ttests$p.value,
 
 ### 2. Calculate z-scores
 
-Now that we have compared the raw means in the prior step, we create a table of the zscores of the 10-year averages for each TDA + pronoun ngram. These are the data posted on Dataverse, as shown below.
+Now that we have compared the raw means in the prior step, we create a table of the zscores of the 10-year averages for each TDA + noun ngram. These are the data posted on Dataverse, as shown below.
 
 ```{r, warning=FALSE, label = "analyses_ngrams_zscores"}
 ngrams_all_zscores <- tibble(
@@ -502,7 +502,7 @@ rm(TDA_data_scored.tab)
 ```
 
 
-### 3. Correlations between the 5 TDA + pronoun vectors
+### 3. Correlations between the 5 TDA + noun vectors
 
 ```{r, warning=FALSE, label = "analyses_ngrams_cors"}
 # drop the column of TDA labels
@@ -514,9 +514,9 @@ cor_ngrams <- corr.test(ngrams_zscores,
                         ci = TRUE)
 
 cor_ngrams_ci <- tibble(
-  pronoun1 = c("person", "person", "person", "person", "woman", 
+  noun1 = c("person", "person", "person", "person", "woman", 
              "woman", "woman", "man", "man", "girl"),
-  pronoun2 = c("woman", "man", "girl", "boy", "man", 
+  noun2 = c("woman", "man", "girl", "boy", "man", 
              "girl", "boy", "girl", "boy", "boy"),
   lower_bound = cor_ngrams$ci$lower,
   r = cor_ngrams$ci$r,
@@ -540,7 +540,7 @@ cor_ngrams_ci$upper_bound <- round(cor_ngrams_ci$upper_bound, 3)
 #           placement= "h")
 ```
 
-The table below shows the correlations between pronoun pairs with the lower and upper bounds of the 95% confidence intervals.
+The table below shows the correlations between noun pairs with the lower and upper bounds of the 95% confidence intervals.
 
 ```{r, warning=FALSE, echo = F, label = "analyses_ngrams_cors_cis"}
 cor_ngrams_ci
@@ -549,7 +549,7 @@ cor_ngrams_ci
 
 ### 4. Calculate the Ngrams frequency index
 
-Here, we find the frequencies index by finding the average of the z-scores across all 5 TDA + pronoun pairs for each TDA *after* removing the max z-score for each TDA. In other words, find the average among all but the largest z-score for each TDA. This approach is used to reduce the skew introduced in a few cases where the pairing of a specific TDA + pronoun is part of a song, book, famous individual, etc.
+Here, we find the frequencies index by finding the average of the z-scores across all 5 TDA + noun pairs for each TDA *after* removing the max z-score for each TDA. In other words, find the average among all but the largest z-score for each TDA. This approach is used to reduce the skew introduced in a few cases where the pairing of a specific TDA + noun is part of a song, book, famous individual, etc.
 
 Output from the following section of code is used to populate the ngram column of the [database of frequencies](https://pie-lab.github.io/tdafrequency/ngrams-frequency.html) provided on this website.
 
