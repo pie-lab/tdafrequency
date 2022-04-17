@@ -25,6 +25,8 @@ output:
 --- The raw data are proprietary and cannot be shared by the authors. However z-scores of the frequency estimates for each TDA + pronoun have been made available for download at 
 [add dataverse link here]
 
+DON'T FORGET TO UPDATE THE LINKS ON THE CODE PAGE IN 4 PLACES -- 2 UNDER CALCULATE ZSCORES FOR SERPS AND 2 UNDER CALCULATE ZSCORES FOR NGRAMS.
+
 --- The analytic code used for this project is available at [https://pie-lab.github.io/tdafrequency/code.html](https://pie-lab.github.io/tdafrequency/code.html).
 
 --- The code used to create this website is available at [https://github.com/pie-lab/tdafrequency](https://github.com/pie-lab/tdafrequency).
