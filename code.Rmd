@@ -592,4 +592,23 @@ present_table1 <- ngrams_freq_index %>%
           # placement= "h")
 ```
 
+# Comparison with Roivainen (2013)
 
+Using the z-scored versions of the raw counts provided by Roivainen (personal correspondence), it is straight-forward to evaluate the correlation between the frequency estimates presented here and the 2010 estimates reported in Roivainen (2013).
+
+```{r, warning=FALSE, label = "roivainen_comparison"}
+rm(list=ls())
+roivainen <- read_csv(here("data/serps/serps_roivainen_comparison.csv"))
+
+serps_freq_index <- read_csv(here("data/serps/serps_freq_index.csv"))
+serps_freq <- as.data.frame(serps_freq_index[,c("person_zscore", "freq_index")])
+rownames(serps_freq) <- serps_freq_index$TDA
+
+roivainen_435 <- serps_freq[as.data.frame(roivainen)[,1],]
+roivainen <- data.frame(roivainen[,"Roivainen2010z"], roivainen_435)
+roivainenCor <- corCi(roivainen, plot = FALSE)
+roiCor <- data.frame(roivainenCor$ci[1:2,c("low.e")], roivainenCor$means[1:2], roivainenCor$ci[1:2,c("up.e", "p")])
+rownames(roiCor) <- c("person2010z-person2022z", "person2010z-freq_index2022")
+colnames(roiCor) <- c("lowerCI", "r", "upperCI", "p_value")
+round(roiCor,3)
+```

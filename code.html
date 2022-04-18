@@ -304,6 +304,7 @@ $(document).ready(function () {
 <li><a href="#calculate-the-ngrams-frequency-index">4. Calculate the Ngrams frequency index</a></li>
 </ul></li>
 </ul></li>
+<li><a href="#comparison-with-roivainen-2013">Comparison with Roivainen (2013)</a></li>
 </ul>
 </div>
 
@@ -771,6 +772,27 @@ ngrams_freq_index &lt;- ngrams_freq_index %&gt;%
     select(TDA, everything())</code></pre>
 </div>
 </div>
+</div>
+<div id="comparison-with-roivainen-2013" class="section level1">
+<h1>Comparison with Roivainen (2013)</h1>
+<p>Using the z-scored versions of the raw counts provided by Roivainen (personal correspondence), it is straight-forward to evaluate the correlation between the frequency estimates presented here and the 2010 estimates reported in Roivainen (2013).</p>
+<pre class="r"><code>rm(list=ls())
+roivainen &lt;- read_csv(here(&quot;data/serps/serps_roivainen_comparison.csv&quot;))
+
+serps_freq_index &lt;- read_csv(here(&quot;data/serps/serps_freq_index.csv&quot;))
+serps_freq &lt;- as.data.frame(serps_freq_index[,c(&quot;person_zscore&quot;, &quot;freq_index&quot;)])
+rownames(serps_freq) &lt;- serps_freq_index$TDA
+
+roivainen_435 &lt;- serps_freq[as.data.frame(roivainen)[,1],]
+roivainen &lt;- data.frame(roivainen[,&quot;Roivainen2010z&quot;], roivainen_435)
+roivainenCor &lt;- corCi(roivainen, plot = FALSE)
+roiCor &lt;- data.frame(roivainenCor$ci[1:2,c(&quot;low.e&quot;)], roivainenCor$means[1:2], roivainenCor$ci[1:2,c(&quot;up.e&quot;, &quot;p&quot;)])
+rownames(roiCor) &lt;- c(&quot;person2010z-person2022z&quot;, &quot;person2010z-freq_index2022&quot;)
+colnames(roiCor) &lt;- c(&quot;lowerCI&quot;, &quot;r&quot;, &quot;upperCI&quot;, &quot;p_value&quot;)
+round(roiCor,3)</code></pre>
+<pre><code>##                            lowerCI     r upperCI p_value
+## person2010z-person2022z      0.779 0.858   0.901   0.000
+## person2010z-freq_index2022   0.140 0.359   0.650   0.075</code></pre>
 </div>
 
 
