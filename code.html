@@ -787,12 +787,12 @@ roivainen_435 &lt;- serps_freq[as.data.frame(roivainen)[,1],]
 roivainen &lt;- data.frame(roivainen[,&quot;Roivainen2010z&quot;], roivainen_435)
 roivainenCor &lt;- corCi(roivainen, plot = FALSE)
 roiCor &lt;- data.frame(roivainenCor$ci[1:2,c(&quot;low.e&quot;)], roivainenCor$means[1:2], roivainenCor$ci[1:2,c(&quot;up.e&quot;, &quot;p&quot;)])
-rownames(roiCor) &lt;- c(&quot;person2010z-person2022z&quot;, &quot;person2010z-freq_index2022&quot;)
+rownames(roiCor) &lt;- c(&quot;serps_person2012z-serps_person2022z&quot;, &quot;person2012z-serps_freq_index2022&quot;)
 colnames(roiCor) &lt;- c(&quot;lowerCI&quot;, &quot;r&quot;, &quot;upperCI&quot;, &quot;p_value&quot;)
 round(roiCor,3)</code></pre>
-<pre><code>##                            lowerCI     r upperCI p_value
-## person2010z-person2022z      0.779 0.858   0.901   0.000
-## person2010z-freq_index2022   0.140 0.359   0.650   0.075</code></pre>
+<pre><code>##                                     lowerCI     r upperCI p_value
+## serps_person2012z-serps_person2022z   0.803 0.862   0.914   0.000
+## person2012z-serps_freq_index2022      0.153 0.352   0.670   0.095</code></pre>
 </div>
 
 

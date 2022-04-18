@@ -608,7 +608,7 @@ roivainen_435 <- serps_freq[as.data.frame(roivainen)[,1],]
 roivainen <- data.frame(roivainen[,"Roivainen2010z"], roivainen_435)
 roivainenCor <- corCi(roivainen, plot = FALSE)
 roiCor <- data.frame(roivainenCor$ci[1:2,c("low.e")], roivainenCor$means[1:2], roivainenCor$ci[1:2,c("up.e", "p")])
-rownames(roiCor) <- c("person2010z-person2022z", "person2010z-freq_index2022")
+rownames(roiCor) <- c("serps_person2012z-serps_person2022z", "person2012z-serps_freq_index2022")
 colnames(roiCor) <- c("lowerCI", "r", "upperCI", "p_value")
 round(roiCor,3)
 ```
