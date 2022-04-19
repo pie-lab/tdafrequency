@@ -276,7 +276,7 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">Analytic Code</h1>
-<h4 class="date">Last updated 2022-04-17</h4>
+<h4 class="date">Last updated 2022-04-18</h4>
 
 </div>
 
@@ -775,9 +775,9 @@ ngrams_freq_index &lt;- ngrams_freq_index %&gt;%
 </div>
 <div id="comparison-with-roivainen-2013" class="section level1">
 <h1>Comparison with Roivainen (2013)</h1>
-<p>Using the z-scored versions of the raw counts provided by Roivainen (personal correspondence), it is straight-forward to evaluate the correlation between the frequency estimates presented here and the 2010 estimates reported in Roivainen (2013).</p>
+<p>As discussed in the pre-registration, we evaluated the correlation between the search engine frequency estimates presented here and the 2010 estimates reported in Roivainen (2013). This is done using z-scored versions of the raw counts provided by Roivainen (personal correspondence).</p>
 <pre class="r"><code>rm(list=ls())
-roivainen &lt;- read_csv(here(&quot;data/serps/serps_roivainen_comparison.csv&quot;))
+roivainen &lt;- read_csv(here(&quot;data/other/serps_roivainen_comparison.csv&quot;))
 
 serps_freq_index &lt;- read_csv(here(&quot;data/serps/serps_freq_index.csv&quot;))
 serps_freq &lt;- as.data.frame(serps_freq_index[,c(&quot;person_zscore&quot;, &quot;freq_index&quot;)])
@@ -791,8 +791,8 @@ rownames(roiCor) &lt;- c(&quot;serps_person2012z-serps_person2022z&quot;, &quot;
 colnames(roiCor) &lt;- c(&quot;lowerCI&quot;, &quot;r&quot;, &quot;upperCI&quot;, &quot;p_value&quot;)
 round(roiCor,3)</code></pre>
 <pre><code>##                                     lowerCI     r upperCI p_value
-## serps_person2012z-serps_person2022z   0.803 0.862   0.914   0.000
-## person2012z-serps_freq_index2022      0.153 0.352   0.670   0.095</code></pre>
+## serps_person2012z-serps_person2022z   0.777 0.860   0.918   0.000
+## person2012z-serps_freq_index2022      0.134 0.368   0.631   0.075</code></pre>
 </div>
 
 
