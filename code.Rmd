@@ -177,8 +177,8 @@ serps_all_zscores <- serps_all %>%
     TDA = serps_person$term,
     person_zscore = (person - mean(person, na.rm = TRUE))/sd(person, na.rm = TRUE),
     woman_zscore = (woman - mean(woman, na.rm = TRUE))/sd(woman, na.rm = TRUE),
-    girl_zscore = (girl - mean(girl, na.rm = TRUE))/sd(girl, na.rm = TRUE),
     man_zscore = (man - mean(man, na.rm = TRUE))/sd(man, na.rm = TRUE),
+    girl_zscore = (girl - mean(girl, na.rm = TRUE))/sd(girl, na.rm = TRUE),
     boy_zscore = (boy - mean(boy, na.rm = TRUE))/sd(boy, na.rm = TRUE)
   ) %>%
   select(TDA, person_zscore:boy_zscore)
@@ -592,24 +592,54 @@ present_table1 <- ngrams_freq_index %>%
           # placement= "h")
 ```
 
+
+# Correlation between search engine and ngram estimates
+
+This is done by creating a large data frame with all the search engine and ngram estimates for each descriptor. Note that (1) the confidence intervals for some of the correlations involving ngram values are very wide due to large numbers of missing observations, and (2) there is a more nicely formatted table in the manuscript referenced at the top of this page.
+
+```{r, warning=FALSE, R.options = list(width = 90), label = "serp_ngram_correlations"}
+ngrams <- as.data.frame(ngrams_freq_index)[,c("person_zscore", "woman_zscore", "man_zscore", "girl_zscore", "boy_zscore", "freq_index")]
+rownames(ngrams) <- as.data.frame(ngrams_freq_index)[,"TDA"]
+colnames(ngrams) <- c("person_ngrams", "woman_ngrams", "man_ngrams", "girl_ngrams", "boy_ngrams", "index_ngrams")
+
+serps_freq_index <- read_csv(here("data/serps/serps_freq_index.csv"))
+serps <- as.data.frame(serps_freq_index)[,c("person_zscore", "woman_zscore", "man_zscore", "girl_zscore", "boy_zscore", "freq_index")]
+rownames(serps) <- as.data.frame(serps_freq_index)[,"TDA"]
+colnames(serps) <- c("person_serps", "woman_serps", "man_serps", "girl_serps", "boy_serps", "index_serps")
+
+all <- data.frame(serps, ngrams)
+all_cor <- corCi(all, plot = FALSE)
+all_cor
+```
+
+
 # Comparison with Roivainen (2013)
 
-As discussed in the pre-registration, we evaluated the correlation between the search engine frequency estimates presented here and the 2010 estimates reported in Roivainen (2013). This is done using z-scored versions of the raw counts provided by Roivainen (personal correspondence).
+As pre-registered, we evaluated the correlation between the frequency estimates presented here and the estimates reported in Roivainen (2013). This was done using z-scored versions of the raw counts provided by Roivainen (personal correspondence).
 
 ```{r, warning=FALSE, label = "roivainen_comparison"}
 rm(list=ls())
-roivainen <- read_csv(here("data/other/serps_roivainen_comparison.csv"))
+roivainen <- read_csv(here("data/other/roivainen_comparison.csv"))
 
 serps_freq_index <- read_csv(here("data/serps/serps_freq_index.csv"))
 serps_freq <- as.data.frame(serps_freq_index[,c("person_zscore", "freq_index")])
 rownames(serps_freq) <- serps_freq_index$TDA
+roivainen_435_serps <- serps_freq[as.data.frame(roivainen)[,1],]
+colnames(roivainen_435_serps) <- c("person_serps", "index_serps")
 
-roivainen_435 <- serps_freq[as.data.frame(roivainen)[,1],]
-roivainen <- data.frame(roivainen[,"Roivainen2010z"], roivainen_435)
+ngrams_freq_index <- read_csv(here("data/ngrams/ngrams_freq_index.csv"))
+ngrams_freq <- as.data.frame(ngrams_freq_index[,c("person_zscore", "freq_index")])
+rownames(ngrams_freq) <- ngrams_freq_index$TDA
+roivainen_435_ngrams <- ngrams_freq[as.data.frame(roivainen)[,1],]
+colnames(roivainen_435_ngrams) <- c("person_ngrams", "index_ngrams")
+
+roivainen <- data.frame(roivainen[,"Rserps2012z"], roivainen_435_serps, roivainen[,"Rngrams2000z"], roivainen_435_ngrams)
 roivainenCor <- corCi(roivainen, plot = FALSE)
-roiCor <- data.frame(roivainenCor$ci[1:2,c("low.e")], roivainenCor$means[1:2], roivainenCor$ci[1:2,c("up.e", "p")])
-rownames(roiCor) <- c("serps_person2012z-serps_person2022z", "person2012z-serps_freq_index2022")
-colnames(roiCor) <- c("lowerCI", "r", "upperCI", "p_value")
-round(roiCor,3)
+
+roiCor_df <- data.frame(roivainenCor$ci[,c("low.e")], roivainenCor$means, roivainenCor$ci[,c("up.e", "p")])
+colnames(roiCor_df) <- c("lowerCI", "r", "upperCI", "p_value")
+roiCor_df <- roiCor_df[c("R2012-prsn_s", "R2012-indx_s", "R2000-prsn_n", "R2000-indx_n"),]
+rownames(roiCor_df) <- c("serps_person2012z-serps_person2022z", "serps_person2012z-serps_freq_index2022", "ngrams_person2000z-ngrams_person2019z", "ngrams_person2000z-ngrams_freq_index2019")
+round(roiCor_df,3)
 ```
 

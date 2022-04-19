@@ -33,7 +33,7 @@ DON'T FORGET TO UPDATE THE LINKS ON THE CODE PAGE IN 4 PLACES -- 2 UNDER CALCULA
 
 ### About the frequencies
 
-[Insert info about: the source files, downloading the data, and how users can provide feedback or suggestions.]
+[Insert info about: the source files, downloading the data, and how users can provide feedback or suggestions. Also mention that this list is over-inclusive, containing many descriptors that are neither psychological or physical traits. Still, they ]
 
 
 
