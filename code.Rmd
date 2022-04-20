@@ -643,7 +643,7 @@ rownames(roiCor_df) <- c("serps_person2012z-serps_person2022z", "serps_person201
 round(roiCor_df,3)
 ```
 
-```{r, eval = T, echo = T, label = "motschenbacher_tests"}
+```{r, eval = T, echo = F, label = "motschenbacher_tests"}
 ngrams_gender_age <- as.data.frame(ngrams_freq_index)[, c("woman_zscore", "man_zscore", "girl_zscore", "boy_zscore")]-as.data.frame(ngrams_freq_index)[, c("freq_index")]
 colnames(ngrams_gender_age) <- c("dev_woman", "dev_man", "dev_girl", "dev_boy")
 rownames(ngrams_gender_age) <- as.data.frame(ngrams_freq_index)[, c("TDA")]

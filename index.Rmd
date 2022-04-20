@@ -1,7 +1,7 @@
 ---
-title: Trait Descriptive Adjectives
-subtitle: Usage frequencies based on search engine results and ngrams in Google Books
-author: [--- author names blinded for review ---]
+title: Frequency of use metrics for person descriptors
+subtitle: 
+author: David M. Condon & Sarah McDougald
 output: 
   html_document:
     toc: FALSE
@@ -10,19 +10,24 @@ output:
     theme: cosmo
 ---
 
+<br>
+
 ### Overview
 
 [Insert something like the abstract from the submitted manuscript here.]
 
+<br>
+
 ### For more details
 
---- A full description of the data is provided in
+--- A full description of this project is provided in
+<!--
 [--- citation blinded for review ---]
-<!-- 
-<font size="2">Condon, D. M., & McDougald, S. (under review). Frequency of use metrics for American English personality descriptors: Extensions of Roivainen's internet search methodology. *Journal TBD*.</font>
 -->
+ 
+> <font size="3">Condon, D. M., & McDougald, S. (under review). Frequency of use metrics for person descriptors: Extensions of Roivainen's internet search methodology. *Journal TBD*.</font>
 
---- The raw data are proprietary and cannot be shared by the authors. However z-scores of the frequency estimates for each TDA + noun have been made available for download at 
+--- The raw data are proprietary and cannot be shared by the authors. However z-scores of the frequency estimates for each descriptor + noun have been made available for download at 
 [add dataverse link here]
 
 DON'T FORGET TO UPDATE THE LINKS ON THE CODE PAGE IN 4 PLACES -- 2 UNDER CALCULATE ZSCORES FOR SERPS AND 2 UNDER CALCULATE ZSCORES FOR NGRAMS.
