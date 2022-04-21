@@ -149,23 +149,18 @@ serps_uncorrected_ttests <- pairwise.t.test(x = serps_all_longForm$value,
 serps_holm_ttests <- pairwise.t.test(x = serps_all_longForm$value, 
                                              g = serps_all_longForm$form, 
                                              p.adjust.method = "holm")
-serps_bonferroni_ttests <- pairwise.t.test(x = serps_all_longForm$value, 
-                                             g = serps_all_longForm$form, 
-                                             p.adjust.method = "bonferroni")
 ```
 
-Next, show the p-values for the uncorrected t-tests of means, then the holm-corrected and bonferroni-corrected p-values. None of the t-tests are significant when using corrections of either type. If using uncorrected means (not recommended), the only significant difference in means is for girl-woman; the p-value for girl-person is just above the significance threshold at p>.05.
+Next, show the p-values for the uncorrected t-tests of means, then the holm-corrected p-values. None of the t-tests are significant when using corrections of either type. If using uncorrected means (not recommended), the only significant difference in means is for girl-woman; the p-value for girl-person is just above the significance threshold at p>.05.
 
 ```{r, warning=FALSE, label = "analyses_serps_means_pvalues"}
 round(serps_uncorrected_ttests$p.value, 3)
 round(serps_holm_ttests$p.value, 3)
-round(serps_bonferroni_ttests$p.value, 3)
 ```
 
 ```{r, eval = F, echo = F, label = "serps_ttest_tables_apa"}
 apa_table(serps_uncorrected_ttests$p.value, caption = "P-values of uncorrected t-tests comparing mean descriptor SERPs count by person-word.", placement = "h")
 apa_table(serps_holm_ttests$p.value, caption = "P-values of Holm-corrected t-tests comparing mean descriptor SERPs count by person-word.", placement = "h")
-apa_table(serps_bonferroni_ttests$p.value, caption = "P-values of Bonferroni-corrected t-tests comparing mean descriptor SERPs count by person-word.", placement = "h")
 ```
 
 
@@ -218,6 +213,8 @@ rm(TDA_data_scored.tab)
 
 ### 3. Correlations between the 5 TDA + noun vectors
 
+Note that there is a more nicely formatted table in the manuscript referenced at the top of this page.
+
 ```{r, warning=FALSE, label = "analyses_serps_cors"}
 serps_zscores <- subset(serps_all_zscores, select = -c(TDA))
 cor_table_serps <- corr.test(serps_zscores, 
@@ -231,10 +228,10 @@ cor_serps_ci <- tibble(
              "woman", "woman", "man", "man", "girl"),
   group2 = c("woman", "man", "girl", "boy", "man", 
              "girl", "boy", "girl", "boy", "boy"),
-  lower_bound = cor_table_serps$ci$lower,
+  lower_bound = cor_table_serps$ci.adj$lower,
   r = cor_table_serps$ci$r,
-  upper_bound = cor_table_serps$ci$upper,
-  p_value = cor_table_serps$ci$p
+  upper_bound = cor_table_serps$ci.adj$upper,
+  p_value = cor_table_serps$ci2$p
 )
 ```
 
@@ -409,7 +406,7 @@ ngrams_all_avgfreq$TDA <- sub("zo√∂philous", "zoöphilous", ngrams_all_avgfr
 
 ### 1. Calculate overall means and compare differences using t-tests
 
-Calculate the overall means for each of the TDA + noun vectors. In other words, find the means for all the TDA + person ngrams, TDA + man ngrams, woman, girl, and boy. Then compare the means with t-tests. This is repeated using holm and bonferroni corrections.
+Calculate the overall means for each of the TDA + noun vectors. In other words, find the means for all the TDA + person ngrams, TDA + man ngrams, woman, girl, and boy. Then compare the means with t-tests. This is repeated using the holm corrections.
 
 ```{r, warning=FALSE, label = "analyses_ngrams_means"}
 # drop the column of TDA labels
@@ -432,17 +429,13 @@ ngrams_uncorrected_ttests <- pairwise.t.test(x = ngrams_all_longForm$value,
 ngrams_holm_ttests <- pairwise.t.test(x = ngrams_all_longForm$value, 
                                              g = ngrams_all_longForm$form, 
                                              p.adjust.method = "holm")
-ngrams_bonferroni_ttests <- pairwise.t.test(x = ngrams_all_longForm$value, 
-                                             g = ngrams_all_longForm$form, 
-                                             p.adjust.method = "bonferroni")
 ```
 
-Next, show the p-values for the uncorrected t-tests of means, then the holm-corrected and bonferroni-corrected p-values. None of the t-tests are significant when using corrections of either type. If using uncorrected means (not recommended), the largest differences in means are for boy-man, person-man, girl-man, woman-man (in that order).
+Next, show the p-values for the uncorrected t-tests of means, then the holm-corrected p-values. None of the t-tests are significant when using corrections of either type. If using uncorrected means (not recommended), the largest differences in means are for boy-man, person-man, girl-man, woman-man (in that order).
 
 ```{r, warning=FALSE, label = "analyses_ngrams_means_pvalues"}
 round(ngrams_uncorrected_ttests$p.value, 3)
 round(ngrams_holm_ttests$p.value, 3)
-round(ngrams_bonferroni_ttests$p.value, 3)
 ```
 
 ```{r, eval = F, echo = F, label = "ngrams_ttest_tables_apa"}
@@ -453,9 +446,6 @@ apa_table(ngrams_uncorrected_ttests$p.value,
           placement= "h")
 apa_table(ngrams_holm_ttests$p.value,
           caption = "P-values of Holm-corrected t-tests comparing mean descriptor ngrams frequency by person-word.",
-          placement= "h")
-apa_table(ngrams_bonferroni_ttests$p.value,
-          caption = "P-values of Bonferroni-corrected t-tests comparing mean descriptor ngrams frequency by person-word.",
           placement= "h")
 ```
 
@@ -509,6 +499,8 @@ rm(TDA_data_scored.tab)
 
 ### 3. Correlations between the 5 TDA + noun vectors
 
+Note that there is a more nicely formatted table in the manuscript referenced at the top of this page.
+
 ```{r, warning=FALSE, label = "analyses_ngrams_cors"}
 # drop the column of TDA labels
 ngrams_zscores <- subset(ngrams_all_zscores, select = -c(TDA, coded))
@@ -523,10 +515,10 @@ cor_ngrams_ci <- tibble(
              "woman", "woman", "man", "man", "girl"),
   noun2 = c("woman", "man", "girl", "boy", "man", 
              "girl", "boy", "girl", "boy", "boy"),
-  lower_bound = cor_ngrams$ci$lower,
+  lower_bound = cor_ngrams$ci.adj$lower,
   r = cor_ngrams$ci$r,
-  upper_bound = cor_ngrams$ci$upper,
-  p_value = cor_ngrams$ci$p
+  upper_bound = cor_ngrams$ci.adj$upper,
+  p_value = cor_ngrams$ci2$p
 )
 ```
 
@@ -600,7 +592,7 @@ present_table1 <- ngrams_freq_index %>%
 
 # Correlation between search engine and ngram estimates
 
-This is done by creating a large data frame with all the search engine and ngram estimates for each descriptor. Note that (1) the confidence intervals for some of the correlations involving ngram values are very wide due to large numbers of missing observations, and (2) there is a more nicely formatted table in the manuscript referenced at the top of this page.
+This is done by creating a large data frame with all the search engine and ngram estimates for each descriptor. Note that (1) this analysis overlaps with the correlational analyses previously reported within type, and (2) there is a more nicely formatted table in the manuscript referenced at the top of this page. In the manuscript, we report the holm-adjusted confidence intervals around the correlations.
 
 ```{r, warning=FALSE, R.options = list(width = 90), label = "serp_ngram_correlations"}
 ngrams <- as.data.frame(ngrams_freq_index)[,c("person_zscore", "woman_zscore", "man_zscore", "girl_zscore", "boy_zscore", "freq_index")]
@@ -613,8 +605,8 @@ rownames(serps) <- as.data.frame(serps_freq_index)[,"TDA"]
 colnames(serps) <- c("person_serps", "woman_serps", "man_serps", "girl_serps", "boy_serps", "index_serps")
 
 all <- data.frame(serps, ngrams)
-all_cor <- corCi(all, plot = FALSE)
-all_cor
+all_cor <- corr.test(all, use="pairwise", method = "pearson", alpha = .05, ci=TRUE)
+round(all_cor$r, 3)
 ```
 
 
@@ -639,13 +631,22 @@ roivainen_435_ngrams <- ngrams_freq[as.data.frame(roivainen)[,1],]
 colnames(roivainen_435_ngrams) <- c("person_ngrams", "index_ngrams")
 
 roivainen <- data.frame(roivainen[,"Rserps2012z"], roivainen_435_serps, roivainen[,"Rngrams2000z"], roivainen_435_ngrams)
-roivainenCor <- corCi(roivainen, plot = FALSE)
 
-roiCor_df <- data.frame(roivainenCor$ci[,c("low.e")], roivainenCor$means, roivainenCor$ci[,c("up.e", "p")])
-colnames(roiCor_df) <- c("lowerCI", "r", "upperCI", "p_value")
-roiCor_df <- roiCor_df[c("R2012-prsn_s", "R2012-indx_s", "R2000-prsn_n", "R2000-indx_n"),]
-rownames(roiCor_df) <- c("serps_person2012z-serps_person2022z", "serps_person2012z-serps_freq_index2022", "ngrams_person2000z-ngrams_person2019z", "ngrams_person2000z-ngrams_freq_index2019")
-round(roiCor_df,3)
+roivainenCor <- corr.test(roivainen, 
+                                    use = "pairwise",
+                                    method = "pearson",
+                                    alpha = .05,
+                                    ci = TRUE)
+
+roivainenCorci <- tibble(
+  group1 = c("serps_person2012z", "serps_person2012z", "serps_person2012z", "serps_person2012z", "serps_person2012z", "serps_person2022z", "serps_person2022z", "serps_person2022z", "serps_person2022z", "serps_freq_index2022", "serps_freq_index2022", "serps_freq_index2022", "ngrams_person2000z", "ngrams_person2000z", "ngrams_person2019z"), 
+  group2 = c("serps_person2022z", "serps_freq_index2022", "ngrams_person2000z", "ngrams_person2019z", "ngrams_freq_index2019", "serps_freq_index2022", "ngrams_person2000z", "ngrams_person2019z", "ngrams_freq_index2019", "ngrams_person2000z", "ngrams_person2019z", "ngrams_freq_index2019", "ngrams_person2019z", "ngrams_freq_index2019", "ngrams_freq_index2019"),
+  lower_bound = roivainenCor$ci.adj$lower,
+  r = roivainenCor$ci$r,
+  upper_bound = roivainenCor$ci.adj$upper,
+  p_value = roivainenCor$ci2$p
+)
+roivainenCorci[c(1,2,13,14),] # we are only interested in a few
 ```
 
 ```{r, eval = T, echo = F, label = "motschenbacher_tests"}

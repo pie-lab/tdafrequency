@@ -430,11 +430,8 @@ serps_uncorrected_ttests &lt;- pairwise.t.test(x = serps_all_longForm$value,
                                              p.adjust.method = &quot;none&quot;)
 serps_holm_ttests &lt;- pairwise.t.test(x = serps_all_longForm$value, 
                                              g = serps_all_longForm$form, 
-                                             p.adjust.method = &quot;holm&quot;)
-serps_bonferroni_ttests &lt;- pairwise.t.test(x = serps_all_longForm$value, 
-                                             g = serps_all_longForm$form, 
-                                             p.adjust.method = &quot;bonferroni&quot;)</code></pre>
-<p>Next, show the p-values for the uncorrected t-tests of means, then the holm-corrected and bonferroni-corrected p-values. None of the t-tests are significant when using corrections of either type. If using uncorrected means (not recommended), the only significant difference in means is for girl-woman; the p-value for girl-person is just above the significance threshold at p&gt;.05.</p>
+                                             p.adjust.method = &quot;holm&quot;)</code></pre>
+<p>Next, show the p-values for the uncorrected t-tests of means, then the holm-corrected p-values. None of the t-tests are significant when using corrections of either type. If using uncorrected means (not recommended), the only significant difference in means is for girl-woman; the p-value for girl-person is just above the significance threshold at p&gt;.05.</p>
 <pre class="r"><code>round(serps_uncorrected_ttests$p.value, 3)</code></pre>
 <pre><code>##          boy  girl   man person
 ## girl   0.000    NA    NA     NA
@@ -447,12 +444,6 @@ serps_bonferroni_ttests &lt;- pairwise.t.test(x = serps_all_longForm$value,
 ## man    0.258 0.668    NA     NA
 ## person 0.884 0.113 1.000     NA
 ## woman  1.000 0.025 0.805      1</code></pre>
-<pre class="r"><code>round(serps_bonferroni_ttests$p.value, 3)</code></pre>
-<pre><code>##          boy  girl man person
-## girl   0.002    NA  NA     NA
-## man    0.368 1.000  NA     NA
-## person 1.000 0.141   1     NA
-## woman  1.000 0.028   1      1</code></pre>
 </div>
 <div id="calculate-z-scores" class="section level3">
 <h3>2. Calculate z-scores</h3>
@@ -486,6 +477,7 @@ rm(TDA_data_scored.tab)</code></pre>
 </div>
 <div id="correlations-between-the-5-tda-noun-vectors" class="section level3">
 <h3>3. Correlations between the 5 TDA + noun vectors</h3>
+<p>Note that there is a more nicely formatted table in the manuscript referenced at the top of this page.</p>
 <pre class="r"><code>serps_zscores &lt;- subset(serps_all_zscores, select = -c(TDA))
 cor_table_serps &lt;- corr.test(serps_zscores, 
                                     use = &quot;pairwise&quot;,
@@ -498,23 +490,23 @@ cor_serps_ci &lt;- tibble(
              &quot;woman&quot;, &quot;woman&quot;, &quot;man&quot;, &quot;man&quot;, &quot;girl&quot;),
   group2 = c(&quot;woman&quot;, &quot;man&quot;, &quot;girl&quot;, &quot;boy&quot;, &quot;man&quot;, 
              &quot;girl&quot;, &quot;boy&quot;, &quot;girl&quot;, &quot;boy&quot;, &quot;boy&quot;),
-  lower_bound = cor_table_serps$ci$lower,
+  lower_bound = cor_table_serps$ci.adj$lower,
   r = cor_table_serps$ci$r,
-  upper_bound = cor_table_serps$ci$upper,
-  p_value = cor_table_serps$ci$p
+  upper_bound = cor_table_serps$ci.adj$upper,
+  p_value = cor_table_serps$ci2$p
 )</code></pre>
 <p>The table below shows the correlations between noun pairs with the lower and upper bounds of the 95% confidence intervals.</p>
 <pre><code>##    group1 group2 lower_bound     r upper_bound p_value
-## 1  person  woman       0.049 0.063       0.078       0
-## 2  person    man       0.023 0.037       0.052       0
-## 3  person   girl       0.023 0.037       0.052       0
+## 1  person  woman       0.045 0.063       0.082       0
+## 2  person    man       0.020 0.037       0.055       0
+## 3  person   girl       0.021 0.037       0.054       0
 ## 4  person    boy       0.017 0.032       0.046       0
-## 5   woman    man       0.701 0.708       0.716       0
-## 6   woman   girl       0.636 0.645       0.653       0
-## 7   woman    boy       0.498 0.508       0.519       0
-## 8     man   girl       0.521 0.532       0.542       0
-## 9     man    boy       0.367 0.380       0.392       0
-## 10   girl    boy       0.573 0.583       0.592       0</code></pre>
+## 5   woman    man       0.698 0.708       0.719       0
+## 6   woman   girl       0.632 0.645       0.656       0
+## 7   woman    boy       0.494 0.508       0.523       0
+## 8     man   girl       0.517 0.532       0.546       0
+## 9     man    boy       0.363 0.380       0.396       0
+## 10   girl    boy       0.569 0.583       0.596       0</code></pre>
 </div>
 <div id="calculate-the-search-engine-frequency-index" class="section level3">
 <h3>4. Calculate the search engine frequency index</h3>
@@ -637,7 +629,7 @@ ngrams_all_avgfreq$TDA &lt;- sub(&quot;zo√∂philous&quot;, &quot;zoöphilous&
 <h2>Analyses</h2>
 <div id="calculate-overall-means-and-compare-differences-using-t-tests-1" class="section level3">
 <h3>1. Calculate overall means and compare differences using t-tests</h3>
-<p>Calculate the overall means for each of the TDA + noun vectors. In other words, find the means for all the TDA + person ngrams, TDA + man ngrams, woman, girl, and boy. Then compare the means with t-tests. This is repeated using holm and bonferroni corrections.</p>
+<p>Calculate the overall means for each of the TDA + noun vectors. In other words, find the means for all the TDA + person ngrams, TDA + man ngrams, woman, girl, and boy. Then compare the means with t-tests. This is repeated using the holm corrections.</p>
 <pre class="r"><code># drop the column of TDA labels
 ngrams_avgfreq &lt;- subset(ngrams_all_avgfreq, select = -c(TDA))
 means_vector &lt;- c()
@@ -660,11 +652,8 @@ ngrams_uncorrected_ttests &lt;- pairwise.t.test(x = ngrams_all_longForm$value,
                                              p.adjust.method = &quot;none&quot;)
 ngrams_holm_ttests &lt;- pairwise.t.test(x = ngrams_all_longForm$value, 
                                              g = ngrams_all_longForm$form, 
-                                             p.adjust.method = &quot;holm&quot;)
-ngrams_bonferroni_ttests &lt;- pairwise.t.test(x = ngrams_all_longForm$value, 
-                                             g = ngrams_all_longForm$form, 
-                                             p.adjust.method = &quot;bonferroni&quot;)</code></pre>
-<p>Next, show the p-values for the uncorrected t-tests of means, then the holm-corrected and bonferroni-corrected p-values. None of the t-tests are significant when using corrections of either type. If using uncorrected means (not recommended), the largest differences in means are for boy-man, person-man, girl-man, woman-man (in that order).</p>
+                                             p.adjust.method = &quot;holm&quot;)</code></pre>
+<p>Next, show the p-values for the uncorrected t-tests of means, then the holm-corrected p-values. None of the t-tests are significant when using corrections of either type. If using uncorrected means (not recommended), the largest differences in means are for boy-man, person-man, girl-man, woman-man (in that order).</p>
 <pre class="r"><code>round(ngrams_uncorrected_ttests$p.value, 3)</code></pre>
 <pre><code>##                 freq_avg_boy freq_avg_girl freq_avg_man freq_avg_person
 ## freq_avg_girl          0.607            NA           NA              NA
@@ -677,12 +666,6 @@ ngrams_bonferroni_ttests &lt;- pairwise.t.test(x = ngrams_all_longForm$value,
 ## freq_avg_man           0.072         0.279           NA              NA
 ## freq_avg_person        1.000         1.000        0.279              NA
 ## freq_avg_woman         1.000         1.000        0.324               1</code></pre>
-<pre class="r"><code>round(ngrams_bonferroni_ttests$p.value, 3)</code></pre>
-<pre><code>##                 freq_avg_boy freq_avg_girl freq_avg_man freq_avg_person
-## freq_avg_girl          1.000            NA           NA              NA
-## freq_avg_man           0.072         0.344           NA              NA
-## freq_avg_person        1.000         1.000        0.310              NA
-## freq_avg_woman         1.000         1.000        0.462               1</code></pre>
 </div>
 <div id="calculate-z-scores-1" class="section level3">
 <h3>2. Calculate z-scores</h3>
@@ -716,6 +699,7 @@ rm(TDA_data_scored.tab)</code></pre>
 </div>
 <div id="correlations-between-the-5-tda-noun-vectors-1" class="section level3">
 <h3>3. Correlations between the 5 TDA + noun vectors</h3>
+<p>Note that there is a more nicely formatted table in the manuscript referenced at the top of this page.</p>
 <pre class="r"><code># drop the column of TDA labels
 ngrams_zscores &lt;- subset(ngrams_all_zscores, select = -c(TDA, coded))
 cor_ngrams &lt;- corr.test(ngrams_zscores,
@@ -729,23 +713,23 @@ cor_ngrams_ci &lt;- tibble(
              &quot;woman&quot;, &quot;woman&quot;, &quot;man&quot;, &quot;man&quot;, &quot;girl&quot;),
   noun2 = c(&quot;woman&quot;, &quot;man&quot;, &quot;girl&quot;, &quot;boy&quot;, &quot;man&quot;, 
              &quot;girl&quot;, &quot;boy&quot;, &quot;girl&quot;, &quot;boy&quot;, &quot;boy&quot;),
-  lower_bound = cor_ngrams$ci$lower,
+  lower_bound = cor_ngrams$ci.adj$lower,
   r = cor_ngrams$ci$r,
-  upper_bound = cor_ngrams$ci$upper,
-  p_value = cor_ngrams$ci$p
+  upper_bound = cor_ngrams$ci.adj$upper,
+  p_value = cor_ngrams$ci2$p
 )</code></pre>
 <p>The table below shows the correlations between noun pairs with the lower and upper bounds of the 95% confidence intervals.</p>
 <pre><code>##     noun1 noun2 lower_bound     r upper_bound p_value
-## 1  person woman       0.344 0.371       0.397       0
-## 2  person   man       0.313 0.339       0.364       0
+## 1  person woman       0.337 0.371       0.404       0
+## 2  person   man       0.307 0.339       0.370       0
 ## 3  person  girl       0.164 0.198       0.232       0
-## 4  person   boy       0.179 0.214       0.248       0
-## 5   woman   man       0.959 0.961       0.963       0
-## 6   woman  girl       0.427 0.454       0.481       0
-## 7   woman   boy       0.532 0.557       0.581       0
-## 8     man  girl       0.443 0.469       0.495       0
-## 9     man   boy       0.589 0.610       0.631       0
-## 10   girl   boy       0.952 0.956       0.959       0</code></pre>
+## 4  person   boy       0.174 0.214       0.253       0
+## 5   woman   man       0.958 0.961       0.964       0
+## 6   woman  girl       0.418 0.454       0.489       0
+## 7   woman   boy       0.523 0.557       0.589       0
+## 8     man  girl       0.433 0.469       0.504       0
+## 9     man   boy       0.580 0.610       0.639       0
+## 10   girl   boy       0.951 0.956       0.960       0</code></pre>
 </div>
 <div id="calculate-the-ngrams-frequency-index" class="section level3">
 <h3>4. Calculate the Ngrams frequency index</h3>
@@ -779,7 +763,7 @@ ngrams_freq_index &lt;- ngrams_freq_index %&gt;%
 </div>
 <div id="correlation-between-search-engine-and-ngram-estimates" class="section level1">
 <h1>Correlation between search engine and ngram estimates</h1>
-<p>This is done by creating a large data frame with all the search engine and ngram estimates for each descriptor. Note that (1) the confidence intervals for some of the correlations involving ngram values are very wide due to large numbers of missing observations, and (2) there is a more nicely formatted table in the manuscript referenced at the top of this page.</p>
+<p>This is done by creating a large data frame with all the search engine and ngram estimates for each descriptor. Note that (1) this analysis overlaps with the correlational analyses previously reported within type, and (2) there is a more nicely formatted table in the manuscript referenced at the top of this page. In the manuscript, we report the holm-adjusted confidence intervals around the correlations.</p>
 <pre class="r"><code>ngrams &lt;- as.data.frame(ngrams_freq_index)[,c(&quot;person_zscore&quot;, &quot;woman_zscore&quot;, &quot;man_zscore&quot;, &quot;girl_zscore&quot;, &quot;boy_zscore&quot;, &quot;freq_index&quot;)]
 rownames(ngrams) &lt;- as.data.frame(ngrams_freq_index)[,&quot;TDA&quot;]
 colnames(ngrams) &lt;- c(&quot;person_ngrams&quot;, &quot;woman_ngrams&quot;, &quot;man_ngrams&quot;, &quot;girl_ngrams&quot;, &quot;boy_ngrams&quot;, &quot;index_ngrams&quot;)
@@ -790,93 +774,34 @@ rownames(serps) &lt;- as.data.frame(serps_freq_index)[,&quot;TDA&quot;]
 colnames(serps) &lt;- c(&quot;person_serps&quot;, &quot;woman_serps&quot;, &quot;man_serps&quot;, &quot;girl_serps&quot;, &quot;boy_serps&quot;, &quot;index_serps&quot;)
 
 all &lt;- data.frame(serps, ngrams)
-all_cor &lt;- corCi(all, plot = FALSE)
-all_cor</code></pre>
-<pre><code>## Call:corCi(x = all, plot = FALSE)
-## 
-##  Coefficients and bootstrapped confidence intervals 
-##               prsn_s wmn_s mn_sr grl_s by_sr indx_s prsn_n wmn_n mn_ng grl_n by_ng indx_n
-## person_serps  1.00                                                                       
-## woman_serps   0.06   1.00                                                                
-## man_serps     0.04   0.71  1.00                                                          
-## girl_serps    0.04   0.64  0.53  1.00                                                    
-## boy_serps     0.03   0.51  0.38  0.58  1.00                                              
-## index_serps   0.07   0.92  0.76  0.74  0.70  1.00                                        
-## person_ngrams 0.16   0.38  0.29  0.23  0.27  0.43   1.00                                 
-## woman_ngrams  0.05   0.91  0.84  0.56  0.47  0.89   0.37   1.00                          
-## man_ngrams    0.04   0.81  0.90  0.52  0.47  0.84   0.34   0.96  1.00                    
-## girl_ngrams   0.02   0.41  0.39  0.49  0.83  0.57   0.20   0.45  0.47  1.00              
-## boy_ngrams    0.02   0.45  0.56  0.52  0.81  0.62   0.21   0.56  0.61  0.96  1.00        
-## index_ngrams  0.05   0.82  0.81  0.60  0.70  0.90   0.41   0.92  0.93  0.73  0.81  1.00  
-## 
-##  scale correlations and bootstrapped confidence intervals 
-##               lower.emp lower.norm estimate upper.norm upper.emp    p
-## prsn_s-wmn_s       0.03      -0.13     0.06       0.48      0.50 0.24
-## prsn_s-mn_sr       0.02      -0.13     0.04       0.39      0.47 0.33
-## prsn_s-grl_s       0.02      -0.11     0.04       0.33      0.37 0.31
-## prsn_s-by_sr       0.01      -0.14     0.03       0.36      0.42 0.37
-## prsn_s-indx_s      0.04      -0.14     0.07       0.52      0.50 0.23
-## prsn_s-prsn_n      0.05      -0.39     0.16       0.96      0.95 0.29
-## prsn_s-wmn_n       0.02      -0.16     0.05       0.50      0.59 0.30
-## prsn_s-mn_ng       0.02      -0.15     0.04       0.43      0.52 0.33
-## prsn_s-grl_n       0.01      -0.17     0.02       0.38      0.48 0.42
-## prsn_s-by_ng       0.01      -0.15     0.02       0.34      0.39 0.42
-## prsn_s-indx_n      0.02      -0.16     0.05       0.49      0.52 0.29
-## wmn_s-mn_sr        0.42       0.48     0.71       0.88      0.89 0.00
-## wmn_s-grl_s        0.48       0.42     0.64       0.84      0.85 0.00
-## wmn_s-by_sr        0.14      -0.07     0.51       0.82      0.87 0.11
-## wmn_s-indx_s       0.69       0.68     0.92       0.98      0.98 0.01
-## wmn_s-prsn_n       0.21       0.19     0.38       0.55      0.55 0.00
-## wmn_s-wmn_n        0.62       0.61     0.91       0.98      0.98 0.02
-## wmn_s-mn_ng        0.34       0.37     0.81       0.95      0.95 0.03
-## wmn_s-grl_n        0.13      -0.23     0.41       0.92      0.95 0.20
-## wmn_s-by_ng        0.11      -0.02     0.45       0.84      0.87 0.09
-## wmn_s-indx_n       0.34       0.34     0.82       0.95      0.95 0.03
-## mn_sr-grl_s        0.34       0.28     0.53       0.77      0.80 0.00
-## mn_sr-by_sr        0.13      -0.04     0.38       0.74      0.81 0.09
-## mn_sr-indx_s       0.66       0.57     0.76       0.92      0.95 0.00
-## mn_sr-prsn_n       0.16       0.09     0.29       0.53      0.58 0.01
-## mn_sr-wmn_n        0.48       0.58     0.84       0.96      0.97 0.01
-## mn_sr-mn_ng        0.65       0.69     0.90       0.98      0.98 0.01
-## mn_sr-grl_n        0.21      -0.05     0.39       0.88      0.88 0.11
-## mn_sr-by_ng        0.25       0.04     0.56       0.92      0.93 0.09
-## mn_sr-indx_n       0.51       0.56     0.81       0.94      0.95 0.00
-## grl_s-by_sr        0.40       0.33     0.58       0.77      0.77 0.00
-## grl_s-indx_s       0.64       0.54     0.74       0.92      0.93 0.00
-## grl_s-prsn_n       0.11       0.04     0.23       0.45      0.48 0.02
-## grl_s-wmn_n        0.32       0.26     0.56       0.80      0.81 0.01
-## grl_s-mn_ng        0.29       0.21     0.52       0.78      0.79 0.01
-## grl_s-grl_n        0.33       0.24     0.49       0.77      0.79 0.00
-## grl_s-by_ng        0.32       0.25     0.52       0.77      0.77 0.00
-## grl_s-indx_n       0.37       0.29     0.60       0.84      0.84 0.01
-## by_sr-indx_s       0.48       0.35     0.70       0.88      0.91 0.01
-## by_sr-prsn_n       0.12       0.04     0.27       0.51      0.54 0.03
-## by_sr-wmn_n        0.08      -0.13     0.47       0.81      0.87 0.15
-## by_sr-mn_ng        0.11      -0.07     0.47       0.82      0.87 0.12
-## by_sr-grl_n        0.29       0.29     0.83       0.95      0.93 0.04
-## by_sr-by_ng        0.31       0.28     0.81       0.95      0.94 0.04
-## by_sr-indx_n       0.23       0.20     0.70       0.90      0.89 0.04
-## indx_s-prsn_n      0.32       0.29     0.43       0.59      0.60 0.00
-## indx_s-wmn_n       0.67       0.61     0.89       0.97      0.96 0.01
-## indx_s-mn_ng       0.64       0.54     0.84       0.95      0.96 0.01
-## indx_s-grl_n       0.44       0.11     0.57       0.93      0.95 0.07
-## indx_s-by_ng       0.50       0.34     0.62       0.87      0.91 0.01
-## indx_s-indx_n      0.71       0.66     0.90       0.97      0.97 0.01
-## prsn_n-wmn_n       0.21       0.14     0.37       0.61      0.67 0.01
-## prsn_n-mn_ng       0.19       0.11     0.34       0.60      0.63 0.01
-## prsn_n-grl_n       0.09      -0.03     0.20       0.54      0.58 0.09
-## prsn_n-by_ng       0.10      -0.01     0.21       0.49      0.57 0.06
-## prsn_n-indx_n      0.27       0.22     0.41       0.61      0.63 0.00
-## wmn_n-mn_ng        0.66       0.81     0.96       0.99      0.99 0.02
-## wmn_n-grl_n        0.23      -0.21     0.45       0.96      0.97 0.20
-## wmn_n-by_ng        0.25       0.02     0.56       0.94      0.94 0.11
-## wmn_n-indx_n       0.60       0.63     0.92       0.99      0.99 0.04
-## mn_ng-grl_n        0.29      -0.11     0.47       0.95      0.97 0.16
-## mn_ng-by_ng        0.41       0.07     0.61       0.96      0.96 0.11
-## mn_ng-indx_n       0.74       0.74     0.93       0.99      0.99 0.02
-## grl_n-by_ng        0.82       0.81     0.96       0.99      0.99 0.01
-## grl_n-indx_n       0.71       0.38     0.73       0.98      0.99 0.08
-## by_ng-indx_n       0.74       0.65     0.81       0.96      0.96 0.00</code></pre>
+all_cor &lt;- corr.test(all, use=&quot;pairwise&quot;, method = &quot;pearson&quot;, alpha = .05, ci=TRUE)
+round(all_cor$r, 3)</code></pre>
+<pre><code>##               person_serps woman_serps man_serps girl_serps boy_serps index_serps
+## person_serps         1.000       0.063     0.037      0.037     0.032       0.068
+## woman_serps          0.063       1.000     0.708      0.645     0.508       0.924
+## man_serps            0.037       0.708     1.000      0.532     0.380       0.764
+## girl_serps           0.037       0.645     0.532      1.000     0.583       0.743
+## boy_serps            0.032       0.508     0.380      0.583     1.000       0.696
+## index_serps          0.068       0.924     0.764      0.743     0.696       1.000
+## person_ngrams        0.163       0.382     0.291      0.233     0.265       0.432
+## woman_ngrams         0.052       0.909     0.842      0.559     0.471       0.888
+## man_ngrams           0.042       0.813     0.902      0.524     0.472       0.844
+## girl_ngrams          0.023       0.411     0.395      0.488     0.829       0.565
+## boy_ngrams           0.025       0.453     0.561      0.519     0.812       0.617
+## index_ngrams         0.054       0.819     0.808      0.603     0.704       0.901
+##               person_ngrams woman_ngrams man_ngrams girl_ngrams boy_ngrams index_ngrams
+## person_serps          0.163        0.052      0.042       0.023      0.025        0.054
+## woman_serps           0.382        0.909      0.813       0.411      0.453        0.819
+## man_serps             0.291        0.842      0.902       0.395      0.561        0.808
+## girl_serps            0.233        0.559      0.524       0.488      0.519        0.603
+## boy_serps             0.265        0.471      0.472       0.829      0.812        0.704
+## index_serps           0.432        0.888      0.844       0.565      0.617        0.901
+## person_ngrams         1.000        0.371      0.339       0.198      0.214        0.408
+## woman_ngrams          0.371        1.000      0.961       0.454      0.557        0.920
+## man_ngrams            0.339        0.961      1.000       0.469      0.610        0.930
+## girl_ngrams           0.198        0.454      0.469       1.000      0.956        0.728
+## boy_ngrams            0.214        0.557      0.610       0.956      1.000        0.805
+## index_ngrams          0.408        0.920      0.930       0.728      0.805        1.000</code></pre>
 </div>
 <div id="comparison-with-roivainen-2013" class="section level1">
 <h1>Comparison with Roivainen (2013)</h1>
@@ -897,18 +822,29 @@ roivainen_435_ngrams &lt;- ngrams_freq[as.data.frame(roivainen)[,1],]
 colnames(roivainen_435_ngrams) &lt;- c(&quot;person_ngrams&quot;, &quot;index_ngrams&quot;)
 
 roivainen &lt;- data.frame(roivainen[,&quot;Rserps2012z&quot;], roivainen_435_serps, roivainen[,&quot;Rngrams2000z&quot;], roivainen_435_ngrams)
-roivainenCor &lt;- corCi(roivainen, plot = FALSE)
 
-roiCor_df &lt;- data.frame(roivainenCor$ci[,c(&quot;low.e&quot;)], roivainenCor$means, roivainenCor$ci[,c(&quot;up.e&quot;, &quot;p&quot;)])
-colnames(roiCor_df) &lt;- c(&quot;lowerCI&quot;, &quot;r&quot;, &quot;upperCI&quot;, &quot;p_value&quot;)
-roiCor_df &lt;- roiCor_df[c(&quot;R2012-prsn_s&quot;, &quot;R2012-indx_s&quot;, &quot;R2000-prsn_n&quot;, &quot;R2000-indx_n&quot;),]
-rownames(roiCor_df) &lt;- c(&quot;serps_person2012z-serps_person2022z&quot;, &quot;serps_person2012z-serps_freq_index2022&quot;, &quot;ngrams_person2000z-ngrams_person2019z&quot;, &quot;ngrams_person2000z-ngrams_freq_index2019&quot;)
-round(roiCor_df,3)</code></pre>
-<pre><code>##                                          lowerCI     r upperCI p_value
-## serps_person2012z-serps_person2022z        0.803 0.862   0.907   0.000
-## serps_person2012z-serps_freq_index2022     0.140 0.300   0.557   0.047
-## ngrams_person2000z-ngrams_person2019z      0.610 0.885   0.967   0.011
-## ngrams_person2000z-ngrams_freq_index2019   0.219 0.388   0.620   0.007</code></pre>
+roivainenCor &lt;- corr.test(roivainen, 
+                                    use = &quot;pairwise&quot;,
+                                    method = &quot;pearson&quot;,
+                                    alpha = .05,
+                                    ci = TRUE)
+
+roivainenCorci &lt;- tibble(
+  group1 = c(&quot;serps_person2012z&quot;, &quot;serps_person2012z&quot;, &quot;serps_person2012z&quot;, &quot;serps_person2012z&quot;, &quot;serps_person2012z&quot;, &quot;serps_person2022z&quot;, &quot;serps_person2022z&quot;, &quot;serps_person2022z&quot;, &quot;serps_person2022z&quot;, &quot;serps_freq_index2022&quot;, &quot;serps_freq_index2022&quot;, &quot;serps_freq_index2022&quot;, &quot;ngrams_person2000z&quot;, &quot;ngrams_person2000z&quot;, &quot;ngrams_person2019z&quot;), 
+  group2 = c(&quot;serps_person2022z&quot;, &quot;serps_freq_index2022&quot;, &quot;ngrams_person2000z&quot;, &quot;ngrams_person2019z&quot;, &quot;ngrams_freq_index2019&quot;, &quot;serps_freq_index2022&quot;, &quot;ngrams_person2000z&quot;, &quot;ngrams_person2019z&quot;, &quot;ngrams_freq_index2019&quot;, &quot;ngrams_person2000z&quot;, &quot;ngrams_person2019z&quot;, &quot;ngrams_freq_index2019&quot;, &quot;ngrams_person2019z&quot;, &quot;ngrams_freq_index2019&quot;, &quot;ngrams_freq_index2019&quot;),
+  lower_bound = roivainenCor$ci.adj$lower,
+  r = roivainenCor$ci$r,
+  upper_bound = roivainenCor$ci.adj$upper,
+  p_value = roivainenCor$ci2$p
+)
+roivainenCorci[c(1,2,13,14),] # we are only interested in a few</code></pre>
+<pre><code>## # A tibble: 4 × 6
+##   group1             group2              lower_bound     r upper_bound   p_value
+##   &lt;chr&gt;              &lt;chr&gt;                     &lt;dbl&gt; &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;
+## 1 serps_person2012z  serps_person2022z        0.815  0.857       0.890 8.97e-126
+## 2 serps_person2012z  serps_freq_index20…      0.0964 0.214       0.326 7.27e-  6
+## 3 ngrams_person2000z ngrams_person2019z       0.806  0.887       0.936 1.02e- 35
+## 4 ngrams_person2000z ngrams_freq_index2…      0.0998 0.349       0.557 3.06e-  4</code></pre>
 <pre><code>##          dev_woman     dev_man    dev_girl     dev_boy
 ## little -11.9350637 -9.01966790 38.97418217 32.70550553
 ## good    -3.7121148  1.79613290 -0.43812725  2.35410914
