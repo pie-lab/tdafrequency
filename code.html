@@ -247,7 +247,7 @@ $(document).ready(function () {
   <a href="serps-frequency.html">Estimates based on Search Engine Results</a>
 </li>
 <li>
-  <a href="ngrams-frequency.html">Estimates based on Ngram Results</a>
+  <a href="ngrams-frequency.html">Estimates based on Books Results</a>
 </li>
 <li>
   <a href="code.html">Code</a>
@@ -378,10 +378,11 @@ serps_all &lt;- tibble(
   girl = serps_girl$count,
   boy = serps_boy$count
 )
+serps_all &lt;- subset(serps_all, TDA != &quot;self-harming&quot;)
 
 serps_all_onlyFreq &lt;- serps_all %&gt;%
   select(-TDA)</code></pre>
-<p>It’s also necessary to fix special characters for many of the adjectives.</p>
+<p>It’s also necessary to fix special characters for many of the descriptors.</p>
 <pre class="r"><code># fix characters
 serps_all$TDA &lt;- sub(&quot;acharn√©&quot;, &quot;achar&quot;, serps_all$TDA)
 serps_all$TDA &lt;- sub(&quot;b√™te&quot;, &quot;bête&quot;, serps_all$TDA)
@@ -421,7 +422,7 @@ for (j in 1:ncol(serps_person))
 names(serps_all_means) &lt;- NOUNS_LIST
 serps_all_means</code></pre>
 <pre><code>##   person    woman      man     girl      boy 
-## 157458.3 129931.3 266361.2 378681.0 194969.2</code></pre>
+## 153750.6 126884.4 196866.7 276353.7  92631.9</code></pre>
 <pre class="r"><code>serps_all_longForm &lt;- serps_all %&gt;%
   gather(form, value, person:boy)
 serps_uncorrected_ttests &lt;- pairwise.t.test(x = serps_all_longForm$value, 
@@ -436,29 +437,29 @@ serps_bonferroni_ttests &lt;- pairwise.t.test(x = serps_all_longForm$value,
 <p>Next, show the p-values for the uncorrected t-tests of means, then the holm-corrected and bonferroni-corrected p-values. None of the t-tests are significant when using corrections of either type. If using uncorrected means (not recommended), the only significant difference in means is for girl-woman; the p-value for girl-person is just above the significance threshold at p&gt;.05.</p>
 <pre class="r"><code>round(serps_uncorrected_ttests$p.value, 3)</code></pre>
 <pre><code>##          boy  girl   man person
-## girl   0.105    NA    NA     NA
-## man    0.528 0.321    NA     NA
-## person 0.740 0.051 0.336     NA
-## woman  0.566 0.028 0.228  0.808</code></pre>
+## girl   0.000    NA    NA     NA
+## man    0.037 0.111    NA     NA
+## person 0.221 0.014 0.388     NA
+## woman  0.493 0.003 0.161  0.591</code></pre>
 <pre class="r"><code>round(serps_holm_ttests$p.value, 3)</code></pre>
-<pre><code>##          boy  girl man person
-## girl   0.837    NA  NA     NA
-## man    1.000 1.000  NA     NA
-## person 1.000 0.456   1     NA
-## woman  1.000 0.280   1      1</code></pre>
+<pre><code>##          boy  girl   man person
+## girl   0.002    NA    NA     NA
+## man    0.258 0.668    NA     NA
+## person 0.884 0.113 1.000     NA
+## woman  1.000 0.025 0.805      1</code></pre>
 <pre class="r"><code>round(serps_bonferroni_ttests$p.value, 3)</code></pre>
-<pre><code>##        boy  girl man person
-## girl     1    NA  NA     NA
-## man      1 1.000  NA     NA
-## person   1 0.506   1     NA
-## woman    1 0.280   1      1</code></pre>
+<pre><code>##          boy  girl man person
+## girl   0.002    NA  NA     NA
+## man    0.368 1.000  NA     NA
+## person 1.000 0.141   1     NA
+## woman  1.000 0.028   1      1</code></pre>
 </div>
 <div id="calculate-z-scores" class="section level3">
 <h3>2. Calculate z-scores</h3>
 <p>Now that we have compared the raw means in the prior step, we create a table of the zscores of the 10-year averages for each TDA + noun ngram. These are the data posted on Dataverse, as shown below.</p>
 <pre class="r"><code>serps_all_zscores &lt;- serps_all %&gt;%
   mutate(
-    TDA = serps_person$term,
+    TDA = serps_all$TDA,
     person_zscore = (person - mean(person, na.rm = TRUE))/sd(person, na.rm = TRUE),
     woman_zscore = (woman - mean(woman, na.rm = TRUE))/sd(woman, na.rm = TRUE),
     man_zscore = (man - mean(man, na.rm = TRUE))/sd(man, na.rm = TRUE),
@@ -504,16 +505,16 @@ cor_serps_ci &lt;- tibble(
 )</code></pre>
 <p>The table below shows the correlations between noun pairs with the lower and upper bounds of the 95% confidence intervals.</p>
 <pre><code>##    group1 group2 lower_bound     r upper_bound p_value
-## 1  person  woman       0.058 0.072       0.086       0
-## 2  person    man       0.055 0.070       0.084       0
-## 3  person   girl       0.055 0.069       0.084       0
-## 4  person    boy       0.049 0.063       0.078       0
-## 5   woman    man       0.388 0.400       0.412       0
-## 6   woman   girl       0.344 0.357       0.369       0
-## 7   woman    boy       0.196 0.210       0.224       0
-## 8     man   girl       0.942 0.944       0.945       0
-## 9     man    boy       0.940 0.941       0.943       0
-## 10   girl    boy       0.959 0.960       0.961       0</code></pre>
+## 1  person  woman       0.049 0.063       0.078       0
+## 2  person    man       0.023 0.037       0.052       0
+## 3  person   girl       0.023 0.037       0.052       0
+## 4  person    boy       0.017 0.032       0.046       0
+## 5   woman    man       0.701 0.708       0.716       0
+## 6   woman   girl       0.636 0.645       0.653       0
+## 7   woman    boy       0.498 0.508       0.519       0
+## 8     man   girl       0.521 0.532       0.542       0
+## 9     man    boy       0.367 0.380       0.392       0
+## 10   girl    boy       0.573 0.583       0.592       0</code></pre>
 </div>
 <div id="calculate-the-search-engine-frequency-index" class="section level3">
 <h3>4. Calculate the search engine frequency index</h3>
@@ -599,8 +600,9 @@ ngrams_all_avgfreq &lt;- tibble(
   freq_avg_man = ngrams_man$freq_avg_all_years,
   freq_avg_girl = ngrams_girl$freq_avg_all_years,
   freq_avg_boy = ngrams_boy$freq_avg_all_years
-)</code></pre>
-<p>It’s also necessary to fix special characters for many of the adjectives.</p>
+)
+ngrams_all_avgfreq &lt;- subset(ngrams_all_avgfreq, TDA != &quot;self-harming&quot;)</code></pre>
+<p>It’s also necessary to fix special characters for many of the descriptors.</p>
 <pre class="r"><code># fix characters
 ngrams_all_avgfreq$TDA &lt;- sub(&quot;acharn√©&quot;, &quot;acharné&quot;, ngrams_all_avgfreq$TDA)
 ngrams_all_avgfreq$TDA &lt;- sub(&quot;b√™te&quot;, &quot;bête&quot;, ngrams_all_avgfreq$TDA)
@@ -693,7 +695,8 @@ ngrams_bonferroni_ttests &lt;- pairwise.t.test(x = ngrams_all_longForm$value,
   man_zscore = ngrams_man$zscore,
   girl_zscore = ngrams_girl$zscore,
   boy_zscore = ngrams_boy$zscore
-)</code></pre>
+)
+ngrams_all_zscores &lt;- subset(ngrams_all_zscores, TDA != &quot;self-harming&quot;)</code></pre>
 <pre class="r"><code>write_csv(ngrams_all_zscores, 
           file = here(&quot;data/ngrams/ngrams_all_zscores.csv&quot;))</code></pre>
 <p>This csv file (above) has been posted publicly on Dataverse (see doi). All subsequent analyses of the ngrams data are based on this file, including the database of ngram estimates (see <a href="https://pie-lab.github.io/tdafrequency/ngrams-frequency.html">here</a>).</p>
@@ -794,86 +797,86 @@ all_cor</code></pre>
 ##  Coefficients and bootstrapped confidence intervals 
 ##               prsn_s wmn_s mn_sr grl_s by_sr indx_s prsn_n wmn_n mn_ng grl_n by_ng indx_n
 ## person_serps  1.00                                                                       
-## woman_serps   0.07   1.00                                                                
-## man_serps     0.07   0.40  1.00                                                          
-## girl_serps    0.07   0.36  0.94  1.00                                                    
-## boy_serps     0.06   0.21  0.94  0.96  1.00                                              
-## index_serps   0.08   0.41  0.98  0.97  0.97  1.00                                        
-## person_ngrams 0.16   0.38  0.29  0.23  0.27  0.49   1.00                                 
+## woman_serps   0.06   1.00                                                                
+## man_serps     0.04   0.71  1.00                                                          
+## girl_serps    0.04   0.64  0.53  1.00                                                    
+## boy_serps     0.03   0.51  0.38  0.58  1.00                                              
+## index_serps   0.07   0.92  0.76  0.74  0.70  1.00                                        
+## person_ngrams 0.16   0.38  0.29  0.23  0.27  0.43   1.00                                 
 ## woman_ngrams  0.05   0.91  0.84  0.56  0.47  0.89   0.37   1.00                          
-## man_ngrams    0.04   0.81  0.90  0.52  0.47  0.88   0.34   0.96  1.00                    
-## girl_ngrams   0.02   0.41  0.39  0.49  0.83  0.53   0.20   0.45  0.47  1.00              
-## boy_ngrams    0.02   0.45  0.56  0.52  0.81  0.64   0.21   0.56  0.61  0.96  1.00        
-## index_ngrams  0.05   0.82  0.81  0.60  0.70  0.89   0.41   0.92  0.93  0.73  0.81  1.00  
+## man_ngrams    0.04   0.81  0.90  0.52  0.47  0.84   0.34   0.96  1.00                    
+## girl_ngrams   0.02   0.41  0.39  0.49  0.83  0.57   0.20   0.45  0.47  1.00              
+## boy_ngrams    0.02   0.45  0.56  0.52  0.81  0.62   0.21   0.56  0.61  0.96  1.00        
+## index_ngrams  0.05   0.82  0.81  0.60  0.70  0.90   0.41   0.92  0.93  0.73  0.81  1.00  
 ## 
 ##  scale correlations and bootstrapped confidence intervals 
 ##               lower.emp lower.norm estimate upper.norm upper.emp    p
-## prsn_s-wmn_s       0.03      -0.16     0.07       0.46      0.49 0.32
-## prsn_s-mn_sr       0.02      -0.22     0.07       0.49      0.65 0.43
-## prsn_s-grl_s       0.02      -0.21     0.07       0.47      0.63 0.43
-## prsn_s-by_sr       0.01      -0.21     0.06       0.45      0.59 0.44
-## prsn_s-indx_s      0.05      -0.23     0.08       0.58      0.70 0.35
-## prsn_s-prsn_n      0.05      -0.51     0.16       0.93      0.93 0.38
-## prsn_s-wmn_n       0.02      -0.20     0.05       0.46      0.54 0.41
-## prsn_s-mn_ng       0.02      -0.18     0.04       0.39      0.45 0.44
-## prsn_s-grl_n       0.01      -0.14     0.02       0.29      0.40 0.48
-## prsn_s-by_ng       0.01      -0.12     0.02       0.26      0.36 0.47
-## prsn_s-indx_n      0.03      -0.19     0.05       0.44      0.53 0.40
-## wmn_s-mn_sr        0.35       0.08     0.40       0.84      0.86 0.05
-## wmn_s-grl_s        0.33       0.08     0.36       0.80      0.83 0.04
-## wmn_s-by_sr        0.16      -0.09     0.21       0.69      0.75 0.13
-## wmn_s-indx_s       0.37      -0.02     0.41       0.93      0.93 0.11
-## wmn_s-prsn_n       0.20       0.22     0.38       0.56      0.58 0.00
-## wmn_s-wmn_n        0.67       0.67     0.91       0.97      0.97 0.01
-## wmn_s-mn_ng        0.31       0.39     0.81       0.95      0.94 0.02
-## wmn_s-grl_n        0.12      -0.25     0.41       0.92      0.94 0.21
-## wmn_s-by_ng        0.12      -0.02     0.45       0.82      0.84 0.09
-## wmn_s-indx_n       0.36       0.36     0.82       0.95      0.93 0.03
-## mn_sr-grl_s        0.32       0.22     0.94       0.99      0.99 0.15
-## mn_sr-by_sr        0.13       0.03     0.94       0.99      0.99 0.20
-## mn_sr-indx_s       0.57       0.67     0.98       1.00      1.00 0.13
-## mn_sr-prsn_n       0.16       0.10     0.29       0.54      0.54 0.01
-## mn_sr-wmn_n        0.35       0.53     0.84       0.95      0.94 0.01
-## mn_sr-mn_ng        0.55       0.64     0.90       0.97      0.97 0.01
-## mn_sr-grl_n        0.21      -0.05     0.39       0.84      0.84 0.10
-## mn_sr-by_ng        0.24       0.01     0.56       0.90      0.93 0.09
-## mn_sr-indx_n       0.45       0.54     0.81       0.93      0.90 0.00
-## grl_s-by_sr        0.40       0.28     0.96       0.99      0.99 0.16
-## grl_s-indx_s       0.66       0.56     0.97       1.00      1.00 0.13
-## grl_s-prsn_n       0.08       0.03     0.23       0.46      0.48 0.03
-## grl_s-wmn_n        0.25       0.23     0.56       0.81      0.80 0.01
-## grl_s-mn_ng        0.22       0.19     0.52       0.79      0.78 0.01
-## grl_s-grl_n        0.29       0.22     0.49       0.78      0.81 0.01
-## grl_s-by_ng        0.26       0.24     0.52       0.78      0.78 0.00
-## grl_s-indx_n       0.28       0.28     0.60       0.84      0.83 0.01
-## by_sr-indx_s       0.33       0.28     0.97       0.99      0.99 0.17
-## by_sr-prsn_n       0.10       0.04     0.27       0.50      0.53 0.03
-## by_sr-wmn_n        0.09      -0.05     0.47       0.81      0.82 0.10
-## by_sr-mn_ng        0.12       0.03     0.47       0.82      0.83 0.06
-## by_sr-grl_n        0.36       0.49     0.83       0.95      0.93 0.01
-## by_sr-by_ng        0.49       0.49     0.81       0.94      0.93 0.01
-## by_sr-indx_n       0.39       0.39     0.70       0.89      0.88 0.01
-## indx_s-prsn_n      0.32       0.34     0.49       0.67      0.66 0.00
-## indx_s-wmn_n       0.70       0.72     0.89       0.95      0.95 0.00
-## indx_s-mn_ng       0.60       0.64     0.88       0.96      0.95 0.00
-## indx_s-grl_n       0.38       0.12     0.53       0.89      0.90 0.05
-## indx_s-by_ng       0.40       0.25     0.64       0.89      0.91 0.02
-## indx_s-indx_n      0.64       0.70     0.89       0.95      0.95 0.00
-## prsn_n-wmn_n       0.21       0.19     0.37       0.61      0.67 0.00
-## prsn_n-mn_ng       0.18       0.14     0.34       0.60      0.60 0.00
-## prsn_n-grl_n       0.09       0.00     0.20       0.50      0.53 0.05
-## prsn_n-by_ng       0.09       0.03     0.21       0.46      0.52 0.03
-## prsn_n-indx_n      0.27       0.23     0.41       0.62      0.63 0.00
-## wmn_n-mn_ng        0.60       0.77     0.96       0.99      0.99 0.03
-## wmn_n-grl_n        0.22      -0.28     0.45       0.96      0.98 0.23
-## wmn_n-by_ng        0.26      -0.02     0.56       0.92      0.94 0.11
-## wmn_n-indx_n       0.62       0.57     0.92       0.99      0.99 0.06
-## mn_ng-grl_n        0.28      -0.16     0.47       0.95      0.96 0.18
-## mn_ng-by_ng        0.40       0.03     0.61       0.95      0.97 0.11
-## mn_ng-indx_n       0.76       0.73     0.93       0.99      0.99 0.02
-## grl_n-by_ng        0.78       0.80     0.96       0.99      0.99 0.02
-## grl_n-indx_n       0.68       0.34     0.73       0.98      0.99 0.08
-## by_ng-indx_n       0.74       0.65     0.81       0.95      0.95 0.00</code></pre>
+## prsn_s-wmn_s       0.03      -0.13     0.06       0.48      0.50 0.24
+## prsn_s-mn_sr       0.02      -0.13     0.04       0.39      0.47 0.33
+## prsn_s-grl_s       0.02      -0.11     0.04       0.33      0.37 0.31
+## prsn_s-by_sr       0.01      -0.14     0.03       0.36      0.42 0.37
+## prsn_s-indx_s      0.04      -0.14     0.07       0.52      0.50 0.23
+## prsn_s-prsn_n      0.05      -0.39     0.16       0.96      0.95 0.29
+## prsn_s-wmn_n       0.02      -0.16     0.05       0.50      0.59 0.30
+## prsn_s-mn_ng       0.02      -0.15     0.04       0.43      0.52 0.33
+## prsn_s-grl_n       0.01      -0.17     0.02       0.38      0.48 0.42
+## prsn_s-by_ng       0.01      -0.15     0.02       0.34      0.39 0.42
+## prsn_s-indx_n      0.02      -0.16     0.05       0.49      0.52 0.29
+## wmn_s-mn_sr        0.42       0.48     0.71       0.88      0.89 0.00
+## wmn_s-grl_s        0.48       0.42     0.64       0.84      0.85 0.00
+## wmn_s-by_sr        0.14      -0.07     0.51       0.82      0.87 0.11
+## wmn_s-indx_s       0.69       0.68     0.92       0.98      0.98 0.01
+## wmn_s-prsn_n       0.21       0.19     0.38       0.55      0.55 0.00
+## wmn_s-wmn_n        0.62       0.61     0.91       0.98      0.98 0.02
+## wmn_s-mn_ng        0.34       0.37     0.81       0.95      0.95 0.03
+## wmn_s-grl_n        0.13      -0.23     0.41       0.92      0.95 0.20
+## wmn_s-by_ng        0.11      -0.02     0.45       0.84      0.87 0.09
+## wmn_s-indx_n       0.34       0.34     0.82       0.95      0.95 0.03
+## mn_sr-grl_s        0.34       0.28     0.53       0.77      0.80 0.00
+## mn_sr-by_sr        0.13      -0.04     0.38       0.74      0.81 0.09
+## mn_sr-indx_s       0.66       0.57     0.76       0.92      0.95 0.00
+## mn_sr-prsn_n       0.16       0.09     0.29       0.53      0.58 0.01
+## mn_sr-wmn_n        0.48       0.58     0.84       0.96      0.97 0.01
+## mn_sr-mn_ng        0.65       0.69     0.90       0.98      0.98 0.01
+## mn_sr-grl_n        0.21      -0.05     0.39       0.88      0.88 0.11
+## mn_sr-by_ng        0.25       0.04     0.56       0.92      0.93 0.09
+## mn_sr-indx_n       0.51       0.56     0.81       0.94      0.95 0.00
+## grl_s-by_sr        0.40       0.33     0.58       0.77      0.77 0.00
+## grl_s-indx_s       0.64       0.54     0.74       0.92      0.93 0.00
+## grl_s-prsn_n       0.11       0.04     0.23       0.45      0.48 0.02
+## grl_s-wmn_n        0.32       0.26     0.56       0.80      0.81 0.01
+## grl_s-mn_ng        0.29       0.21     0.52       0.78      0.79 0.01
+## grl_s-grl_n        0.33       0.24     0.49       0.77      0.79 0.00
+## grl_s-by_ng        0.32       0.25     0.52       0.77      0.77 0.00
+## grl_s-indx_n       0.37       0.29     0.60       0.84      0.84 0.01
+## by_sr-indx_s       0.48       0.35     0.70       0.88      0.91 0.01
+## by_sr-prsn_n       0.12       0.04     0.27       0.51      0.54 0.03
+## by_sr-wmn_n        0.08      -0.13     0.47       0.81      0.87 0.15
+## by_sr-mn_ng        0.11      -0.07     0.47       0.82      0.87 0.12
+## by_sr-grl_n        0.29       0.29     0.83       0.95      0.93 0.04
+## by_sr-by_ng        0.31       0.28     0.81       0.95      0.94 0.04
+## by_sr-indx_n       0.23       0.20     0.70       0.90      0.89 0.04
+## indx_s-prsn_n      0.32       0.29     0.43       0.59      0.60 0.00
+## indx_s-wmn_n       0.67       0.61     0.89       0.97      0.96 0.01
+## indx_s-mn_ng       0.64       0.54     0.84       0.95      0.96 0.01
+## indx_s-grl_n       0.44       0.11     0.57       0.93      0.95 0.07
+## indx_s-by_ng       0.50       0.34     0.62       0.87      0.91 0.01
+## indx_s-indx_n      0.71       0.66     0.90       0.97      0.97 0.01
+## prsn_n-wmn_n       0.21       0.14     0.37       0.61      0.67 0.01
+## prsn_n-mn_ng       0.19       0.11     0.34       0.60      0.63 0.01
+## prsn_n-grl_n       0.09      -0.03     0.20       0.54      0.58 0.09
+## prsn_n-by_ng       0.10      -0.01     0.21       0.49      0.57 0.06
+## prsn_n-indx_n      0.27       0.22     0.41       0.61      0.63 0.00
+## wmn_n-mn_ng        0.66       0.81     0.96       0.99      0.99 0.02
+## wmn_n-grl_n        0.23      -0.21     0.45       0.96      0.97 0.20
+## wmn_n-by_ng        0.25       0.02     0.56       0.94      0.94 0.11
+## wmn_n-indx_n       0.60       0.63     0.92       0.99      0.99 0.04
+## mn_ng-grl_n        0.29      -0.11     0.47       0.95      0.97 0.16
+## mn_ng-by_ng        0.41       0.07     0.61       0.96      0.96 0.11
+## mn_ng-indx_n       0.74       0.74     0.93       0.99      0.99 0.02
+## grl_n-by_ng        0.82       0.81     0.96       0.99      0.99 0.01
+## grl_n-indx_n       0.71       0.38     0.73       0.98      0.99 0.08
+## by_ng-indx_n       0.74       0.65     0.81       0.96      0.96 0.00</code></pre>
 </div>
 <div id="comparison-with-roivainen-2013" class="section level1">
 <h1>Comparison with Roivainen (2013)</h1>
@@ -902,17 +905,10 @@ roiCor_df &lt;- roiCor_df[c(&quot;R2012-prsn_s&quot;, &quot;R2012-indx_s&quot;, 
 rownames(roiCor_df) &lt;- c(&quot;serps_person2012z-serps_person2022z&quot;, &quot;serps_person2012z-serps_freq_index2022&quot;, &quot;ngrams_person2000z-ngrams_person2019z&quot;, &quot;ngrams_person2000z-ngrams_freq_index2019&quot;)
 round(roiCor_df,3)</code></pre>
 <pre><code>##                                          lowerCI     r upperCI p_value
-## serps_person2012z-serps_person2022z        0.802 0.866   0.916   0.000
-## serps_person2012z-serps_freq_index2022     0.144 0.338   0.623   0.072
-## ngrams_person2000z-ngrams_person2019z      0.635 0.885   0.963   0.012
-## ngrams_person2000z-ngrams_freq_index2019   0.210 0.377   0.639   0.005</code></pre>
-<pre class="r"><code>ngrams_gender_age &lt;- as.data.frame(ngrams_freq_index)[, c(&quot;woman_zscore&quot;, &quot;man_zscore&quot;, &quot;girl_zscore&quot;, &quot;boy_zscore&quot;)]-as.data.frame(ngrams_freq_index)[, c(&quot;freq_index&quot;)]
-colnames(ngrams_gender_age) &lt;- c(&quot;dev_woman&quot;, &quot;dev_man&quot;, &quot;dev_girl&quot;, &quot;dev_boy&quot;)
-rownames(ngrams_gender_age) &lt;- as.data.frame(ngrams_freq_index)[, c(&quot;TDA&quot;)]
-
-ngrams_dev_woman &lt;- ngrams_gender_age[order(ngrams_gender_age$dev_woman),]
-ngrams_dev_woman &lt;- ngrams_dev_woman[!is.na(ngrams_dev_woman$dev_woman),]
-head(ngrams_dev_woman, 15)</code></pre>
+## serps_person2012z-serps_person2022z        0.803 0.862   0.907   0.000
+## serps_person2012z-serps_freq_index2022     0.140 0.300   0.557   0.047
+## ngrams_person2000z-ngrams_person2019z      0.610 0.885   0.967   0.011
+## ngrams_person2000z-ngrams_freq_index2019   0.219 0.388   0.620   0.007</code></pre>
 <pre><code>##          dev_woman     dev_man    dev_girl     dev_boy
 ## little -11.9350637 -9.01966790 38.97418217 32.70550553
 ## good    -3.7121148  1.79613290 -0.43812725  2.35410914
@@ -929,7 +925,6 @@ head(ngrams_dev_woman, 15)</code></pre>
 ## great   -0.1963551  2.87390418 -0.40283056 -0.57531911
 ## common  -0.1903876  1.30588138 -0.25394200 -0.27048348
 ## lost    -0.1898209 -0.13030346  0.02801681  0.45634063</code></pre>
-<pre class="r"><code>tail(ngrams_dev_woman, 15)</code></pre>
 <pre><code>##              dev_woman      dev_man     dev_girl      dev_boy
 ## pretty       0.8970556 -1.233722744  3.160693769  1.640841192
 ## naked        0.9492511  0.262810539  0.065082470 -0.087345551
@@ -946,9 +941,6 @@ head(ngrams_dev_woman, 15)</code></pre>
 ## beautiful    7.9748086 -1.251445856  1.988484988 -0.447062365
 ## old         19.7044159 35.331937952 -7.942652603  4.692086017
 ## young       26.0800198 28.046594423 -6.720707914 -8.141387499</code></pre>
-<pre class="r"><code>ngrams_dev_man &lt;- ngrams_gender_age[order(ngrams_gender_age$dev_man),]
-ngrams_dev_man &lt;- ngrams_dev_man[!is.na(ngrams_dev_man$dev_man),]
-head(ngrams_dev_man, 15)</code></pre>
 <pre><code>##                 dev_woman    dev_man    dev_girl      dev_boy
 ## little      -11.935063661 -9.0196679 38.97418217 32.705505531
 ## beautiful     7.974808646 -1.2514459  1.98848499 -0.447062365
@@ -965,7 +957,6 @@ head(ngrams_dev_man, 15)</code></pre>
 ## lost         -0.189820945 -0.1303035  0.02801681  0.456340635
 ## tiny          0.305167939 -0.1255398  0.13756795 -0.007627161
 ## silly        -0.007037702 -0.1184337  0.45025673  0.356795087</code></pre>
-<pre class="r"><code>tail(ngrams_dev_man, 15)</code></pre>
 <pre><code>##            dev_woman   dev_man   dev_girl    dev_boy
 ## fat       0.03708667  1.443002 -0.2093927  0.4626991
 ## best     -0.57928839  1.473316 -0.4118797 -0.4821475
@@ -982,9 +973,6 @@ head(ngrams_dev_man, 15)</code></pre>
 ## white     2.10946178  6.812456 -2.7800343 -1.5687765
 ## young    26.08001985 28.046594 -6.7207079 -8.1413875
 ## old      19.70441588 35.331938 -7.9426526  4.6920860</code></pre>
-<pre class="r"><code>ngrams_dev_girl &lt;- ngrams_gender_age[order(ngrams_gender_age$dev_girl),]
-ngrams_dev_girl &lt;- ngrams_dev_girl[!is.na(ngrams_dev_girl$dev_girl),]
-head(ngrams_dev_girl, 15)</code></pre>
 <pre><code>##           dev_woman    dev_man   dev_girl    dev_boy
 ## old     19.70441588 35.3319380 -7.9426526  4.6920860
 ## young   26.08001985 28.0465944 -6.7207079 -8.1413875
@@ -1001,7 +989,6 @@ head(ngrams_dev_girl, 15)</code></pre>
 ## single   1.32832251  0.2676379 -0.5758042 -1.0201562
 ## real     0.18826002  0.6254890 -0.4983613 -0.3153877
 ## second   0.06954701  0.7642398 -0.4838151 -0.3499717</code></pre>
-<pre class="r"><code>tail(ngrams_dev_girl, 15)</code></pre>
 <pre><code>##               dev_woman      dev_man   dev_girl     dev_boy
 ## darling    -0.090243801 -0.066772847  0.3222917  0.36138763
 ## dancing     0.032266066  0.021623052  0.3251283  0.02916216
@@ -1018,9 +1005,6 @@ head(ngrams_dev_girl, 15)</code></pre>
 ## beautiful   7.974808646 -1.251445856  1.9884850 -0.44706236
 ## pretty      0.897055575 -1.233722744  3.1606938  1.64084119
 ## little    -11.935063661 -9.019667902 38.9741822 32.70550553</code></pre>
-<pre class="r"><code>ngrams_dev_boy &lt;- ngrams_gender_age[order(ngrams_gender_age$dev_boy),]
-ngrams_dev_boy &lt;- ngrams_dev_boy[!is.na(ngrams_dev_boy$dev_boy),]
-head(ngrams_dev_boy, 15)</code></pre>
 <pre><code>##          dev_woman     dev_man   dev_girl    dev_boy
 ## young   26.0800198 28.04659442 -6.7207079 -8.1413875
 ## first    4.1881072  0.36566276 -2.2869753 -2.2667947
@@ -1037,7 +1021,6 @@ head(ngrams_dev_boy, 15)</code></pre>
 ## right    0.1428781  0.57560442 -0.2055202 -0.5129623
 ## best    -0.5792884  1.47331559 -0.4118797 -0.4821475
 ## strong   0.7483647  0.82269838 -0.6636507 -0.4805386</code></pre>
-<pre class="r"><code>tail(ngrams_dev_boy, 15)</code></pre>
 <pre><code>##              dev_woman     dev_man    dev_girl    dev_boy
 ## local      0.076161033 -0.08574363  0.09633485  0.5522838
 ## handsome   0.108227073  1.71191179 -0.32189527  0.5624347
@@ -1054,154 +1037,134 @@ head(ngrams_dev_boy, 15)</code></pre>
 ## old       19.704415884 35.33193795 -7.94265260  4.6920860
 ## small     -0.060457586  0.08252710  0.21845662  6.3020947
 ## little   -11.935063661 -9.01966790 38.97418217 32.7055055</code></pre>
-<pre class="r"><code>serps_gender_age &lt;- as.data.frame(serps_freq_index)[, c(&quot;woman_zscore&quot;, &quot;man_zscore&quot;, &quot;girl_zscore&quot;, &quot;boy_zscore&quot;)]-as.data.frame(serps_freq_index)[, c(&quot;freq_index&quot;)]
-colnames(serps_gender_age) &lt;- c(&quot;dev_woman&quot;, &quot;dev_man&quot;, &quot;dev_girl&quot;, &quot;dev_boy&quot;)
-rownames(serps_gender_age) &lt;- as.data.frame(serps_freq_index)[, c(&quot;TDA&quot;)]
-
-serps_dev_woman &lt;- serps_gender_age[order(serps_gender_age$dev_woman),]
-serps_dev_woman &lt;- serps_dev_woman[!is.na(serps_dev_woman$dev_woman),]
-head(serps_dev_woman, 15)</code></pre>
-<pre><code>##                 dev_woman     dev_man    dev_girl     dev_boy
-## self-harming -49.55641735 55.19649006 56.95704515 63.62390959
-## good          -1.89632429  2.82889045  0.83933586 -0.04247993
-## little        -1.70368774 -0.95634851  8.04732859  5.93660684
-## bad           -0.84941723 -0.57944750  2.15484709  2.53500114
-## gay           -0.36466709  2.63889236 -0.58652530  1.49930333
-## wonderful     -0.29952017  0.41796047  0.14559807 -0.26403836
-## crazy         -0.19352062 -0.17044935  0.81381534  0.13160551
-## best          -0.18239516  1.05387728  0.29339108 -0.45332157
-## normal        -0.17225552  0.08989097  0.13145437 -0.04908982
-## lucky         -0.13640056  1.46929363  0.20507110  0.13531535
-## small         -0.12823264 -0.01849373  1.15636743  0.59447839
-## rough         -0.10823914  0.23209554  0.29965693  0.09324206
-## mean          -0.09684782  0.10280183  0.32982585 -0.06136601
-## private       -0.09493406  0.44085919 -0.09486535 -0.25105977
-## quick         -0.08799013  0.07594704  0.46301358 -0.01678791</code></pre>
-<pre class="r"><code>tail(serps_dev_woman, 15)</code></pre>
-<pre><code>##           dev_woman    dev_man    dev_girl      dev_boy
-## fat        4.821280  0.5795469  0.46654910   0.14973675
-## strong     4.948741  0.7942979 -0.17298042  -0.46306873
-## naked      7.967209  1.3141214  1.58267977  -1.46024586
-## addicted   8.457256  0.3367745 -0.16865086  -0.17441439
-## white      9.332562  1.6454318  2.53436341  -1.62719818
-## happy      9.636185 -0.6258392  0.67949760  -0.15488502
-## first     13.408300 -3.7298826 -4.61405122  -5.06436593
-## sexy      13.467946 -1.5842547  6.37985371  -2.07875718
-## pretty    13.782374  0.1376185 -0.09792626  -0.08607018
-## pregnant  16.318292 -0.1258995  0.42934181  -0.17921299
-## black     24.652683  6.3293705  5.68796312  -5.88181421
-## mature    26.259860  1.0074848  0.48264673  -0.86493006
-## beautiful 27.211655 -2.6769550  9.02453970  -3.26820078
-## old       27.583230 24.7933334 -1.55788794 -11.99795288
-## young     94.369872  9.1760560  4.63555777  -5.23300826</code></pre>
-<pre class="r"><code>serps_dev_man &lt;- serps_gender_age[order(serps_gender_age$dev_man),]
-serps_dev_man &lt;- serps_dev_man[!is.na(serps_dev_man$dev_man),]
-head(serps_dev_man, 15)</code></pre>
-<pre><code>##            dev_woman    dev_man    dev_girl    dev_boy
-## first     13.4082997 -3.7298826 -4.61405122 -5.0643659
-## beautiful 27.2116553 -2.6769550  9.02453970 -3.2682008
-## sexy      13.4679464 -1.5842547  6.37985371 -2.0787572
-## hot        4.6452698 -1.3118461 22.98164627 -1.1791145
-## little    -1.7036877 -0.9563485  8.04732859  5.9366068
-## cute       2.4108487 -0.8306456  9.48520346 -0.8182351
-## happy      9.6361853 -0.6258392  0.67949760 -0.1548850
-## cat        1.5585391 -0.5978605  1.43926095 -0.5318567
-## bad       -0.8494172 -0.5794475  2.15484709  2.5350011
-## pussy      0.7990488 -0.3460229  1.32651357 -0.2164079
-## single     2.6110422 -0.3307769 -0.93780908 -1.3424562
-## dirty      1.2187751 -0.2971087  0.78962576 -0.2846982
-## gorgeous   2.5382999 -0.2958743  1.35607647 -0.4841507
-## human      0.8443296 -0.2886792 -0.21756450 -0.3380859
-## athletic   0.4292640 -0.2523843  0.06309407 -0.2399737</code></pre>
-<pre class="r"><code>tail(serps_dev_man, 15)</code></pre>
-<pre><code>##                  dev_woman   dev_man      dev_girl       dev_boy
-## rich           0.368293199  1.495684  0.1763365516  -0.405524847
-## white          9.332562153  1.645432  2.5343634137  -1.627198184
-## interesting    0.040095085  1.712894 -0.0155635399  -0.102231269
-## burning        0.015559486  1.927012  0.0006109588  -0.000542786
-## dead           0.671578495  2.067451 -0.2164397932  -0.646246984
-## last           0.027018394  2.137212 -0.3673931671  -0.392244685
-## gay           -0.364667086  2.638892 -0.5865253040   1.499303325
-## good          -1.896324291  2.828890  0.8393358563  -0.042479931
-## punch          0.009781023  3.244024  0.0029732232  -0.004560116
-## dog            0.015186026  3.324221  0.1230725503  -0.104244107
-## black         24.652683081  6.329370  5.6879631204  -5.881814213
-## young         94.369871969  9.176056  4.6355577713  -5.233008258
-## iron           0.124864814 12.311165 -0.0379641175  -0.055245506
-## old           27.583230484 24.793333 -1.5578879386 -11.997952880
-## self-harming -49.556417346 55.196490 56.9570451458  63.623909586</code></pre>
-<pre class="r"><code>serps_dev_girl &lt;- serps_gender_age[order(serps_gender_age$dev_girl),]
-serps_dev_girl &lt;- serps_dev_girl[!is.na(serps_dev_girl$dev_girl),]
-head(serps_dev_girl, 15)</code></pre>
-<pre><code>##           dev_woman     dev_man   dev_girl     dev_boy
-## first   13.40829974 -3.72988259 -4.6140512  -5.0643659
-## old     27.58323048 24.79333340 -1.5578879 -11.9979529
-## single   2.61104219 -0.33077691 -0.9378091  -1.3424562
-## gay     -0.36466709  2.63889236 -0.5865253   1.4993033
-## great    0.53642142  1.30454521 -0.5598855  -0.4481273
-## elderly  4.61570712  0.70807443 -0.4723116  -0.5294519
-## average  1.09169458 -0.16582801 -0.4124256  -0.5027713
-## last     0.02701839  2.13721150 -0.3673932  -0.3922447
-## male     0.46622165  0.21943407 -0.3308721  -0.1008176
-## wise     0.81525705  1.02872698 -0.3179882  -0.3377611
-## real     2.71660693  0.87751029 -0.2944569  -1.2412045
-## better  -0.08646016  0.66467231 -0.2923862  -0.2858259
-## right    0.15243807  0.48748333 -0.2831114  -0.3568100
-## second   0.53821802  0.03096774 -0.2731437  -0.2960421
-## sick     0.21319792  0.27901110 -0.2665927  -0.2256164</code></pre>
-<pre class="r"><code>tail(serps_dev_girl, 15)</code></pre>
-<pre><code>##                dev_woman     dev_man  dev_girl     dev_boy
-## sweet          0.9222552 -0.21356728  2.283978 -0.16695011
-## german         0.5284466 -0.11014676  2.454835 -0.18104247
-## white          9.3325622  1.64543183  2.534363 -1.62719818
-## new            0.9596543 -0.07655935  2.658091 -0.80732654
-## skinny         0.8859422 -0.23508174  2.788229 -0.18176852
-## horny          1.2908234 -0.09228020  3.410796 -0.09027089
-## cam            0.2564183 -0.12074345  3.559534 -0.07947263
-## young         94.3698720  9.17605597  4.635558 -5.23300826
-## black         24.6526831  6.32937048  5.687963 -5.88181421
-## sexy          13.4679464 -1.58425474  6.379854 -2.07875718
-## little        -1.7036877 -0.95634851  8.047329  5.93660684
-## beautiful     27.2116553 -2.67695498  9.024540 -3.26820078
-## cute           2.4108487 -0.83064562  9.485203 -0.81823507
-## hot            4.6452698 -1.31184607 22.981646 -1.17911453
-## self-harming -49.5564173 55.19649006 56.957045 63.62390959</code></pre>
-<pre class="r"><code>serps_dev_boy &lt;- serps_gender_age[order(serps_gender_age$dev_boy),]
-serps_dev_boy &lt;- serps_dev_boy[!is.na(serps_dev_boy$dev_boy),]
-head(serps_dev_boy, 15)</code></pre>
+<pre><code>##           dev_woman    dev_man   dev_girl    dev_boy
+## little   -9.3752519 -3.9755091 24.3228557 77.7450367
+## good     -6.0584881  6.8983327  2.2176487 10.8797725
+## bad      -3.0780312 -1.2862168  7.3256728 33.4467225
+## big      -2.3016247  1.8209020  4.9070196 21.5841015
+## gay      -2.1874440  6.7078279 -2.1447662 18.1056358
+## best     -2.0320975  2.8419285  1.1376076  2.4105418
+## new      -1.7490473  0.1493156  9.0067186  4.4158821
+## lucky    -1.7480824  3.4134816  0.1555239  4.2712482
+## small    -1.4642363 -0.2602656  3.5149869  9.5507866
+## horny    -1.3696037 -0.9124428 10.1059623  6.0819063
+## it       -0.8210216  1.3001772  2.3231965  1.4248533
+## crazy    -0.7771489 -0.7820441  2.2192097  1.9098866
+## naughty  -0.7236985 -0.8524494  2.9518846  6.0692377
+## cool     -0.6838913  0.5201010  3.3188439  1.1080390
+## innocent -0.6628324  0.8773653  1.5467795  0.5939014</code></pre>
+<pre><code>##            dev_woman    dev_man   dev_girl     dev_boy
+## attractive  3.674886  0.5580097  0.5161665  -0.4595009
+## elderly     4.123081  2.3182462 -0.9203370  -1.1355041
+## strong      4.331303  2.3111725 -0.2704791  -1.1972686
+## naked       5.137605  3.3384500  5.0026071  -3.9557657
+## happy       8.167490 -2.2511839  1.7308982   2.0152827
+## addicted    8.299391  0.9936971 -0.3942642  -0.3394183
+## sexy        9.922869 -3.2697776 21.4089811  -0.1876102
+## black      11.168507 16.4632609 18.5819777  -7.6133000
+## first      11.843555 -2.6480178 -4.8603739  -4.3351633
+## pretty     13.879861  0.4478997 -0.2067581  -0.2111515
+## pregnant   16.091676 -0.4065818  1.3148434  -0.3501268
+## beautiful  21.182181 -6.9978992 29.1039477  -4.6873390
+## old        21.908146 83.2423243 13.7161746 -18.2173130
+## mature     25.100778  2.7914172  1.7448243  -2.4124382
+## young      61.869850 13.6443807  6.2784629  22.4878604</code></pre>
+<pre><code>##            dev_woman    dev_man   dev_girl    dev_boy
+## beautiful 21.1821812 -6.9978992 29.1039477 -4.6873390
+## little    -9.3752519 -3.9755091 24.3228557 77.7450367
+## sexy       9.9228687 -3.2697776 21.4089811 -0.1876102
+## first     11.8435550 -2.6480178 -4.8603739 -4.3351633
+## hot        2.1741508 -2.2905879 72.1897920  4.8281562
+## happy      8.1674900 -2.2511839  1.7308982  2.0152827
+## bad       -3.0780312 -1.2862168  7.3256728 33.4467225
+## horny     -1.3696037 -0.9124428 10.1059623  6.0819063
+## blond      1.7994756 -0.8749871  1.6206653  0.5230289
+## cat        1.1329227 -0.8537973  5.4022496  0.4843206
+## naughty   -0.7236985 -0.8524494  2.9518846  6.0692377
+## cute       2.4606340 -0.8496717 30.6582113 -0.8579026
+## female     0.8435869 -0.7844271  0.5874983  0.6789337
+## crazy     -0.7771489 -0.7820441  2.2192097  1.9098866
+## pussy      0.3237625 -0.6822292  4.4526659  1.0860605</code></pre>
+<pre><code>##                dev_woman   dev_man     dev_girl      dev_boy
+## bearded     -0.003916872  4.045093 -0.009022917   0.07265645
+## rich        -0.475695394  4.357291  0.957568061   0.51334729
+## great        0.358891244  4.360985 -0.783786220   0.14314163
+## interesting -0.034180349  4.849306  0.113992902  -0.08101446
+## burning     -0.032977849  5.299761 -0.004729567   0.10293784
+## last        -0.141355127  6.517185 -0.361286568  -0.05708976
+## dead         0.292772043  6.556776  0.408776720  -0.49753004
+## gay         -2.187443979  6.707828 -2.144766206  18.10563584
+## good        -6.058488146  6.898333  2.217648738  10.87977246
+## punch       -0.012139001  8.943691  0.013748421   0.02940357
+## dog         -0.474337517  9.110857  0.397502989   0.60392626
+## young       61.869850349 13.644381  6.278462897  22.48786039
+## black       11.168506644 16.463261 18.581977734  -7.61329996
+## iron         0.076996681 34.013940 -0.017418980   0.02296256
+## old         21.908146007 83.242324 13.716174628 -18.21731300</code></pre>
+<pre><code>##                  dev_woman    dev_man   dev_girl    dev_boy
+## first          11.84355503 -2.6480178 -4.8603739 -4.3351633
+## gay            -2.18744398  6.7078279 -2.1447662 18.1056358
+## elderly         4.12308087  2.3182462 -0.9203370 -1.1355041
+## single          1.74903874  0.6798855 -0.8486135 -1.5803108
+## great           0.35889124  4.3609850 -0.7837862  0.1431416
+## better         -0.62137368  1.8756180 -0.7517521 -0.4655625
+## middle-aged     2.74134395  1.9977696 -0.6800373 -0.6799583
+## male            0.04922817  0.8351180 -0.6695296  1.7314045
+## right          -0.35057236  1.5209727 -0.5716959 -0.5987044
+## sick           -0.23104503  0.9647828 -0.5095199  0.4939764
+## casual          0.19052252  0.5385002 -0.4661786  0.9230598
+## average         0.81632982  0.1912931 -0.4518542 -0.5270144
+## free            0.29035316  1.7768448 -0.4486746  2.2747131
+## depersonalized  1.91589416  1.2903421 -0.4416910 -0.4461169
+## second          0.27216967  0.3998719 -0.4201554 -0.2518861</code></pre>
+<pre><code>##             dev_woman     dev_man  dev_girl     dev_boy
+## white      1.78375935  2.84768141  7.075760   5.6286478
+## sweet     -0.37902232 -0.68187311  7.091967   2.9245332
+## bad       -3.07803124 -1.28621683  7.325673  33.4467225
+## german     0.23654584 -0.09746006  7.790949   0.4008287
+## skinny     0.13594899 -0.54465404  8.768149   1.6456462
+## new       -1.74904726  0.14931564  9.006719   4.4158821
+## horny     -1.36960371 -0.91244282 10.105962   6.0819063
+## cam       -0.00961754 -0.26075582 11.003619   0.5986347
+## old       21.90814601 83.24232434 13.716175 -18.2173130
+## black     11.16850664 16.46326087 18.581978  -7.6133000
+## sexy       9.92286872 -3.26977765 21.408981  -0.1876102
+## little    -9.37525191 -3.97550911 24.322856  77.7450367
+## beautiful 21.18218121 -6.99789922 29.103948  -4.6873390
+## cute       2.46063400 -0.84967175 30.658211  -0.8579026
+## hot        2.17415085 -2.29058791 72.189792   4.8281562</code></pre>
 <pre><code>##            dev_woman     dev_man   dev_girl     dev_boy
-## old       27.5832305 24.79333340 -1.5578879 -11.9979529
-## black     24.6526831  6.32937048  5.6879631  -5.8818142
-## young     94.3698720  9.17605597  4.6355578  -5.2330083
-## first     13.4082997 -3.72988259 -4.6140512  -5.0643659
-## beautiful 27.2116553 -2.67695498  9.0245397  -3.2682008
-## sexy      13.4679464 -1.58425474  6.3798537  -2.0787572
-## white      9.3325622  1.64543183  2.5343634  -1.6271982
-## naked      7.9672085  1.31412139  1.5826798  -1.4602459
-## single     2.6110422 -0.33077691 -0.9378091  -1.3424562
-## real       2.7166069  0.87751029 -0.2944569  -1.2412045
-## hot        4.6452698 -1.31184607 22.9816463  -1.1791145
-## nice       1.2607276 -0.17908041  0.8496834  -1.0922184
-## mature    26.2598595  1.00748484  0.4826467  -0.8649301
-## cute       2.4108487 -0.83064562  9.4852035  -0.8182351
-## new        0.9596543 -0.07655935  2.6580907  -0.8073265</code></pre>
-<pre class="r"><code>tail(serps_dev_boy, 15)</code></pre>
-<pre><code>##                 dev_woman     dev_man    dev_girl    dev_boy
-## straight       0.05432740  0.43425094 -0.05923564  0.3969794
-## lady           0.41094109 -0.06655063 -0.08425954  0.4485645
-## tommy          0.10070166 -0.05768403  0.04411352  0.4736901
-## golden        -0.05512249 -0.18647384  0.49332092  0.4749711
-## sissy          0.40255473 -0.19395924  0.01630742  0.4968862
-## small         -0.12823264 -0.01849373  1.15636743  0.5944784
-## beast         -0.01358167  0.04649225 -0.01307537  0.6482638
-## handsome       0.11754010 -0.13061041  0.06463670  0.8017622
-## out            0.02256424  0.28245324 -0.14263984  0.8988680
-## big            0.35927020  0.44323328  1.22763862  0.9346090
-## gay           -0.36466709  2.63889236 -0.58652530  1.4993033
-## game           0.09037525 -0.04077311  0.04159855  2.0050320
-## bad           -0.84941723 -0.57944750  2.15484709  2.5350011
-## little        -1.70368774 -0.95634851  8.04732859  5.9366068
-## self-harming -49.55641735 55.19649006 56.95704515 63.6239096</code></pre>
+## old       21.9081460 83.24232434 13.7161746 -18.2173130
+## black     11.1685066 16.46326087 18.5819777  -7.6133000
+## beautiful 21.1821812 -6.99789922 29.1039477  -4.6873390
+## first     11.8435550 -2.64801779 -4.8603739  -4.3351633
+## naked      5.1376053  3.33845002  5.0026071  -3.9557657
+## mature    25.1007776  2.79141717  1.7448243  -2.4124382
+## nice       0.7924295  0.92054856  4.3338311  -1.6390074
+## single     1.7490387  0.67988553 -0.8486135  -1.5803108
+## real       1.5091061  3.54610352  0.6321148  -1.5439057
+## strong     4.3313032  2.31117248 -0.2704791  -1.1972686
+## elderly    4.1230809  2.31824617 -0.9203370  -1.1355041
+## lovely     1.3650663  0.03745268  3.4862966  -0.9005215
+## natural    1.0378148 -0.22965650  1.0128657  -0.8613623
+## cute       2.4606340 -0.84967175 30.6582113  -0.8579026
+## depressed  1.7502309  0.98105281 -0.3035603  -0.7242267</code></pre>
+<pre><code>##            dev_woman     dev_man    dev_girl   dev_boy
+## beast    -0.05675579  0.14000242 -0.01941671  6.244109
+## lady      0.22954219  0.10709682  0.11404872  6.250749
+## sissy     0.26417630 -0.27272687  0.38038085  6.402525
+## straight -0.53647525  1.38569992  0.14044398  6.808891
+## handsome  0.03515349 -0.24435695  0.34656325  8.323608
+## small    -1.46423631 -0.26026555  3.51498686  9.550787
+## fat       1.93236151  1.00032642  1.22960070  9.635718
+## good     -6.05848815  6.89833271  2.21764874 10.879772
+## out      -0.38990619  1.03529784 -0.06523989 11.138978
+## gay      -2.18744398  6.70782789 -2.14476621 18.105636
+## game     -0.05773113  0.00786943  0.29273672 19.808874
+## big      -2.30162474  1.82090205  4.90701956 21.584102
+## young    61.86985035 13.64438075  6.27846290 22.487860
+## bad      -3.07803124 -1.28621683  7.32567284 33.446722
+## little   -9.37525191 -3.97550911 24.32285572 77.745037</code></pre>
 </div>
 
 

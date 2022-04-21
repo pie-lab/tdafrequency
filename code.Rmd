@@ -8,6 +8,7 @@ output:
 
 ```{r, include = F}
 knitr::opts_chunk$set(message = F, warning = F)
+rm(list=ls())
 ```
 
 
@@ -88,12 +89,13 @@ serps_all <- tibble(
   girl = serps_girl$count,
   boy = serps_boy$count
 )
+serps_all <- subset(serps_all, TDA != "self-harming")
 
 serps_all_onlyFreq <- serps_all %>%
   select(-TDA)
 ```
 
-It's also necessary to fix special characters for many of the adjectives.
+It's also necessary to fix special characters for many of the descriptors.
 
 ```{r, warning=FALSE, message=FALSE, label = "data-prep_serps_special_characters"}
 # fix characters
@@ -161,9 +163,9 @@ round(serps_bonferroni_ttests$p.value, 3)
 ```
 
 ```{r, eval = F, echo = F, label = "serps_ttest_tables_apa"}
-apa_table(serps_uncorrected_ttests$p.value, caption = "P-values of uncorrected t-tests comparing mean adjective SERPs count by person-word.", placement = "h")
-apa_table(serps_holm_ttests$p.value, caption = "P-values of Holm-corrected t-tests comparing mean adjective SERPs count by person-word.", placement = "h")
-apa_table(serps_bonferroni_ttests$p.value, caption = "P-values of Bonferroni-corrected t-tests comparing mean adjective SERPs count by person-word.", placement = "h")
+apa_table(serps_uncorrected_ttests$p.value, caption = "P-values of uncorrected t-tests comparing mean descriptor SERPs count by person-word.", placement = "h")
+apa_table(serps_holm_ttests$p.value, caption = "P-values of Holm-corrected t-tests comparing mean descriptor SERPs count by person-word.", placement = "h")
+apa_table(serps_bonferroni_ttests$p.value, caption = "P-values of Bonferroni-corrected t-tests comparing mean descriptor SERPs count by person-word.", placement = "h")
 ```
 
 
@@ -174,7 +176,7 @@ Now that we have compared the raw means in the prior step, we create a table of 
 ```{r, warning=FALSE, "analyses_serps_zscores"}
 serps_all_zscores <- serps_all %>%
   mutate(
-    TDA = serps_person$term,
+    TDA = serps_all$TDA,
     person_zscore = (person - mean(person, na.rm = TRUE))/sd(person, na.rm = TRUE),
     woman_zscore = (woman - mean(woman, na.rm = TRUE))/sd(woman, na.rm = TRUE),
     man_zscore = (man - mean(man, na.rm = TRUE))/sd(man, na.rm = TRUE),
@@ -292,7 +294,7 @@ present_table2 <- serps_freq_index %>%
   select(TDA, freq_index)
 
 #apa_table(present_table2[1:10,],
-        #  caption = "Top 10 adjectives with the highest frequency index.",
+        #  caption = "Top 10 descriptors with the highest frequency index.",
         #  placement= "h")
 ```
 
@@ -365,9 +367,10 @@ ngrams_all_avgfreq <- tibble(
   freq_avg_girl = ngrams_girl$freq_avg_all_years,
   freq_avg_boy = ngrams_boy$freq_avg_all_years
 )
+ngrams_all_avgfreq <- subset(ngrams_all_avgfreq, TDA != "self-harming")
 ```
 
-It's also necessary to fix special characters for many of the adjectives.
+It's also necessary to fix special characters for many of the descriptors.
 
 ```{r, warning=FALSE, message=FALSE, label = "data-prep_ngrams_special_characters"}
 # fix characters
@@ -446,13 +449,13 @@ round(ngrams_bonferroni_ttests$p.value, 3)
 # These tables are unnecessary for the website version
 
 apa_table(ngrams_uncorrected_ttests$p.value,
-          caption = "P-values of uncorrected t-tests comparing mean adjective ngrams frequency by person-word.",
+          caption = "P-values of uncorrected t-tests comparing mean descriptor ngrams frequency by person-word.",
           placement= "h")
 apa_table(ngrams_holm_ttests$p.value,
-          caption = "P-values of Holm-corrected t-tests comparing mean adjective ngrams frequency by person-word.",
+          caption = "P-values of Holm-corrected t-tests comparing mean descriptor ngrams frequency by person-word.",
           placement= "h")
 apa_table(ngrams_bonferroni_ttests$p.value,
-          caption = "P-values of Bonferroni-corrected t-tests comparing mean adjective ngrams frequency by person-word.",
+          caption = "P-values of Bonferroni-corrected t-tests comparing mean descriptor ngrams frequency by person-word.",
           placement= "h")
 ```
 
@@ -471,6 +474,8 @@ ngrams_all_zscores <- tibble(
   girl_zscore = ngrams_girl$zscore,
   boy_zscore = ngrams_boy$zscore
 )
+ngrams_all_zscores <- subset(ngrams_all_zscores, TDA != "self-harming")
+
 ```
 
 ```{r, eval = T, echo = T, label = "save_ngrams_zscores"}
@@ -588,7 +593,7 @@ present_table1 <- ngrams_freq_index %>%
   select(TDA, freq_index)
 
 # apa_table(present_table1[1:10,],
-        # caption = "Top 10 adjectives with the highest frequency index.",
+        # caption = "Top 10 descriptors with the highest frequency index.",
           # placement= "h")
 ```
 
