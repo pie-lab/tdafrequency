@@ -32,6 +32,8 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
@@ -276,7 +278,7 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">Analytic Code</h1>
-<h4 class="date">Last updated 2022-04-20</h4>
+<h4 class="date">Last updated 2022-04-21</h4>
 
 </div>
 
@@ -775,33 +777,1137 @@ colnames(serps) &lt;- c(&quot;person_serps&quot;, &quot;woman_serps&quot;, &quot
 
 all &lt;- data.frame(serps, ngrams)
 all_cor &lt;- corr.test(all, use=&quot;pairwise&quot;, method = &quot;pearson&quot;, alpha = .05, ci=TRUE)
-round(all_cor$r, 3)</code></pre>
-<pre><code>##               person_serps woman_serps man_serps girl_serps boy_serps index_serps
-## person_serps         1.000       0.063     0.037      0.037     0.032       0.068
-## woman_serps          0.063       1.000     0.708      0.645     0.508       0.924
-## man_serps            0.037       0.708     1.000      0.532     0.380       0.764
-## girl_serps           0.037       0.645     0.532      1.000     0.583       0.743
-## boy_serps            0.032       0.508     0.380      0.583     1.000       0.696
-## index_serps          0.068       0.924     0.764      0.743     0.696       1.000
-## person_ngrams        0.163       0.382     0.291      0.233     0.265       0.432
-## woman_ngrams         0.052       0.909     0.842      0.559     0.471       0.888
-## man_ngrams           0.042       0.813     0.902      0.524     0.472       0.844
-## girl_ngrams          0.023       0.411     0.395      0.488     0.829       0.565
-## boy_ngrams           0.025       0.453     0.561      0.519     0.812       0.617
-## index_ngrams         0.054       0.819     0.808      0.603     0.704       0.901
-##               person_ngrams woman_ngrams man_ngrams girl_ngrams boy_ngrams index_ngrams
-## person_serps          0.163        0.052      0.042       0.023      0.025        0.054
-## woman_serps           0.382        0.909      0.813       0.411      0.453        0.819
-## man_serps             0.291        0.842      0.902       0.395      0.561        0.808
-## girl_serps            0.233        0.559      0.524       0.488      0.519        0.603
-## boy_serps             0.265        0.471      0.472       0.829      0.812        0.704
-## index_serps           0.432        0.888      0.844       0.565      0.617        0.901
-## person_ngrams         1.000        0.371      0.339       0.198      0.214        0.408
-## woman_ngrams          0.371        1.000      0.961       0.454      0.557        0.920
-## man_ngrams            0.339        0.961      1.000       0.469      0.610        0.930
-## girl_ngrams           0.198        0.454      0.469       1.000      0.956        0.728
-## boy_ngrams            0.214        0.557      0.610       0.956      1.000        0.805
-## index_ngrams          0.408        0.920      0.930       0.728      0.805        1.000</code></pre>
+#round(all_cor$r, 3)</code></pre>
+<pre class="r"><code>library(apaTables)
+all_cor_tab = apa.cor.table(all, show.sig.stars = FALSE, filename = &quot;~/Downloads/cortable.html&quot;)
+ all_cor_tab$table.body %&gt;%
+   as.data.frame() %&gt;% 
+   #remove mean annd sd
+   select(-M, -SD) %&gt;% 
+   kable(booktabs = T,align = c(&quot;l&quot;, rep(&quot;c&quot;, 11)), 
+         row.names = F) %&gt;% kable_classic()</code></pre>
+<table class=" lightable-classic" style='font-family: "Arial Narrow", "Source Sans Pro", sans-serif; margin-left: auto; margin-right: auto;'>
+<thead>
+<tr>
+<th style="text-align:left;">
+Variable
+</th>
+<th style="text-align:center;">
+1
+</th>
+<th style="text-align:center;">
+2
+</th>
+<th style="text-align:center;">
+3
+</th>
+<th style="text-align:center;">
+4
+</th>
+<th style="text-align:center;">
+5
+</th>
+<th style="text-align:center;">
+6
+</th>
+<th style="text-align:center;">
+7
+</th>
+<th style="text-align:center;">
+8
+</th>
+<th style="text-align:center;">
+9
+</th>
+<th style="text-align:center;">
+10
+</th>
+<th style="text-align:center;">
+11
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<ol style="list-style-type: decimal">
+<li>person_serps
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="2" style="list-style-type: decimal">
+<li>woman_serps
+</td>
+<td style="text-align:center;">
+.06
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:center;">
+[.05, .08]
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="3" style="list-style-type: decimal">
+<li>man_serps
+</td>
+<td style="text-align:center;">
+.04
+</td>
+<td style="text-align:center;">
+.71
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:center;">
+[.02, .05]
+</td>
+<td style="text-align:center;">
+[.70, .72]
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="4" style="list-style-type: decimal">
+<li>girl_serps
+</td>
+<td style="text-align:center;">
+.04
+</td>
+<td style="text-align:center;">
+.64
+</td>
+<td style="text-align:center;">
+.53
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:center;">
+[.02, .05]
+</td>
+<td style="text-align:center;">
+[.64, .65]
+</td>
+<td style="text-align:center;">
+[.52, .54]
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="5" style="list-style-type: decimal">
+<li>boy_serps
+</td>
+<td style="text-align:center;">
+.03
+</td>
+<td style="text-align:center;">
+.51
+</td>
+<td style="text-align:center;">
+.38
+</td>
+<td style="text-align:center;">
+.58
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:center;">
+[.02, .05]
+</td>
+<td style="text-align:center;">
+[.50, .52]
+</td>
+<td style="text-align:center;">
+[.37, .39]
+</td>
+<td style="text-align:center;">
+[.57, .59]
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="6" style="list-style-type: decimal">
+<li>index_serps
+</td>
+<td style="text-align:center;">
+.07
+</td>
+<td style="text-align:center;">
+.92
+</td>
+<td style="text-align:center;">
+.76
+</td>
+<td style="text-align:center;">
+.74
+</td>
+<td style="text-align:center;">
+.70
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:center;">
+[.05, .08]
+</td>
+<td style="text-align:center;">
+[.92, .93]
+</td>
+<td style="text-align:center;">
+[.76, .77]
+</td>
+<td style="text-align:center;">
+[.74, .75]
+</td>
+<td style="text-align:center;">
+[.69, .70]
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="7" style="list-style-type: decimal">
+<li>person_ngrams
+</td>
+<td style="text-align:center;">
+.16
+</td>
+<td style="text-align:center;">
+.38
+</td>
+<td style="text-align:center;">
+.29
+</td>
+<td style="text-align:center;">
+.23
+</td>
+<td style="text-align:center;">
+.27
+</td>
+<td style="text-align:center;">
+.43
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:center;">
+[.14, .19]
+</td>
+<td style="text-align:center;">
+[.36, .41]
+</td>
+<td style="text-align:center;">
+[.27, .32]
+</td>
+<td style="text-align:center;">
+[.21, .26]
+</td>
+<td style="text-align:center;">
+[.24, .29]
+</td>
+<td style="text-align:center;">
+[.41, .45]
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="8" style="list-style-type: decimal">
+<li>woman_ngrams
+</td>
+<td style="text-align:center;">
+.05
+</td>
+<td style="text-align:center;">
+.91
+</td>
+<td style="text-align:center;">
+.84
+</td>
+<td style="text-align:center;">
+.56
+</td>
+<td style="text-align:center;">
+.47
+</td>
+<td style="text-align:center;">
+.89
+</td>
+<td style="text-align:center;">
+.37
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:center;">
+[.02, .08]
+</td>
+<td style="text-align:center;">
+[.90, .91]
+</td>
+<td style="text-align:center;">
+[.83, .85]
+</td>
+<td style="text-align:center;">
+[.54, .58]
+</td>
+<td style="text-align:center;">
+[.45, .49]
+</td>
+<td style="text-align:center;">
+[.88, .89]
+</td>
+<td style="text-align:center;">
+[.34, .40]
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="9" style="list-style-type: decimal">
+<li>man_ngrams
+</td>
+<td style="text-align:center;">
+.04
+</td>
+<td style="text-align:center;">
+.81
+</td>
+<td style="text-align:center;">
+.90
+</td>
+<td style="text-align:center;">
+.52
+</td>
+<td style="text-align:center;">
+.47
+</td>
+<td style="text-align:center;">
+.84
+</td>
+<td style="text-align:center;">
+.34
+</td>
+<td style="text-align:center;">
+.96
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:center;">
+[.02, .07]
+</td>
+<td style="text-align:center;">
+[.81, .82]
+</td>
+<td style="text-align:center;">
+[.90, .91]
+</td>
+<td style="text-align:center;">
+[.51, .54]
+</td>
+<td style="text-align:center;">
+[.45, .49]
+</td>
+<td style="text-align:center;">
+[.84, .85]
+</td>
+<td style="text-align:center;">
+[.31, .36]
+</td>
+<td style="text-align:center;">
+[.96, .96]
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="10" style="list-style-type: decimal">
+<li>girl_ngrams
+</td>
+<td style="text-align:center;">
+.02
+</td>
+<td style="text-align:center;">
+.41
+</td>
+<td style="text-align:center;">
+.39
+</td>
+<td style="text-align:center;">
+.49
+</td>
+<td style="text-align:center;">
+.83
+</td>
+<td style="text-align:center;">
+.57
+</td>
+<td style="text-align:center;">
+.20
+</td>
+<td style="text-align:center;">
+.45
+</td>
+<td style="text-align:center;">
+.47
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:center;">
+[-.01, .06]
+</td>
+<td style="text-align:center;">
+[.38, .44]
+</td>
+<td style="text-align:center;">
+[.37, .42]
+</td>
+<td style="text-align:center;">
+[.46, .51]
+</td>
+<td style="text-align:center;">
+[.82, .84]
+</td>
+<td style="text-align:center;">
+[.54, .59]
+</td>
+<td style="text-align:center;">
+[.16, .23]
+</td>
+<td style="text-align:center;">
+[.43, .48]
+</td>
+<td style="text-align:center;">
+[.44, .50]
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="11" style="list-style-type: decimal">
+<li>boy_ngrams
+</td>
+<td style="text-align:center;">
+.02
+</td>
+<td style="text-align:center;">
+.45
+</td>
+<td style="text-align:center;">
+.56
+</td>
+<td style="text-align:center;">
+.52
+</td>
+<td style="text-align:center;">
+.81
+</td>
+<td style="text-align:center;">
+.62
+</td>
+<td style="text-align:center;">
+.21
+</td>
+<td style="text-align:center;">
+.56
+</td>
+<td style="text-align:center;">
+.61
+</td>
+<td style="text-align:center;">
+.96
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:center;">
+[-.01, .06]
+</td>
+<td style="text-align:center;">
+[.43, .48]
+</td>
+<td style="text-align:center;">
+[.54, .58]
+</td>
+<td style="text-align:center;">
+[.49, .54]
+</td>
+<td style="text-align:center;">
+[.80, .82]
+</td>
+<td style="text-align:center;">
+[.60, .64]
+</td>
+<td style="text-align:center;">
+[.18, .25]
+</td>
+<td style="text-align:center;">
+[.53, .58]
+</td>
+<td style="text-align:center;">
+[.59, .63]
+</td>
+<td style="text-align:center;">
+[.95, .96]
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<ol start="12" style="list-style-type: decimal">
+<li>index_ngrams
+</td>
+<td style="text-align:center;">
+.05
+</td>
+<td style="text-align:center;">
+.82
+</td>
+<td style="text-align:center;">
+.81
+</td>
+<td style="text-align:center;">
+.60
+</td>
+<td style="text-align:center;">
+.70
+</td>
+<td style="text-align:center;">
+.90
+</td>
+<td style="text-align:center;">
+.41
+</td>
+<td style="text-align:center;">
+.92
+</td>
+<td style="text-align:center;">
+.93
+</td>
+<td style="text-align:center;">
+.73
+</td>
+<td style="text-align:center;">
+.81
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:center;">
+[.03, .08]
+</td>
+<td style="text-align:center;">
+[.81, .83]
+</td>
+<td style="text-align:center;">
+[.80, .82]
+</td>
+<td style="text-align:center;">
+[.59, .62]
+</td>
+<td style="text-align:center;">
+[.69, .72]
+</td>
+<td style="text-align:center;">
+[.90, .91]
+</td>
+<td style="text-align:center;">
+[.38, .43]
+</td>
+<td style="text-align:center;">
+[.92, .92]
+</td>
+<td style="text-align:center;">
+[.93, .93]
+</td>
+<td style="text-align:center;">
+[.71, .74]
+</td>
+<td style="text-align:center;">
+[.79, .82]
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+</tbody>
+</table></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol></li>
+</ol>
 </div>
 <div id="comparison-with-roivainen-2013" class="section level1">
 <h1>Comparison with Roivainen (2013)</h1>

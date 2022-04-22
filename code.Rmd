@@ -606,8 +606,20 @@ colnames(serps) <- c("person_serps", "woman_serps", "man_serps", "girl_serps", "
 
 all <- data.frame(serps, ngrams)
 all_cor <- corr.test(all, use="pairwise", method = "pearson", alpha = .05, ci=TRUE)
-round(all_cor$r, 3)
+#round(all_cor$r, 3)
 ```
+
+```{r sara cor table, results = 'asis'}
+library(apaTables)
+all_cor_tab = apa.cor.table(all, show.sig.stars = FALSE, filename = "~/Downloads/cortable.html")
+ all_cor_tab$table.body %>%
+   as.data.frame() %>% 
+   #remove mean annd sd
+   select(-M, -SD) %>% 
+   kable(booktabs = T,align = c("l", rep("c", 11)), 
+         row.names = F) %>% kable_classic()
+```
+
 
 
 # Comparison with Roivainen (2013)
