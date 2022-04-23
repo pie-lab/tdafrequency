@@ -6,7 +6,7 @@ navbar:
     - text: Estimates based on Search Engine Results  
       href: serps-frequency.html
     - text: Estimates based on Books Results  
-      href: ngrams-frequency.html
+      href: books-frequency.html
     - text: Code  
       href: code.html
   right:

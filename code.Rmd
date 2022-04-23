@@ -11,6 +11,7 @@ knitr::opts_chunk$set(message = F, warning = F)
 rm(list=ls())
 ```
 
+<br>
 
 # Prepare the environment
 
@@ -22,11 +23,16 @@ library(R.utils) # just for the insert() function
 library(tidyverse) # for data cleaning and manipulation
 library(matrixStats)
 library(kableExtra)
+library(apaTables)
 
 options(scipen=999)
 ```
 
+<br>
+
 # Derive the search engine frequency estimates
+
+<br> 
 
 ## Data loading and preparation
 
@@ -40,7 +46,7 @@ serps_girl <- read_csv(here("../../TDAfreqdata/SERPs/serps_rawdata_file_girl.csv
 serps_boy <- read_csv(here("../../TDAfreqdata/SERPs/serps_rawdata_file_boy.csv"))
 ```
 
-Once loaded, the data are re-coded in the instances where empty results are automatically replaced with results for similarly spelled terms. See the manuscript for more description of this issue. Once cleaned, the counts from each raw data file are combined into a single data frame with all of the TDA + noun pairings.
+Once loaded, the data are re-coded in the instances where empty results are automatically replaced with results for similarly spelled terms. See the manuscript for more description of this issue. Once cleaned, the counts from each raw data file are combined into a single data frame with all of the descriptor + noun pairings.
 
 ```{r, warning=FALSE, message=FALSE, label = "data-prep_serps"}
 NOUNS_LIST <- c("person", "woman", "man", "girl", "boy")
@@ -129,6 +135,11 @@ serps_all$TDA <- sub("zo√∂id", "zoöid", serps_all$TDA)
 serps_all$TDA <- sub("zo√∂philous", "zoöphilous", serps_all$TDA)
 ```
 
+<br>
+
+## Analyses
+
+<br> 
 
 ### 1. Calculate overall means and compare differences using t-tests
 
@@ -151,7 +162,7 @@ serps_holm_ttests <- pairwise.t.test(x = serps_all_longForm$value,
                                              p.adjust.method = "holm")
 ```
 
-Next, show the p-values for the uncorrected t-tests of means, then the holm-corrected p-values. None of the t-tests are significant when using corrections of either type. If using uncorrected means (not recommended), the only significant difference in means is for girl-woman; the p-value for girl-person is just above the significance threshold at p>.05.
+Next, show the p-values for the uncorrected t-tests of means, then the holm-corrected p-values. Only boy-girl and girl-woman are significant when using the holm-correction. If using uncorrected means (not recommended), boy-man and girl-person are also significant at *p* < .05.
 
 ```{r, warning=FALSE, label = "analyses_serps_means_pvalues"}
 round(serps_uncorrected_ttests$p.value, 3)
@@ -163,10 +174,11 @@ apa_table(serps_uncorrected_ttests$p.value, caption = "P-values of uncorrected t
 apa_table(serps_holm_ttests$p.value, caption = "P-values of Holm-corrected t-tests comparing mean descriptor SERPs count by person-word.", placement = "h")
 ```
 
+<br>
 
 ### 2. Calculate z-scores
 
-Now that we have compared the raw means in the prior step, we create a table of the zscores of the 10-year averages for each TDA + noun ngram. These are the data posted on Dataverse, as shown below.
+Now that we have compared the raw means in the prior step, we create a table of the z-scores of the 10-year averages for each descriptor + noun ngram. These are the data posted on Dataverse, as shown below.
 
 ```{r, warning=FALSE, "analyses_serps_zscores"}
 serps_all_zscores <- serps_all %>%
@@ -187,7 +199,7 @@ write_csv(serps_all_zscores,
           file = here("data/serps/serps_all_zscores.csv"))
 ```
 
-This csv file (above) has been posted publicly on Dataverse (see doi). All subsequent analyses of the search engine results data are based on this file, including the database of search engine estimates (see [here](https://pie-lab.github.io/tdafrequency/serps-frequency.html)).
+This csv file (above) has been posted on Dataverse (see doi). All subsequent analyses of the search engine results data are based on this file, including the database of search engine estimates (see [here](https://pie-lab.github.io/tdafrequency/serps-frequency.html)).
 
 *ADD DOI LINK TO THE SENTENCE ABOVE*
 
@@ -210,60 +222,17 @@ data <- as.data.frame(TDA_data_scored.tab)
 rm(TDA_data_scored.tab)
 ```
 
+<br>
 
-### 3. Correlations between the 5 TDA + noun vectors
+### 3. Calculate the search engine frequency index
 
-Note that there is a more nicely formatted table in the manuscript referenced at the top of this page.
-
-```{r, warning=FALSE, label = "analyses_serps_cors"}
-serps_zscores <- subset(serps_all_zscores, select = -c(TDA))
-cor_table_serps <- corr.test(serps_zscores, 
-                                    use = "pairwise",
-                                    method = "pearson",
-                                    alpha = .05,
-                                    ci = TRUE)
-
-cor_serps_ci <- tibble(
-  group1 = c("person", "person", "person", "person", "woman", 
-             "woman", "woman", "man", "man", "girl"),
-  group2 = c("woman", "man", "girl", "boy", "man", 
-             "girl", "boy", "girl", "boy", "boy"),
-  lower_bound = cor_table_serps$ci.adj$lower,
-  r = cor_table_serps$ci$r,
-  upper_bound = cor_table_serps$ci.adj$upper,
-  p_value = cor_table_serps$ci2$p
-)
-```
-
-```{r , echo = F, label = "serps_cor_tables_apa"}
-cor_serps_ci <- as.data.frame(cor_serps_ci)
-cor_serps_ci$p_value <- round(cor_serps_ci$p_value, 3)
-cor_serps_ci$lower_bound <- round(cor_serps_ci$lower_bound, 3)
-cor_serps_ci$r <- round(cor_serps_ci$r, 3)
-cor_serps_ci$upper_bound <- round(cor_serps_ci$upper_bound, 3)
-
-#apa_table(cor_table_serps$r,
-#          caption = "Correlations between SERPs person-words.",
-#          placement= "h")
-#apa_table(cor_serps_ci,
-#          caption = "Correlations between SERPs person-words, with confidence intervals.",
-#          placement= "h")
-```
-
-The table below shows the correlations between noun pairs with the lower and upper bounds of the 95% confidence intervals.
-
-```{r, warning=FALSE, echo = F, label = "analyses_serps_cors_cis"}
-cor_serps_ci
-```
-
-
-### 4. Calculate the search engine frequency index
-
-Here, we find the frequencies index by finding the average of the z-scores across all 5 TDA + noun pairs for each TDA *after* removing the max z-score for each TDA. In other words, find the average among all but the largest z-score for each TDA. This approach is used to reduce the skew introduced in a few cases where the pairing of a specific TDA + noun is part of a song, book, famous individual, etc.
+Here, we find the frequencies index by finding the average of the z-scores across all 5 descriptor + noun pairs for each descriptor *after* removing the max z-score for each descriptor. In other words, find the average among all but the largest z-score for each descriptor. This approach is used to reduce the skew introduced in a few cases where the pairing of a specific descriptor + noun is part of a song, book, famous individual, etc.
 
 Output from the following section of code is used to populate the serps column of the [database of frequencies](https://pie-lab.github.io/tdafrequency/serps-frequency.html) provided on this website.
 
 ```{r, warning=FALSE, label = "analyses_serps_freq-index"}
+serps_zscores <- subset(serps_all_zscores, select = -c(TDA))
+
 bucket <- c()
 for (j in 1:nrow(serps_zscores)) 
 {
@@ -286,17 +255,40 @@ serps_freq_index <- serps_zscores %>%
 write_csv(serps_freq_index, 
           file = here("data/serps/serps_freq_index.csv"))
 
-present_table2 <- serps_freq_index %>%
-  arrange(desc(freq_index)) %>%
-  select(TDA, freq_index)
+# present_table2 <- serps_freq_index %>%
+#   arrange(desc(freq_index)) %>%
+#   select(TDA, freq_index)
 
 #apa_table(present_table2[1:10,],
         #  caption = "Top 10 descriptors with the highest frequency index.",
         #  placement= "h")
 ```
 
+<br>
 
-# Derive the ngram frequency estimates
+### 4. Correlations between the 5 descriptor + noun vectors
+
+The following code formats the data frame for the table.
+```{r, warning=FALSE, label = "analyses_serps_cors"}
+serps_cor_tab <- subset(serps_freq_index, select = -c(TDA))
+colnames(serps_cor_tab) <- c("descriptor+person serps", "descriptor+woman serps", "descriptor+man serps", "descriptor+girl serps", "descriptor+boy serps", "frequency index serps")
+```
+
+The table below shows the correlations between descriptor + noun forms with the lower and upper bounds of the 95% confidence intervals. All the correlations are statistically significant but those involving +person are much lower than the rest. Among the other noun forms, woman-man and woman-girl are the strongest. Without exception, the highest correlations for each noun form is with the index, as expected given the overlap in content.
+
+```{r, echo=F, warning=FALSE, label = "analyses_serps_cors_table"}
+serps_cor_table = apa.cor.table(serps_cor_tab, show.sig.stars = FALSE, filename = "~/Downloads/serps_cortable.html")
+ serps_cor_table$table.body %>%
+   as.data.frame() %>%
+   #remove mean and sd
+   select(-M, -SD) %>%
+   kable(booktabs = T,align = c("l", rep("c", 11)), table.attr = "style='width:60%;'",
+         row.names = F) %>% kable_classic()
+```
+
+<br>
+
+# Derive the books frequency estimates
 
 ## Data loading and preparation
 
@@ -310,7 +302,7 @@ ngrams_girl <- read_csv("../../TDAfreqdata/ngrams/ngrams_rawdata_file_girl.csv")
 ngrams_boy <- read_csv("../../TDAfreqdata/ngrams/ngrams_rawdata_file_boy.csv")
 ```
 
-Once loaded, we derive the means for each term + noun ngram across the 10 year period from 2010 to 2019. These averages are then combined in a new data frame.
+Once loaded, we derive the means for each descriptor + noun form across the 10 year period from 2010 to 2019. These averages are then combined in a new data frame.
 
 ```{r, warning=FALSE, message=FALSE, label = "data-prep_ngrams"}
 NOUNS_LIST <- c("person", "woman", "man", "girl", "boy")
@@ -401,12 +393,15 @@ ngrams_all_avgfreq$TDA <- sub("zo√∂id", "zoöid", ngrams_all_avgfreq$TDA)
 ngrams_all_avgfreq$TDA <- sub("zo√∂philous", "zoöphilous", ngrams_all_avgfreq$TDA)
 ```
 
+<br>
 
 ## Analyses
 
+<br> 
+
 ### 1. Calculate overall means and compare differences using t-tests
 
-Calculate the overall means for each of the TDA + noun vectors. In other words, find the means for all the TDA + person ngrams, TDA + man ngrams, woman, girl, and boy. Then compare the means with t-tests. This is repeated using the holm corrections.
+Calculate the overall means for each of the descriptor + noun vectors. In other words, find the means for all the descriptor + person ngrams, descriptor + man ngrams, woman, girl, and boy. Then compare the means with t-tests. This is repeated using the holm corrections.
 
 ```{r, warning=FALSE, label = "analyses_ngrams_means"}
 # drop the column of TDA labels
@@ -431,7 +426,7 @@ ngrams_holm_ttests <- pairwise.t.test(x = ngrams_all_longForm$value,
                                              p.adjust.method = "holm")
 ```
 
-Next, show the p-values for the uncorrected t-tests of means, then the holm-corrected p-values. None of the t-tests are significant when using corrections of either type. If using uncorrected means (not recommended), the largest differences in means are for boy-man, person-man, girl-man, woman-man (in that order).
+Next, show the p-values for the uncorrected t-tests of means, then the holm-corrected p-values. None of the t-tests are significant when using the corrected p-values. If using uncorrected values (not recommended), the largest differences in means are for boy-man, person-man, girl-man, woman-man (in that order).
 
 ```{r, warning=FALSE, label = "analyses_ngrams_means_pvalues"}
 round(ngrams_uncorrected_ttests$p.value, 3)
@@ -449,10 +444,11 @@ apa_table(ngrams_holm_ttests$p.value,
           placement= "h")
 ```
 
+<br> 
 
 ### 2. Calculate z-scores
 
-Now that we have compared the raw means in the prior step, we create a table of the zscores of the 10-year averages for each TDA + noun ngram. These are the data posted on Dataverse, as shown below.
+Now that we have compared the raw means in the prior step, we create a table of the z-scores of the 10-year averages for each descriptor + noun form. These are the data posted on Dataverse, as shown below.
 
 ```{r, warning=FALSE, label = "analyses_ngrams_zscores"}
 ngrams_all_zscores <- tibble(
@@ -473,7 +469,7 @@ write_csv(ngrams_all_zscores,
           file = here("data/ngrams/ngrams_all_zscores.csv"))
 ```
 
-This csv file (above) has been posted publicly on Dataverse (see doi). All subsequent analyses of the ngrams data are based on this file, including the database of ngram estimates (see [here](https://pie-lab.github.io/tdafrequency/ngrams-frequency.html)).
+This csv file (above) has been posted on Dataverse (see doi). All subsequent analyses of the books data are based on this file, including the database of books estimates (see [here](https://pie-lab.github.io/tdafrequency/books-frequency.html)).
 
 *ADD DOI LINK TO THE SENTENCE ABOVE*
 
@@ -496,61 +492,18 @@ data <- as.data.frame(TDA_data_scored.tab)
 rm(TDA_data_scored.tab)
 ```
 
+<br> 
 
-### 3. Correlations between the 5 TDA + noun vectors
+### 3. Calculate the books frequency index
 
-Note that there is a more nicely formatted table in the manuscript referenced at the top of this page.
+Here, we find the frequencies index by finding the average of the z-scores across all 5 descriptor + noun pairs for each descriptor *after* removing the max z-score for each descriptor. In other words, find the average among all but the largest z-score for each descriptor. This approach is used to reduce the skew introduced in a few cases where the pairing of a specific descriptor + noun is part of a song, book, famous individual, etc.
 
-```{r, warning=FALSE, label = "analyses_ngrams_cors"}
-# drop the column of TDA labels
-ngrams_zscores <- subset(ngrams_all_zscores, select = -c(TDA, coded))
-cor_ngrams <- corr.test(ngrams_zscores,
-                        use = "pairwise", 
-                        method = "pearson", 
-                        alpha = 0.05,
-                        ci = TRUE)
-
-cor_ngrams_ci <- tibble(
-  noun1 = c("person", "person", "person", "person", "woman", 
-             "woman", "woman", "man", "man", "girl"),
-  noun2 = c("woman", "man", "girl", "boy", "man", 
-             "girl", "boy", "girl", "boy", "boy"),
-  lower_bound = cor_ngrams$ci.adj$lower,
-  r = cor_ngrams$ci$r,
-  upper_bound = cor_ngrams$ci.adj$upper,
-  p_value = cor_ngrams$ci2$p
-)
-```
-
-```{r , echo = F, label = "ngrams_cor_tables_apa"}
-cor_ngrams_ci <- as.data.frame(cor_ngrams_ci)
-cor_ngrams_ci$p_value <- round(cor_ngrams_ci$p_value, 3)
-cor_ngrams_ci$lower_bound <- round(cor_ngrams_ci$lower_bound, 3)
-cor_ngrams_ci$r <- round(cor_ngrams_ci$r, 3)
-cor_ngrams_ci$upper_bound <- round(cor_ngrams_ci$upper_bound, 3)
-
-# apa_table(cor_ngrams$r,
-#           caption = "Correlations between ngram person-words.",
-#           placement= "h")
-# apa_table(cor_ngrams_ci,
-#           caption = "Correlations between ngram person-words, with confidence intervals.",
-#           placement= "h")
-```
-
-The table below shows the correlations between noun pairs with the lower and upper bounds of the 95% confidence intervals.
-
-```{r, warning=FALSE, echo = F, label = "analyses_ngrams_cors_cis"}
-cor_ngrams_ci
-```
-
-
-### 4. Calculate the Ngrams frequency index
-
-Here, we find the frequencies index by finding the average of the z-scores across all 5 TDA + noun pairs for each TDA *after* removing the max z-score for each TDA. In other words, find the average among all but the largest z-score for each TDA. This approach is used to reduce the skew introduced in a few cases where the pairing of a specific TDA + noun is part of a song, book, famous individual, etc.
-
-Output from the following section of code is used to populate the ngram column of the [database of frequencies](https://pie-lab.github.io/tdafrequency/ngrams-frequency.html) provided on this website.
+Output from the following section of code is used to populate the ngram column of the [database of frequencies](https://pie-lab.github.io/tdafrequency/books-frequency.html) provided on this website.
 
 ```{r, warning=FALSE, label = "analyses_ngrams_freq-index"}
+# drop the column of TDA labels
+ngrams_zscores <- subset(ngrams_all_zscores, select = -c(TDA, coded))
+
 bucket <- c()
 for (j in 1:nrow(ngrams_zscores)) 
 {
@@ -580,24 +533,48 @@ ngrams_freq_index <- ngrams_freq_index %>%
 write_csv(ngrams_freq_index, 
           file = here("data/ngrams/ngrams_freq_index.csv"))
 
-present_table1 <- ngrams_freq_index %>%
-  arrange(desc(freq_index)) %>%
-  select(TDA, freq_index)
+# present_table1 <- ngrams_freq_index %>%
+#   arrange(desc(freq_index)) %>%
+#   select(TDA, freq_index)
 
 # apa_table(present_table1[1:10,],
         # caption = "Top 10 descriptors with the highest frequency index.",
           # placement= "h")
 ```
 
+<br>
 
-# Correlation between search engine and ngram estimates
+### 4. Correlations between the 5 descriptor + noun vectors
 
-This is done by creating a large data frame with all the search engine and ngram estimates for each descriptor. Note that (1) this analysis overlaps with the correlational analyses previously reported within type, and (2) there is a more nicely formatted table in the manuscript referenced at the top of this page. In the manuscript, we report the holm-adjusted confidence intervals around the correlations.
+The following code formats the data frame for the table.
+
+```{r, warning=FALSE, label = "analyses_ngrams_cors"}
+ngrams_cor_tab <- subset(ngrams_freq_index, select = -c(TDA))
+colnames(ngrams_cor_tab) <- c("descriptor+person books", "descriptor+woman books", "descriptor+man books", "descriptor+girl books", "descriptor+boy books", "frequency index books")
+```
+
+The table below shows the correlations between descriptor + noun forms with the lower and upper bounds of the 95% confidence intervals. As with the search engine results, all the correlations are statistically significant, and those involving +person are lower than the rest (in this case the difference is less pronounced). Note that the woman-man and girl-boy correlations are nearly perfect.
+
+```{r, echo=F, warning=FALSE, label = "analyses_ngrams_cors_table"}
+ngrams_cor_table = apa.cor.table(ngrams_cor_tab, show.sig.stars = FALSE, filename = "~/Downloads/ngrams_cortable.html")
+ ngrams_cor_table$table.body %>%
+   as.data.frame() %>%
+   #remove mean and sd
+   select(-M, -SD) %>%
+   kable(booktabs = T,align = c("l", rep("c", 11)), table.attr = "style='width:60%;'",
+         row.names = F) %>% kable_classic()
+```
+
+<br>
+
+# Correlation between search engine and books estimates
+
+This is done by creating a large data frame with all the search engine and books estimates for each descriptor. Note that this analysis overlaps with the correlational analyses previously reported within type, but it's easier to see it all in one table
 
 ```{r, warning=FALSE, R.options = list(width = 90), label = "serp_ngram_correlations"}
 ngrams <- as.data.frame(ngrams_freq_index)[,c("person_zscore", "woman_zscore", "man_zscore", "girl_zscore", "boy_zscore", "freq_index")]
 rownames(ngrams) <- as.data.frame(ngrams_freq_index)[,"TDA"]
-colnames(ngrams) <- c("person_ngrams", "woman_ngrams", "man_ngrams", "girl_ngrams", "boy_ngrams", "index_ngrams")
+colnames(ngrams) <- c("person_books", "woman_books", "man_books", "girl_books", "boy_books", "index_books")
 
 serps_freq_index <- read_csv(here("data/serps/serps_freq_index.csv"))
 serps <- as.data.frame(serps_freq_index)[,c("person_zscore", "woman_zscore", "man_zscore", "girl_zscore", "boy_zscore", "freq_index")]
@@ -605,11 +582,11 @@ rownames(serps) <- as.data.frame(serps_freq_index)[,"TDA"]
 colnames(serps) <- c("person_serps", "woman_serps", "man_serps", "girl_serps", "boy_serps", "index_serps")
 
 all <- data.frame(serps, ngrams)
-all_cor <- corr.test(all, use="pairwise", method = "pearson", alpha = .05, ci=TRUE)
-#round(all_cor$r, 3)
 ```
 
-```{r sara cor table, results = 'asis'}
+The table below shows the correlations among all the search engine and books forms. Focusing only on the search engine-books correlations: the matched noun forms are strong for woman-woman, man-man, and boy-boy, but much less strong for girl-girl and person-person. Similarly, the indices are highly correlated across the two types, though there is considerable variability across the noun types by form. Some noun forms are more highly correlated with unmatched nouns across form --- the search engine results for girl is more highly correlated with the books results for woman, man, and boy than with the books results for girl.
+
+```{r echo=F, results = 'asis', label ="giantcortable"}
 library(apaTables)
 all_cor_tab = apa.cor.table(all, show.sig.stars = FALSE, filename = "~/Downloads/cortable.html")
  all_cor_tab$table.body %>%
@@ -620,93 +597,127 @@ all_cor_tab = apa.cor.table(all, show.sig.stars = FALSE, filename = "~/Downloads
          row.names = F) %>% kable_classic()
 ```
 
-
+<br>
 
 # Comparison with Roivainen (2013)
 
-As pre-registered, we evaluated the correlation between the frequency estimates presented here and the estimates reported in Roivainen (2013). This was done using z-scored versions of the raw counts provided by Roivainen (personal correspondence).
+Next, we evaluated the correlation between the frequency estimates presented here and the estimates reported in Roivainen (2013). This was done using z-scored versions of the raw counts provided by Roivainen (personal correspondence).
 
 ```{r, warning=FALSE, label = "roivainen_comparison"}
-rm(list=ls())
+#rm(list=ls())
 roivainen <- read_csv(here("data/other/roivainen_comparison.csv"))
-
-serps_freq_index <- read_csv(here("data/serps/serps_freq_index.csv"))
-serps_freq <- as.data.frame(serps_freq_index[,c("person_zscore", "freq_index")])
-rownames(serps_freq) <- serps_freq_index$TDA
-roivainen_435_serps <- serps_freq[as.data.frame(roivainen)[,1],]
-colnames(roivainen_435_serps) <- c("person_serps", "index_serps")
-
-ngrams_freq_index <- read_csv(here("data/ngrams/ngrams_freq_index.csv"))
-ngrams_freq <- as.data.frame(ngrams_freq_index[,c("person_zscore", "freq_index")])
-rownames(ngrams_freq) <- ngrams_freq_index$TDA
-roivainen_435_ngrams <- ngrams_freq[as.data.frame(roivainen)[,1],]
-colnames(roivainen_435_ngrams) <- c("person_ngrams", "index_ngrams")
-
-roivainen <- data.frame(roivainen[,"Rserps2012z"], roivainen_435_serps, roivainen[,"Rngrams2000z"], roivainen_435_ngrams)
-
-roivainenCor <- corr.test(roivainen, 
-                                    use = "pairwise",
-                                    method = "pearson",
-                                    alpha = .05,
-                                    ci = TRUE)
-
-roivainenCorci <- tibble(
-  group1 = c("serps_person2012z", "serps_person2012z", "serps_person2012z", "serps_person2012z", "serps_person2012z", "serps_person2022z", "serps_person2022z", "serps_person2022z", "serps_person2022z", "serps_freq_index2022", "serps_freq_index2022", "serps_freq_index2022", "ngrams_person2000z", "ngrams_person2000z", "ngrams_person2019z"), 
-  group2 = c("serps_person2022z", "serps_freq_index2022", "ngrams_person2000z", "ngrams_person2019z", "ngrams_freq_index2019", "serps_freq_index2022", "ngrams_person2000z", "ngrams_person2019z", "ngrams_freq_index2019", "ngrams_person2000z", "ngrams_person2019z", "ngrams_freq_index2019", "ngrams_person2019z", "ngrams_freq_index2019", "ngrams_freq_index2019"),
-  lower_bound = roivainenCor$ci.adj$lower,
-  r = roivainenCor$ci$r,
-  upper_bound = roivainenCor$ci.adj$upper,
-  p_value = roivainenCor$ci2$p
-)
-roivainenCorci[c(1,2,13,14),] # we are only interested in a few
+roivainen_435 <- data.frame(all[as.data.frame(roivainen)[,1],c("person_serps", "person_books")], roivainen[,c("roi_person_serps","roi_person_books")])
 ```
 
-```{r, eval = T, echo = F, label = "motschenbacher_tests"}
+```{r echo=F, results = 'asis', label ="roivainencortable"}
+library(apaTables)
+roi_cor_tab = apa.cor.table(roivainen_435, show.sig.stars = FALSE, filename = "~/Downloads/cortable.html")
+ roi_cor_tab$table.body %>%
+   as.data.frame() %>% 
+   #remove mean annd sd
+   select(-M, -SD) %>% 
+   kable(booktabs = T,align = c("l", rep("c", 11)), table.attr = "style='width:50%;'", 
+         row.names = F) %>% kable_classic()
+```
+
+<br>
+
+# Distinctive descriptors for each noun form
+
+For each of the age- and gender-identity-specific nouns, we evaluated the most distinctive descriptors by ranking them according to the deviation from the frequency index for each type. In other words, we sorted by the difference between the z-score for each descriptor + noun form and the frequency index value for the same descriptor. Note that this is quite different from the most frequently used descriptors overall. To clarify that point, we show those first. These are the most frequent search engine results overall.
+
+```{r, eval = T, echo = F, label = "motschenbacher_tests_allserps"}
+freqs <- as.data.frame(all)[, c("index_serps", "index_books")]
+freqs_serps <- freqs[order(freqs$index_serps, decreasing = T),]
+freqs_serps <- freqs_serps[!is.na(freqs_serps$index_serps),]
+rownames(head(freqs_serps))
+```
+
+And these are the most frequent books results overall.
+
+```{r, eval = T, echo = F, label = "motschenbacher_tests_allbooks"}
+freqs_books <- freqs[order(freqs$index_books, decreasing = T),]
+freqs_books <- freqs_books[!is.na(freqs_books$index_books),]
+rownames(head(freqs_books))
+```
+
+The following analyses looking at the distinctiveness of each noun form is based on findings reported in Motschenbacher and Roivainen (2020). These results may provide some indication of the extent to which the different types of results (search engine vs books) reflect stereotype bias. The original hypotheses for these analyses were not very specific. We initially expected to consider the most distinctive terms in both directions --- those descriptors used *most* frequently relative to other noun forms and those descriptors used *least* frequently. However, the data do not support evaluating the least frequently used descriptors because many descriptors have missing data (i.e., they were never used in the books or did not show up in search engine results). Only the most frequently used descriptors relative to other noun forms are shown below. 
+
+The most frequent books results for descriptor + woman: 
+
+```{r, eval = T, echo = F, label = "motschenbacher_tests_ngrams_woman"}
 ngrams_gender_age <- as.data.frame(ngrams_freq_index)[, c("woman_zscore", "man_zscore", "girl_zscore", "boy_zscore")]-as.data.frame(ngrams_freq_index)[, c("freq_index")]
 colnames(ngrams_gender_age) <- c("dev_woman", "dev_man", "dev_girl", "dev_boy")
 rownames(ngrams_gender_age) <- as.data.frame(ngrams_freq_index)[, c("TDA")]
 
-ngrams_dev_woman <- ngrams_gender_age[order(ngrams_gender_age$dev_woman),]
+ngrams_dev_woman <- ngrams_gender_age[order(ngrams_gender_age$dev_woman, decreasing = T),]
 ngrams_dev_woman <- ngrams_dev_woman[!is.na(ngrams_dev_woman$dev_woman),]
-head(ngrams_dev_woman, 15)
-tail(ngrams_dev_woman, 15)
+rownames(head(ngrams_dev_woman, 5))
+```
 
-ngrams_dev_man <- ngrams_gender_age[order(ngrams_gender_age$dev_man),]
+The most frequent books results for descriptor + man: 
+
+```{r, eval = T, echo = F, label = "motschenbacher_tests_ngrams_man"}
+ngrams_dev_man <- ngrams_gender_age[order(ngrams_gender_age$dev_man, decreasing = T),]
 ngrams_dev_man <- ngrams_dev_man[!is.na(ngrams_dev_man$dev_man),]
-head(ngrams_dev_man, 15)
-tail(ngrams_dev_man, 15)
+rownames(head(ngrams_dev_man, 5))
+```
 
-ngrams_dev_girl <- ngrams_gender_age[order(ngrams_gender_age$dev_girl),]
+The most frequent books results for descriptor + girl: 
+
+```{r, eval = T, echo = F, label = "motschenbacher_tests_ngrams_girl"}
+ngrams_dev_girl <- ngrams_gender_age[order(ngrams_gender_age$dev_girl, decreasing = T),]
 ngrams_dev_girl <- ngrams_dev_girl[!is.na(ngrams_dev_girl$dev_girl),]
-head(ngrams_dev_girl, 15)
-tail(ngrams_dev_girl, 15)
+rownames(head(ngrams_dev_girl, 5))
+```
 
-ngrams_dev_boy <- ngrams_gender_age[order(ngrams_gender_age$dev_boy),]
+The most frequent books results for descriptor + boy: 
+
+```{r, eval = T, echo = F, label = "motschenbacher_tests_ngrams_boy"}
+ngrams_dev_boy <- ngrams_gender_age[order(ngrams_gender_age$dev_boy, decreasing = T),]
 ngrams_dev_boy <- ngrams_dev_boy[!is.na(ngrams_dev_boy$dev_boy),]
-head(ngrams_dev_boy, 15)
-tail(ngrams_dev_boy, 15)
+rownames(head(ngrams_dev_boy, 5))
+```
 
+The most frequent search engine results for descriptor + woman: 
+
+```{r, eval = T, echo = F, label = "motschenbacher_tests_serps_woman"}
 serps_gender_age <- as.data.frame(serps_freq_index)[, c("woman_zscore", "man_zscore", "girl_zscore", "boy_zscore")]-as.data.frame(serps_freq_index)[, c("freq_index")]
 colnames(serps_gender_age) <- c("dev_woman", "dev_man", "dev_girl", "dev_boy")
 rownames(serps_gender_age) <- as.data.frame(serps_freq_index)[, c("TDA")]
 
-serps_dev_woman <- serps_gender_age[order(serps_gender_age$dev_woman),]
+serps_dev_woman <- serps_gender_age[order(serps_gender_age$dev_woman, decreasing = T),]
 serps_dev_woman <- serps_dev_woman[!is.na(serps_dev_woman$dev_woman),]
-head(serps_dev_woman, 15)
-tail(serps_dev_woman, 15)
-
-serps_dev_man <- serps_gender_age[order(serps_gender_age$dev_man),]
-serps_dev_man <- serps_dev_man[!is.na(serps_dev_man$dev_man),]
-head(serps_dev_man, 15)
-tail(serps_dev_man, 15)
-
-serps_dev_girl <- serps_gender_age[order(serps_gender_age$dev_girl),]
-serps_dev_girl <- serps_dev_girl[!is.na(serps_dev_girl$dev_girl),]
-head(serps_dev_girl, 15)
-tail(serps_dev_girl, 15)
-
-serps_dev_boy <- serps_gender_age[order(serps_gender_age$dev_boy),]
-serps_dev_boy <- serps_dev_boy[!is.na(serps_dev_boy$dev_boy),]
-head(serps_dev_boy, 15)
-tail(serps_dev_boy, 15)
+rownames(head(serps_dev_woman, 5))
 ```
+
+The most frequent search engine results for descriptor + man: 
+
+```{r, eval = T, echo = F, label = "motschenbacher_tests_serps_man"}
+serps_dev_man <- serps_gender_age[order(serps_gender_age$dev_man, decreasing = T),]
+serps_dev_man <- serps_dev_man[!is.na(serps_dev_man$dev_man),]
+rownames(head(serps_dev_man, 5))
+```
+
+The most frequent search engine results for descriptor + girl: 
+
+```{r, eval = T, echo = F, label = "motschenbacher_tests_serps_girl"}
+serps_dev_girl <- serps_gender_age[order(serps_gender_age$dev_girl, decreasing = T),]
+serps_dev_girl <- serps_dev_girl[!is.na(serps_dev_girl$dev_girl),]
+rownames(head(serps_dev_girl, 5))
+```
+
+The most frequent search engine results for descriptor + boy: 
+
+```{r, eval = T, echo = F, label = "motschenbacher_tests_serps_boy"}
+serps_dev_boy <- serps_gender_age[order(serps_gender_age$dev_boy, decreasing = T),]
+serps_dev_boy <- serps_dev_boy[!is.na(serps_dev_boy$dev_boy),]
+rownames(head(serps_dev_boy, 5))
+```
+
+These comparisons demonstrate a few points worth noting. Above all, most of the terms are specifications of demographic attributes --- young, old, black, white, big, little, small. Very few relate to psychological attributes. This point underscores the primary motivation for this work: the characterization of this large pool of descriptors is intended to provide an additional source of data for identifying a justifiably comprehensive listing of psychological trait descriptors (especially personality-relevant terms), but the list is clearly over-inclusive. This was known from the outset, but the next step is to combine these data with other sources of information and pare the list down to a more relevant subset. A separate point is that the female nouns are more related to physical attributes than the male traits; all of the female noun forms included the descriptor "beautiful" among the top 5. 
+
+**[say something more here]**
+
+Finally, the lists are generally consistent across the two types, at least among the most consistent terms. 
+

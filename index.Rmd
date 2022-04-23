@@ -31,7 +31,7 @@ output:
 [https://pie-lab.github.io/tdafrequency/serps-frequency.html](https://pie-lab.github.io/tdafrequency/serps-frequency.html)
 
 --- Frequency estimates based on the books results are here:
-[https://pie-lab.github.io/tdafrequency/ngrams-frequency.html](https://pie-lab.github.io/tdafrequency/ngrams-frequency.html)
+[https://pie-lab.github.io/tdafrequency/books-frequency.html](https://pie-lab.github.io/tdafrequency/books-frequency.html)
 
 --- The raw data are proprietary, however z-scores of the frequency estimates for each descriptor + noun have been made available for download at 
 [add dataverse link here]
