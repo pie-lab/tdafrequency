@@ -278,7 +278,7 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">Analytic Code</h1>
-<h4 class="date">Last updated 2022-04-22</h4>
+<h4 class="date">Last updated 2022-04-24</h4>
 
 </div>
 
@@ -434,8 +434,8 @@ for (j in 1:ncol(serps_person))
 }
 names(serps_all_means) &lt;- NOUNS_LIST
 serps_all_means</code></pre>
-<pre><code>##   person    woman      man     girl      boy 
-## 153750.6 126884.4 196866.7 276353.7  92631.9</code></pre>
+<pre><code>##    person     woman       man      girl       boy 
+## 153676.75 126500.75 196680.51 271805.98  92060.28</code></pre>
 <pre class="r"><code>serps_all_longForm &lt;- serps_all %&gt;%
   gather(form, value, person:boy)
 serps_uncorrected_ttests &lt;- pairwise.t.test(x = serps_all_longForm$value, 
@@ -448,15 +448,15 @@ serps_holm_ttests &lt;- pairwise.t.test(x = serps_all_longForm$value,
 <pre class="r"><code>round(serps_uncorrected_ttests$p.value, 3)</code></pre>
 <pre><code>##          boy  girl   man person
 ## girl   0.000    NA    NA     NA
-## man    0.037 0.111    NA     NA
-## person 0.221 0.014 0.388     NA
-## woman  0.493 0.003 0.161  0.591</code></pre>
+## man    0.036 0.133    NA     NA
+## person 0.218 0.018 0.389     NA
+## woman  0.491 0.004 0.160  0.587</code></pre>
 <pre class="r"><code>round(serps_holm_ttests$p.value, 3)</code></pre>
 <pre><code>##          boy  girl   man person
-## girl   0.002    NA    NA     NA
-## man    0.258 0.668    NA     NA
-## person 0.884 0.113 1.000     NA
-## woman  1.000 0.025 0.805      1</code></pre>
+## girl   0.003    NA    NA     NA
+## man    0.254 0.796    NA     NA
+## person 0.870 0.145 1.000     NA
+## woman  1.000 0.033 0.801      1</code></pre>
 <p><br></p>
 </div>
 <div id="calculate-z-scores" class="section level3">
@@ -677,7 +677,7 @@ Variable
 .04
 </td>
 <td style="text-align:center;">
-.64
+.65
 </td>
 <td style="text-align:center;">
 .53
@@ -694,7 +694,7 @@ Variable
 [.02, .05]
 </td>
 <td style="text-align:center;">
-[.64, .65]
+[.64, .66]
 </td>
 <td style="text-align:center;">
 [.52, .54]
@@ -785,7 +785,7 @@ Variable
 .76
 </td>
 <td style="text-align:center;">
-.74
+.75
 </td>
 <td style="text-align:center;">
 .70
@@ -948,9 +948,9 @@ for (j in 1:ncol(ngrams_avgfreq))
 names(means_vector) &lt;- NOUNS_LIST
 means_vector</code></pre>
 <pre><code>##            person             woman               man              girl 
-## 0.000000009147355 0.000000009897305 0.000000018108562 0.000000008428365 
+## 0.000000009171558 0.000000009921529 0.000000018155495 0.000000008457852 
 ##               boy 
-## 0.000000005711492</code></pre>
+## 0.000000005733176</code></pre>
 <pre class="r"><code>ngrams_all_longForm &lt;- ngrams_avgfreq %&gt;%
   gather(form, value, freq_avg_person:freq_avg_boy)
 
@@ -964,15 +964,15 @@ ngrams_holm_ttests &lt;- pairwise.t.test(x = ngrams_all_longForm$value,
 <pre class="r"><code>round(ngrams_uncorrected_ttests$p.value, 3)</code></pre>
 <pre><code>##                 freq_avg_boy freq_avg_girl freq_avg_man freq_avg_person
 ## freq_avg_girl          0.607            NA           NA              NA
-## freq_avg_man           0.007         0.034           NA              NA
-## freq_avg_person        0.485         0.883        0.031              NA
-## freq_avg_woman         0.392         0.762        0.046           0.866</code></pre>
+## freq_avg_man           0.007         0.035           NA              NA
+## freq_avg_person        0.486         0.884        0.031              NA
+## freq_avg_woman         0.393         0.764        0.046           0.867</code></pre>
 <pre class="r"><code>round(ngrams_holm_ttests$p.value, 3)</code></pre>
 <pre><code>##                 freq_avg_boy freq_avg_girl freq_avg_man freq_avg_person
 ## freq_avg_girl          1.000            NA           NA              NA
-## freq_avg_man           0.072         0.279           NA              NA
-## freq_avg_person        1.000         1.000        0.279              NA
-## freq_avg_woman         1.000         1.000        0.324               1</code></pre>
+## freq_avg_man           0.072          0.28           NA              NA
+## freq_avg_person        1.000          1.00        0.280              NA
+## freq_avg_woman         1.000          1.00        0.324               1</code></pre>
 <p><br></p>
 </div>
 <div id="calculate-z-scores-1" class="section level3">
@@ -1312,7 +1312,7 @@ Variable
 .73
 </td>
 <td style="text-align:center;">
-.81
+.80
 </td>
 </tr>
 <tr>
@@ -1645,7 +1645,7 @@ Variable
 .04
 </td>
 <td style="text-align:center;">
-.64
+.65
 </td>
 <td style="text-align:center;">
 .53
@@ -1674,7 +1674,7 @@ Variable
 [.02, .05]
 </td>
 <td style="text-align:center;">
-[.64, .65]
+[.64, .66]
 </td>
 <td style="text-align:center;">
 [.52, .54]
@@ -1825,7 +1825,7 @@ Variable
 .76
 </td>
 <td style="text-align:center;">
-.74
+.75
 </td>
 <td style="text-align:center;">
 .70
@@ -2101,7 +2101,7 @@ Variable
 .90
 </td>
 <td style="text-align:center;">
-.52
+.53
 </td>
 <td style="text-align:center;">
 .47
@@ -2232,7 +2232,7 @@ Variable
 [.37, .42]
 </td>
 <td style="text-align:center;">
-[.46, .51]
+[.46, .52]
 </td>
 <td style="text-align:center;">
 [.82, .84]
@@ -2395,7 +2395,7 @@ Variable
 .81
 </td>
 <td style="text-align:center;">
-.60
+.61
 </td>
 <td style="text-align:center;">
 .70
@@ -2416,7 +2416,7 @@ Variable
 .73
 </td>
 <td style="text-align:center;">
-.81
+.80
 </td>
 </tr>
 <tr>
