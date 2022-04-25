@@ -652,7 +652,7 @@ rownames(ngrams_gender_age) <- as.data.frame(ngrams_freq_index)[, c("TDA")]
 
 ngrams_dev_woman <- ngrams_gender_age[order(ngrams_gender_age$dev_woman, decreasing = T),]
 ngrams_dev_woman <- ngrams_dev_woman[!is.na(ngrams_dev_woman$dev_woman),]
-rownames(head(ngrams_dev_woman, 5))
+rownames(head(ngrams_dev_woman, 10))
 ```
 
 The most frequent books results for descriptor + man: 
@@ -660,7 +660,7 @@ The most frequent books results for descriptor + man:
 ```{r, eval = T, echo = F, label = "motschenbacher_tests_ngrams_man"}
 ngrams_dev_man <- ngrams_gender_age[order(ngrams_gender_age$dev_man, decreasing = T),]
 ngrams_dev_man <- ngrams_dev_man[!is.na(ngrams_dev_man$dev_man),]
-rownames(head(ngrams_dev_man, 5))
+rownames(head(ngrams_dev_man, 10))
 ```
 
 The most frequent books results for descriptor + girl: 
@@ -668,7 +668,7 @@ The most frequent books results for descriptor + girl:
 ```{r, eval = T, echo = F, label = "motschenbacher_tests_ngrams_girl"}
 ngrams_dev_girl <- ngrams_gender_age[order(ngrams_gender_age$dev_girl, decreasing = T),]
 ngrams_dev_girl <- ngrams_dev_girl[!is.na(ngrams_dev_girl$dev_girl),]
-rownames(head(ngrams_dev_girl, 5))
+rownames(head(ngrams_dev_girl, 10))
 ```
 
 The most frequent books results for descriptor + boy: 
@@ -676,7 +676,7 @@ The most frequent books results for descriptor + boy:
 ```{r, eval = T, echo = F, label = "motschenbacher_tests_ngrams_boy"}
 ngrams_dev_boy <- ngrams_gender_age[order(ngrams_gender_age$dev_boy, decreasing = T),]
 ngrams_dev_boy <- ngrams_dev_boy[!is.na(ngrams_dev_boy$dev_boy),]
-rownames(head(ngrams_dev_boy, 5))
+rownames(head(ngrams_dev_boy, 10))
 ```
 
 The most frequent search engine results for descriptor + woman: 
@@ -688,7 +688,7 @@ rownames(serps_gender_age) <- as.data.frame(serps_freq_index)[, c("TDA")]
 
 serps_dev_woman <- serps_gender_age[order(serps_gender_age$dev_woman, decreasing = T),]
 serps_dev_woman <- serps_dev_woman[!is.na(serps_dev_woman$dev_woman),]
-rownames(head(serps_dev_woman, 5))
+rownames(head(serps_dev_woman, 10))
 ```
 
 The most frequent search engine results for descriptor + man: 
@@ -696,7 +696,7 @@ The most frequent search engine results for descriptor + man:
 ```{r, eval = T, echo = F, label = "motschenbacher_tests_serps_man"}
 serps_dev_man <- serps_gender_age[order(serps_gender_age$dev_man, decreasing = T),]
 serps_dev_man <- serps_dev_man[!is.na(serps_dev_man$dev_man),]
-rownames(head(serps_dev_man, 5))
+rownames(head(serps_dev_man, 10))
 ```
 
 The most frequent search engine results for descriptor + girl: 
@@ -704,7 +704,7 @@ The most frequent search engine results for descriptor + girl:
 ```{r, eval = T, echo = F, label = "motschenbacher_tests_serps_girl"}
 serps_dev_girl <- serps_gender_age[order(serps_gender_age$dev_girl, decreasing = T),]
 serps_dev_girl <- serps_dev_girl[!is.na(serps_dev_girl$dev_girl),]
-rownames(head(serps_dev_girl, 5))
+rownames(head(serps_dev_girl, 10))
 ```
 
 The most frequent search engine results for descriptor + boy: 
@@ -712,7 +712,7 @@ The most frequent search engine results for descriptor + boy:
 ```{r, eval = T, echo = F, label = "motschenbacher_tests_serps_boy"}
 serps_dev_boy <- serps_gender_age[order(serps_gender_age$dev_boy, decreasing = T),]
 serps_dev_boy <- serps_dev_boy[!is.na(serps_dev_boy$dev_boy),]
-rownames(head(serps_dev_boy, 5))
+rownames(head(serps_dev_boy, 10))
 ```
 
 These comparisons demonstrate a few points worth noting. Above all, most of the terms are specifications of demographic attributes --- young, old, black, white, big, little, small. Very few relate to psychological attributes. This point underscores the primary motivation for this work: the characterization of this large pool of descriptors is intended to provide an additional source of data for identifying a justifiably comprehensive listing of psychological trait descriptors (especially personality-relevant terms), but the list is clearly over-inclusive. This was known from the outset, but the next step is to combine these data with other sources of information and pare the list down to a more relevant subset. A separate point is that the female nouns are more related to physical attributes than the male traits; all of the female noun forms included the descriptor "beautiful" among the top 5. 
