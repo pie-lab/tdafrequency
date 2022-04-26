@@ -46,7 +46,7 @@ serps_girl <- read_csv(here("../../TDAfreqdata/SERPs/serps_rawdata_file_girl.csv
 serps_boy <- read_csv(here("../../TDAfreqdata/SERPs/serps_rawdata_file_boy.csv"))
 ```
 
-Once loaded, the data are re-coded in the instances where empty results are automatically replaced with results for similarly spelled terms. See the manuscript for more description of this issue. Once cleaned, the counts from each raw data file are combined into a single data frame with all of the descriptor + noun pairings.
+Once loaded, the data are re-coded in the instances where empty results are automatically replaced with results for similarly spelled terms. Once cleaned, the counts from each raw data file are combined into a single data frame with all of the descriptor + noun pairings.
 
 ```{r, warning=FALSE, message=FALSE, label = "data-prep_serps"}
 NOUNS_LIST <- c("person", "woman", "man", "girl", "boy")
@@ -277,7 +277,7 @@ colnames(serps_cor_tab) <- c("descriptor+person serps", "descriptor+woman serps"
 The table below shows the correlations between descriptor + noun forms with the lower and upper bounds of the 95% confidence intervals. All the correlations are statistically significant but those involving +person are much lower than the rest. Among the other noun forms, woman-man and woman-girl are the strongest. Without exception, the highest correlations for each noun form is with the index, as expected given the overlap in content.
 
 ```{r, echo=F, warning=FALSE, label = "analyses_serps_cors_table"}
-serps_cor_table = apa.cor.table(serps_cor_tab, show.sig.stars = FALSE, filename = "~/Downloads/serps_cortable.html")
+serps_cor_table = apa.cor.table(serps_cor_tab, show.sig.stars = FALSE)
  serps_cor_table$table.body %>%
    as.data.frame() %>%
    #remove mean and sd
@@ -556,7 +556,7 @@ colnames(ngrams_cor_tab) <- c("descriptor+person books", "descriptor+woman books
 The table below shows the correlations between descriptor + noun forms with the lower and upper bounds of the 95% confidence intervals. As with the search engine results, all the correlations are statistically significant, and those involving +person are lower than the rest (in this case the difference is less pronounced). Note that the woman-man and girl-boy correlations are nearly perfect.
 
 ```{r, echo=F, warning=FALSE, label = "analyses_ngrams_cors_table"}
-ngrams_cor_table = apa.cor.table(ngrams_cor_tab, show.sig.stars = FALSE, filename = "~/Downloads/ngrams_cortable.html")
+ngrams_cor_table = apa.cor.table(ngrams_cor_tab, show.sig.stars = FALSE)
  ngrams_cor_table$table.body %>%
    as.data.frame() %>%
    #remove mean and sd
@@ -588,7 +588,7 @@ The table below shows the correlations among all the search engine and books for
 
 ```{r echo=F, results = 'asis', label ="giantcortable"}
 library(apaTables)
-all_cor_tab = apa.cor.table(all, show.sig.stars = FALSE, filename = "~/Downloads/cortable.html")
+all_cor_tab = apa.cor.table(all, show.sig.stars = FALSE, filename = "~/Downloads/maincortable.html")
  all_cor_tab$table.body %>%
    as.data.frame() %>% 
    #remove mean annd sd
@@ -611,7 +611,7 @@ roivainen_435 <- data.frame(all[as.data.frame(roivainen)[,1],c("person_serps", "
 
 ```{r echo=F, results = 'asis', label ="roivainencortable"}
 library(apaTables)
-roi_cor_tab = apa.cor.table(roivainen_435, show.sig.stars = FALSE, filename = "~/Downloads/cortable.html")
+roi_cor_tab = apa.cor.table(roivainen_435, show.sig.stars = FALSE)
  roi_cor_tab$table.body %>%
    as.data.frame() %>% 
    #remove mean annd sd
@@ -630,7 +630,7 @@ For each of the age- and gender-identity-specific nouns, we evaluated the most d
 freqs <- as.data.frame(all)[, c("index_serps", "index_books")]
 freqs_serps <- freqs[order(freqs$index_serps, decreasing = T),]
 freqs_serps <- freqs_serps[!is.na(freqs_serps$index_serps),]
-rownames(head(freqs_serps))
+rownames(head(freqs_serps, 10))
 ```
 
 And these are the most frequent books results overall.
@@ -638,18 +638,26 @@ And these are the most frequent books results overall.
 ```{r, eval = T, echo = F, label = "motschenbacher_tests_allbooks"}
 freqs_books <- freqs[order(freqs$index_books, decreasing = T),]
 freqs_books <- freqs_books[!is.na(freqs_books$index_books),]
-rownames(head(freqs_books))
+rownames(head(freqs_books, 10))
 ```
 
 The following analyses looking at the distinctiveness of each noun form is based on findings reported in Motschenbacher and Roivainen (2020). These results may provide some indication of the extent to which the different types of results (search engine vs books) reflect stereotype bias. The original hypotheses for these analyses were not very specific. We initially expected to consider the most distinctive terms in both directions --- those descriptors used *most* frequently relative to other noun forms and those descriptors used *least* frequently. However, the data do not support evaluating the least frequently used descriptors because many descriptors have missing data (i.e., they were never used in the books or did not show up in search engine results). Only the most frequently used descriptors relative to other noun forms are shown below. 
 
+The most frequent books results for descriptor + person: 
+
+```{r, eval = T, echo = F, label = "motschenbacher_tests_ngrams_person"}
+ngrams_gender_age <- as.data.frame(ngrams_freq_index)[, c("person_zscore", "woman_zscore", "man_zscore", "girl_zscore", "boy_zscore")]-as.data.frame(ngrams_freq_index)[, c("freq_index")]
+colnames(ngrams_gender_age) <- c("dev_person", "dev_woman", "dev_man", "dev_girl", "dev_boy")
+rownames(ngrams_gender_age) <- as.data.frame(ngrams_freq_index)[, c("TDA")]
+
+ngrams_dev_person <- ngrams_gender_age[order(ngrams_gender_age$dev_person, decreasing = T),]
+ngrams_dev_person <- ngrams_dev_person[!is.na(ngrams_dev_person$dev_person),]
+rownames(head(ngrams_dev_person, 10))
+```
+
 The most frequent books results for descriptor + woman: 
 
 ```{r, eval = T, echo = F, label = "motschenbacher_tests_ngrams_woman"}
-ngrams_gender_age <- as.data.frame(ngrams_freq_index)[, c("woman_zscore", "man_zscore", "girl_zscore", "boy_zscore")]-as.data.frame(ngrams_freq_index)[, c("freq_index")]
-colnames(ngrams_gender_age) <- c("dev_woman", "dev_man", "dev_girl", "dev_boy")
-rownames(ngrams_gender_age) <- as.data.frame(ngrams_freq_index)[, c("TDA")]
-
 ngrams_dev_woman <- ngrams_gender_age[order(ngrams_gender_age$dev_woman, decreasing = T),]
 ngrams_dev_woman <- ngrams_dev_woman[!is.na(ngrams_dev_woman$dev_woman),]
 rownames(head(ngrams_dev_woman, 10))
@@ -679,13 +687,21 @@ ngrams_dev_boy <- ngrams_dev_boy[!is.na(ngrams_dev_boy$dev_boy),]
 rownames(head(ngrams_dev_boy, 10))
 ```
 
+The most frequent search engine results for descriptor + person: 
+
+```{r, eval = T, echo = F, label = "motschenbacher_tests_serps_person"}
+serps_gender_age <- as.data.frame(serps_freq_index)[, c("person_zscore", "woman_zscore", "man_zscore", "girl_zscore", "boy_zscore")]-as.data.frame(serps_freq_index)[, c("freq_index")]
+colnames(serps_gender_age) <- c("dev_person", "dev_woman", "dev_man", "dev_girl", "dev_boy")
+rownames(serps_gender_age) <- as.data.frame(serps_freq_index)[, c("TDA")]
+
+serps_dev_person <- serps_gender_age[order(serps_gender_age$dev_person, decreasing = T),]
+serps_dev_person <- serps_dev_person[!is.na(serps_dev_person$dev_person),]
+rownames(head(serps_dev_person, 10))
+```
+
 The most frequent search engine results for descriptor + woman: 
 
 ```{r, eval = T, echo = F, label = "motschenbacher_tests_serps_woman"}
-serps_gender_age <- as.data.frame(serps_freq_index)[, c("woman_zscore", "man_zscore", "girl_zscore", "boy_zscore")]-as.data.frame(serps_freq_index)[, c("freq_index")]
-colnames(serps_gender_age) <- c("dev_woman", "dev_man", "dev_girl", "dev_boy")
-rownames(serps_gender_age) <- as.data.frame(serps_freq_index)[, c("TDA")]
-
 serps_dev_woman <- serps_gender_age[order(serps_gender_age$dev_woman, decreasing = T),]
 serps_dev_woman <- serps_dev_woman[!is.na(serps_dev_woman$dev_woman),]
 rownames(head(serps_dev_woman, 10))

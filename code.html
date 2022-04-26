@@ -278,7 +278,7 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">Analytic Code</h1>
-<h4 class="date">Last updated 2022-04-24</h4>
+<h4 class="date">Last updated 2022-04-25</h4>
 
 </div>
 
@@ -339,7 +339,7 @@ serps_woman &lt;- read_csv(here(&quot;../../TDAfreqdata/SERPs/serps_rawdata_file
 serps_man &lt;- read_csv(here(&quot;../../TDAfreqdata/SERPs/serps_rawdata_file_man.csv&quot;))
 serps_girl &lt;- read_csv(here(&quot;../../TDAfreqdata/SERPs/serps_rawdata_file_girl.csv&quot;))
 serps_boy &lt;- read_csv(here(&quot;../../TDAfreqdata/SERPs/serps_rawdata_file_boy.csv&quot;))</code></pre>
-<p>Once loaded, the data are re-coded in the instances where empty results are automatically replaced with results for similarly spelled terms. See the manuscript for more description of this issue. Once cleaned, the counts from each raw data file are combined into a single data frame with all of the descriptor + noun pairings.</p>
+<p>Once loaded, the data are re-coded in the instances where empty results are automatically replaced with results for similarly spelled terms. Once cleaned, the counts from each raw data file are combined into a single data frame with all of the descriptor + noun pairings.</p>
 <pre class="r"><code>NOUNS_LIST &lt;- c(&quot;person&quot;, &quot;woman&quot;, &quot;man&quot;, &quot;girl&quot;, &quot;boy&quot;)
 
 serps_person &lt;- serps_person %&gt;%
@@ -2663,10 +2663,15 @@ Variable
 <div id="distinctive-descriptors-for-each-noun-form" class="section level1">
 <h1>Distinctive descriptors for each noun form</h1>
 <p>For each of the age- and gender-identity-specific nouns, we evaluated the most distinctive descriptors by ranking them according to the deviation from the frequency index for each type. In other words, we sorted by the difference between the z-score for each descriptor + noun form and the frequency index value for the same descriptor. Note that this is quite different from the most frequently used descriptors overall. To clarify that point, we show those first. These are the most frequent search engine results overall.</p>
-<pre><code>## [1] &quot;young&quot;     &quot;black&quot;     &quot;old&quot;       &quot;little&quot;    &quot;white&quot;     &quot;beautiful&quot;</code></pre>
+<pre><code>##  [1] &quot;young&quot;     &quot;black&quot;     &quot;old&quot;       &quot;little&quot;    &quot;white&quot;     &quot;beautiful&quot;
+##  [7] &quot;first&quot;     &quot;sexy&quot;      &quot;good&quot;      &quot;hot&quot;</code></pre>
 <p>And these are the most frequent books results overall.</p>
-<pre><code>## [1] &quot;young&quot;  &quot;old&quot;    &quot;little&quot; &quot;good&quot;   &quot;black&quot;  &quot;white&quot;</code></pre>
+<pre><code>##  [1] &quot;young&quot;  &quot;old&quot;    &quot;little&quot; &quot;good&quot;   &quot;black&quot;  &quot;white&quot;  &quot;poor&quot;   &quot;first&quot; 
+##  [9] &quot;dead&quot;   &quot;new&quot;</code></pre>
 <p>The following analyses looking at the distinctiveness of each noun form is based on findings reported in Motschenbacher and Roivainen (2020). These results may provide some indication of the extent to which the different types of results (search engine vs books) reflect stereotype bias. The original hypotheses for these analyses were not very specific. We initially expected to consider the most distinctive terms in both directions — those descriptors used <em>most</em> frequently relative to other noun forms and those descriptors used <em>least</em> frequently. However, the data do not support evaluating the least frequently used descriptors because many descriptors have missing data (i.e., they were never used in the books or did not show up in search engine results). Only the most frequently used descriptors relative to other noun forms are shown below.</p>
+<p>The most frequent books results for descriptor + person:</p>
+<pre><code>##  [1] &quot;first&quot;      &quot;single&quot;     &quot;human&quot;      &quot;average&quot;    &quot;last&quot;      
+##  [6] &quot;reasonable&quot; &quot;right&quot;      &quot;second&quot;     &quot;whole&quot;      &quot;particular&quot;</code></pre>
 <p>The most frequent books results for descriptor + woman:</p>
 <pre><code>##  [1] &quot;young&quot;       &quot;old&quot;         &quot;beautiful&quot;   &quot;pregnant&quot;    &quot;first&quot;      
 ##  [6] &quot;black&quot;       &quot;elderly&quot;     &quot;middle-aged&quot; &quot;white&quot;       &quot;attractive&quot;</code></pre>
@@ -2679,6 +2684,9 @@ Variable
 <p>The most frequent books results for descriptor + boy:</p>
 <pre><code>##  [1] &quot;little&quot; &quot;small&quot;  &quot;old&quot;    &quot;big&quot;    &quot;bad&quot;    &quot;dear&quot;   &quot;good&quot;   &quot;golden&quot;
 ##  [9] &quot;pretty&quot; &quot;stable&quot;</code></pre>
+<p>The most frequent search engine results for descriptor + person:</p>
+<pre><code>##  [1] &quot;athletic&quot;     &quot;first&quot;        &quot;single&quot;       &quot;right&quot;        &quot;overdrinking&quot;
+##  [6] &quot;opiate&quot;       &quot;human&quot;        &quot;normal&quot;       &quot;better&quot;       &quot;specific&quot;</code></pre>
 <p>The most frequent search engine results for descriptor + woman:</p>
 <pre><code>##  [1] &quot;young&quot;     &quot;mature&quot;    &quot;old&quot;       &quot;beautiful&quot; &quot;pregnant&quot;  &quot;pretty&quot;   
 ##  [7] &quot;first&quot;     &quot;black&quot;     &quot;sexy&quot;      &quot;addicted&quot;</code></pre>
