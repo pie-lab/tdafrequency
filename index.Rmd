@@ -14,7 +14,7 @@ output:
 
 ### Overview
 
-[Insert something like the abstract from the submitted manuscript here.]
+Personality traits are often measured using person-descriptive terms, but data are limited regarding the frequency of usage for these terms in everyday language. This project reports on the relative frequency of usage for a large pool of American English terms (N = 18,241) using count estimates from search engine results and in books cataloged by Google. These estimates are based on the ngrams formed when each descriptor is combined with a common person-related noun (person, woman, man, girl, boy). Here, we report the estimates for each noun form and a frequency index in an online database that can be sorted, searched, and downloaded. In the related manuscript (link provided below), we report on associations among the different noun forms and data types, and propose recommendations for uses of these data in conjunction with other resources. In particular, we encourage collaborative approaches among research teams using large language models in psycholexical research related to personality structure.
 
 <br>
 
@@ -25,7 +25,7 @@ output:
 [--- citation blinded for review ---]
 -->
  
-> <font size="3">Condon, D. M., & McDougald, S. (under review). Frequency of use metrics for person descriptors: Extensions of Roivainen's internet search methodology. *Journal TBD*.</font>
+> <font size="3">Condon, D. M., & McDougald, S. (under review). Frequency of use metrics for person descriptors: Extensions of Roivainen's internet search methodology.</font>
 
 --- Frequency estimates based on the search engine results are here:
 [https://pie-lab.github.io/tdafrequency/serps-frequency.html](https://pie-lab.github.io/tdafrequency/serps-frequency.html)
@@ -47,7 +47,8 @@ DON'T FORGET TO UPDATE THE LINKS ON THE CODE PAGE IN 4 PLACES -- 2 UNDER CALCULA
 
 ### About the frequencies
 
-[Insert info about: the source files, downloading the data, and how users can provide feedback or suggestions. Also mention that this list is over-inclusive, containing many descriptors that are neither psychological or physical traits. Still, they ]
+Please note that this list of terms is over-inclusive for many purposes, and this includes personality. **These data are intended for use in personality research and modeling, not assessment.** As discussed in the manuscript, a non-trivial proportion of the terms are (probably) irrelevant as person-descriptors; for example, “car” or “elk”. Further, a large proportion are unrelated to psychological attributes. Even among the descriptors that may be related to psychological attributes, there is variability with respect to (1) the extent of psychological relevance (consider: “injured”, “overdressed”, and “unclean”); (2) the extent to which terms describe a stable or passing attribute (“flustered”, “giddy”); and (3) the extent to which the terms are unambiguously defined or operationalized (“owlish”, “compelling”, “hurting”). Thus, for research on personality structure specifically, it is expected that only a fraction of the terms in this list would have utility – the subset of psychologically relevant terms that are unambiguously used to describe stable attributes. 
 
+But, as it is impossible to anticipate how these data might be used (including outside of personality research), it seemed appropriate to take an overly-inclusive approach.
 
-
+If you have suggestions or ideas about this project, please contact the first author by email.
