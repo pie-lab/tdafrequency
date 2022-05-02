@@ -36,7 +36,7 @@ options(scipen=999)
 
 ## Data loading and preparation
 
-The csv files contain the raw data. These cannot be shared in raw form, but transformations of the raw data are publicly available on Dataverse (see the link below and on the home page). Here, we show how the raw data are loaded, for cleaning and description. Further down in the code, we show the data being saved into the format posted on Dataverse.
+The raw data are in separate csv files for each noun form. These cannot be shared in raw form, but transformations of the raw data are publicly available on Dataverse (see the link below and on the home page). Here, we show how the raw data are loaded, for cleaning and description. Further down in the code, we show the data being saved into the format posted on Dataverse.
 
 ```{r, message = F, warning = F, eval = T, label = "load_raw_data_serps"}
 serps_person <- read_csv(here("../../TDAfreqdata/SERPs/serps_rawdata_file_person.csv"))
@@ -169,16 +169,11 @@ round(serps_uncorrected_ttests$p.value, 3)
 round(serps_holm_ttests$p.value, 3)
 ```
 
-```{r, eval = F, echo = F, label = "serps_ttest_tables_apa"}
-apa_table(serps_uncorrected_ttests$p.value, caption = "P-values of uncorrected t-tests comparing mean descriptor SERPs count by person-word.", placement = "h")
-apa_table(serps_holm_ttests$p.value, caption = "P-values of Holm-corrected t-tests comparing mean descriptor SERPs count by person-word.", placement = "h")
-```
-
 <br>
 
 ### 2. Calculate z-scores
 
-Now that we have compared the raw means in the prior step, we create a table of the z-scores of the 10-year averages for each descriptor + noun ngram. These are the data posted on Dataverse, as shown below.
+Now that we have compared the raw means in the prior step, we create a table of the z-scores for each descriptor + noun ngram. These are the data posted on Dataverse, as shown below.
 
 ```{r, warning=FALSE, "analyses_serps_zscores"}
 serps_all_zscores <- serps_all %>%
@@ -193,33 +188,20 @@ serps_all_zscores <- serps_all %>%
   select(TDA, person_zscore:boy_zscore)
 ```
 
-
-```{r, eval = T, echo = T, label = "save_serps_zscores"}
-write_csv(serps_all_zscores, 
-          file = here("data/serps/serps_all_zscores.csv"))
-```
-
-This csv file (above) has been posted on Dataverse (see doi). All subsequent analyses of the search engine results data are based on this file, including the database of search engine estimates (see [here](https://pie-lab.github.io/tdafrequency/serps-frequency.html)).
-
-*ADD DOI LINK TO THE SENTENCE ABOVE*
+This csv file (above) has been posted on Dataverse (doi: [https://doi.org/10.7910/DVN/BBOLVY](https://doi.org/10.7910/DVN/BBOLVY)). All subsequent analyses of the search engine results data are based on this file, including the database of search engine estimates (see [here](https://pie-lab.github.io/tdafrequency/serps-frequency.html)).
 
 The following code clears the environment and loads the data directly from Dataverse.
 
-*CHANGE THIS TO PULL THE ZSCORES FILE FROM DATAVERSE.*
-```{r, echo = T, label = "load_serps_zscores"}
+```{r, echo = T, label = "load_serps_zscores_dataverse"}
 rm(list=ls())
-serps_all_zscores <- read_csv(here("data/serps/serps_all_zscores.csv"))
-```
-
-```{r, eval = F, echo = T, label = "load_serps_zscores_dataverse"}
 library(dataverse)
 library(data.table)
 
 Sys.setenv("DATAVERSE_SERVER" = "dataverse.harvard.edu")
-writeBin(get_file("TDA_data_scored.tab", "doi:10.7910/DVN/5T80PF"), "TDA_data_scored.tab")
-TDA_data_scored.tab <- fread("TDA_data_scored.tab", na.strings=getOption("<NA>","NA"))
-data <- as.data.frame(TDA_data_scored.tab)
-rm(TDA_data_scored.tab)
+writeBin(get_file("serps_all_zscores.tab", "doi:10.7910/DVN/BBOLVY"), "serps_all_zscores.tab")
+serps_all_zscores.tab <- fread("serps_all_zscores.tab", na.strings=getOption("<NA>","NA"))
+serps_all_zscores <- as.data.frame(serps_all_zscores.tab)
+rm(serps_all_zscores.tab)
 ```
 
 <br>
@@ -251,17 +233,9 @@ serps_freq_index <- serps_zscores %>%
     select(TDA, everything())
 ```
 
-```{r , echo = F, label = "top_serps_table_apa"}
+```{r, echo = F, label = "top_serps_table_apa"}
 write_csv(serps_freq_index, 
           file = here("data/serps/serps_freq_index.csv"))
-
-# present_table2 <- serps_freq_index %>%
-#   arrange(desc(freq_index)) %>%
-#   select(TDA, freq_index)
-
-#apa_table(present_table2[1:10,],
-        #  caption = "Top 10 descriptors with the highest frequency index.",
-        #  placement= "h")
 ```
 
 <br>
@@ -274,7 +248,7 @@ serps_cor_tab <- subset(serps_freq_index, select = -c(TDA))
 colnames(serps_cor_tab) <- c("descriptor+person serps", "descriptor+woman serps", "descriptor+man serps", "descriptor+girl serps", "descriptor+boy serps", "frequency index serps")
 ```
 
-The table below shows the correlations between descriptor + noun forms with the lower and upper bounds of the 95% confidence intervals. All the correlations are statistically significant but those involving +person are much lower than the rest. Among the other noun forms, woman-man and woman-girl are the strongest. Without exception, the highest correlations for each noun form is with the index, as expected given the overlap in content.
+The table below shows the correlations between descriptor + noun forms with the lower and upper bounds of the 95% confidence intervals. All the correlations are statistically significant but those involving +person are much lower in magnitude than the rest. Among the other noun forms, woman-man and woman-girl are the strongest. Without exception, the highest correlations for each noun form is with the index, as expected given the partial overlap in content.
 
 ```{r, echo=F, warning=FALSE, label = "analyses_serps_cors_table"}
 serps_cor_table = apa.cor.table(serps_cor_tab, show.sig.stars = FALSE)
@@ -292,7 +266,7 @@ serps_cor_table = apa.cor.table(serps_cor_tab, show.sig.stars = FALSE)
 
 ## Data loading and preparation
 
-The csv files contain the raw data. As with the search engine results, these cannot be shared in raw form, but transformations of the raw data are publicly available on Dataverse (see the link below and on the home page). Here, we show how the raw data are loaded, for cleaning and description. Further down in the code, we show the data being saved into the format available on Dataverse.
+Again, the raw data are in separate csv files for each noun form. As with the search engine results, these cannot be shared in raw form, but transformations of the raw data are publicly available on Dataverse (see the link below and on the home page). Here, we show how the raw data are loaded, for cleaning and description. Further down in the code, we show the data being saved into the format available on Dataverse.
 
 ```{r, message = F, warning = F, eval = T, label = "load_raw_data"}
 ngrams_person <- read_csv("../../TDAfreqdata/ngrams/ngrams_rawdata_file_person.csv")
@@ -433,17 +407,6 @@ round(ngrams_uncorrected_ttests$p.value, 3)
 round(ngrams_holm_ttests$p.value, 3)
 ```
 
-```{r, eval = F, echo = F, label = "ngrams_ttest_tables_apa"}
-# These tables are unnecessary for the website version
-
-apa_table(ngrams_uncorrected_ttests$p.value,
-          caption = "P-values of uncorrected t-tests comparing mean descriptor ngrams frequency by person-word.",
-          placement= "h")
-apa_table(ngrams_holm_ttests$p.value,
-          caption = "P-values of Holm-corrected t-tests comparing mean descriptor ngrams frequency by person-word.",
-          placement= "h")
-```
-
 <br> 
 
 ### 2. Calculate z-scores
@@ -464,32 +427,21 @@ ngrams_all_zscores <- subset(ngrams_all_zscores, TDA != "self-harming")
 
 ```
 
-```{r, eval = T, echo = T, label = "save_ngrams_zscores"}
-write_csv(ngrams_all_zscores, 
-          file = here("data/ngrams/ngrams_all_zscores.csv"))
-```
-
-This csv file (above) has been posted on Dataverse (see doi). All subsequent analyses of the books data are based on this file, including the database of books estimates (see [here](https://pie-lab.github.io/tdafrequency/books-frequency.html)).
-
-*ADD DOI LINK TO THE SENTENCE ABOVE*
+This csv file (above) has been posted on Dataverse (doi: [https://doi.org/10.7910/DVN/BBOLVY](https://doi.org/10.7910/DVN/BBOLVY)). All subsequent analyses of the books data are based on this file, including the database of books estimates (see [here](https://pie-lab.github.io/tdafrequency/books-frequency.html)).
 
 The following code clears the environment and loads the data directly from Dataverse.
 
-*CHANGE THIS TO PULL THE ZSCORES FILE FROM DATAVERSE.*
-```{r, echo = T, label = "load_ngrams_zscores"}
+```{r, eval = T, echo = T, label = "load_ngrams_zscores_dataverse"}
+#rm(list=setdiff(ls(), "x"))
 rm(list=ls())
-ngrams_all_zscores <- read_csv(here("data/ngrams/ngrams_all_zscores.csv"))
-```
-
-```{r, eval = F, echo = T, label = "load_ngrams_zscores_dataverse"}
 library(dataverse)
 library(data.table)
 
 Sys.setenv("DATAVERSE_SERVER" = "dataverse.harvard.edu")
-writeBin(get_file("TDA_data_scored.tab", "doi:10.7910/DVN/5T80PF"), "TDA_data_scored.tab")
-TDA_data_scored.tab <- fread("TDA_data_scored.tab", na.strings=getOption("<NA>","NA"))
-data <- as.data.frame(TDA_data_scored.tab)
-rm(TDA_data_scored.tab)
+writeBin(get_file("ngrams_all_zscores.tab", "doi:10.7910/DVN/BBOLVY"), "ngrams_all_zscores.tab")
+ngrams_all_zscores.tab <- fread("ngrams_all_zscores.tab", na.strings=getOption("<NA>","NA"))
+ngrams_all_zscores <- as.data.frame(ngrams_all_zscores.tab)
+rm(ngrams_all_zscores.tab)
 ```
 
 <br> 
@@ -527,19 +479,6 @@ ngrams_freq_index <- ngrams_freq_index %>%
                          false = freq_index),
   ) %>%
     select(TDA, everything())
-```
-
-```{r , echo = F, label = "top_ngrams_table_apa"}
-write_csv(ngrams_freq_index, 
-          file = here("data/ngrams/ngrams_freq_index.csv"))
-
-# present_table1 <- ngrams_freq_index %>%
-#   arrange(desc(freq_index)) %>%
-#   select(TDA, freq_index)
-
-# apa_table(present_table1[1:10,],
-        # caption = "Top 10 descriptors with the highest frequency index.",
-          # placement= "h")
 ```
 
 <br>
@@ -588,7 +527,7 @@ The table below shows the correlations among all the search engine and books for
 
 ```{r echo=F, results = 'asis', label ="giantcortable"}
 library(apaTables)
-all_cor_tab = apa.cor.table(all, show.sig.stars = FALSE, filename = "~/Downloads/maincortable.html")
+all_cor_tab = apa.cor.table(all, show.sig.stars = FALSE)
  all_cor_tab$table.body %>%
    as.data.frame() %>% 
    #remove mean annd sd
@@ -604,7 +543,6 @@ all_cor_tab = apa.cor.table(all, show.sig.stars = FALSE, filename = "~/Downloads
 Next, we evaluated the correlation between the frequency estimates presented here and the estimates reported in Roivainen (2013). This was done using z-scored versions of the raw counts provided by Roivainen (personal correspondence).
 
 ```{r, warning=FALSE, label = "roivainen_comparison"}
-#rm(list=ls())
 roivainen <- read_csv(here("data/other/roivainen_comparison.csv"))
 roivainen_435 <- data.frame(all[as.data.frame(roivainen)[,1],c("person_serps", "person_books")], roivainen[,c("roi_person_serps","roi_person_books")])
 ```
@@ -733,7 +671,4 @@ rownames(head(serps_dev_boy, 10))
 
 These comparisons demonstrate a few points worth noting. Above all, most of the terms are specifications of demographic attributes --- young, old, black, white, big, little, small. Very few relate to psychological attributes. This point underscores the primary motivation for this work: the characterization of this large pool of descriptors is intended to provide an additional source of data for identifying a justifiably comprehensive listing of psychological trait descriptors (especially personality-relevant terms), but the list is clearly over-inclusive. This was known from the outset, but the next step is to combine these data with other sources of information and pare the list down to a more relevant subset. A separate point is that the female nouns are more related to physical attributes than the male traits; all of the female noun forms included the descriptor "beautiful" among the top 5. 
 
-**[say something more here]**
-
-Finally, the lists are generally consistent across the two types, at least among the most consistent terms. 
-
+For more interpretation of the data and ideas about further use, see the manuscript.
