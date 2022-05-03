@@ -25,7 +25,7 @@ Personality traits are often measured using person-descriptive terms, but data a
 [--- citation blinded for review ---]
 -->
  
-> <font size="3">Condon, D. M., & McDougald, S. (under review). Frequency of use metrics for person descriptors: Extensions of Roivainen's internet search methodology.</font>
+> <font size="3">Condon, D. M., & McDougald, S. (under review). Frequency of use metrics for person descriptors: Extensions of Roivainen's internet search methodology. *PsyArXiv*. [https://doi.org/10.31234/osf.io/9gtj7](https://doi.org/10.31234/osf.io/9gtj7)</font>
 
 --- Frequency estimates based on the search engine results are here:
 [https://pie-lab.github.io/tdafrequency/serps-frequency.html](https://pie-lab.github.io/tdafrequency/serps-frequency.html)

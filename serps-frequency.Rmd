@@ -9,7 +9,7 @@ output:
 
 The table below provides relative frequency estimates (as z-scores) for each descriptor when combined with the noun at the top of each column (person, woman, man, girl, boy). The index column is the average across ngrams for each descriptor, leaving out the maximum value. For more information about the calculation of this index, the sources of this (over-inclusive) list of terms and data, or additional details, see the manuscript listed below.
 
-> <font size="3">Condon, D. M., & McDougald, S. (under review). Frequency of use metrics for person descriptors: Extensions of Roivainen's internet search methodology.</font>
+> <font size="3">Condon, D. M., & McDougald, S. (under review). Frequency of use metrics for person descriptors: Extensions of Roivainen's internet search methodology. *PsyArXiv*. [https://doi.org/10.31234/osf.io/9gtj7](https://doi.org/10.31234/osf.io/9gtj7)</font>
 
 ```{r, include = F}
 knitr::opts_chunk$set(echo = T, message = F, warning = F)
