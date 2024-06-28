@@ -36,7 +36,7 @@ Personality traits are often measured using person-descriptive terms, but data a
 --- The raw data are proprietary, however z-scores of the frequency estimates for each descriptor + noun have been made available for download at [https://doi.org/10.7910/DVN/BBOLVY](https://doi.org/10.7910/DVN/BBOLVY)
 
 --- The analytic code used for this project is here:
-[https://pie-lab.github.io/tdafrequency/code.html](https://pie-lab.github.io/tdafrequency/code.html).
+[https://osf.io/uc64v/](https://osf.io/uc64v/).
 
 --- The code used to create this website is here: [https://github.com/pie-lab/tdafrequency](https://github.com/pie-lab/tdafrequency).
 
